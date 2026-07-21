@@ -1,0 +1,6 @@
+# FastAPI service (lean for ai-builders.space 256 MB limit)
+fastapi[standard]>=0.115.0
+uvicorn[standard]>=0.30.0
+openai>=1.59.8
+python-dotenv>=1.0.0
+pydantic>=2.9.0

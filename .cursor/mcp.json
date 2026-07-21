@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "ai-builder-mcp": {
+      "command": "/Users/fangkai/编程/mytimetree/scripts/run-ai-builder-mcp.sh",
+      "args": []
+    }
+  }
+}
