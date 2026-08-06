@@ -1,0 +1,9 @@
+# Dev / TDD (domain + local SQLite)
+pytest>=8.0.0
+pytest-cov>=5.0.0
+
+# App runtime (lean; extend in later epics)
+fastapi[standard]>=0.115.0
+uvicorn[standard]>=0.30.0
+python-dotenv>=1.0.0
+pydantic>=2.9.0

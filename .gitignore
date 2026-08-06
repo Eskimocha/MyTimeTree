@@ -13,6 +13,7 @@ venv/
 # Caches / IDE
 .pytest_cache/
 .mypy_cache/
+.coverage
 .ai-builders-mcp-cache/
 .deployment_guide_cache.json
 .DS_Store

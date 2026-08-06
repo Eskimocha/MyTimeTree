@@ -7,6 +7,10 @@ COPY requirements-app.txt .
 RUN pip install --no-cache-dir -r requirements-app.txt
 
 COPY main.py .
+COPY src ./src
+
+ENV PYTHONPATH=/app/src
+ENV MYTIMETREE_DATA_DIR=/tmp/mytimetree
 
 EXPOSE 8000
 
