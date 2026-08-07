@@ -163,6 +163,9 @@ def test_home_shows_balance_tree_and_actions(env):
         "seed",
     )
     assert "ornaments" in home["tree"]
+    assert "cumulative_interest" in home["balance"]
+    assert "today_interest" in home["balance"]
+    assert "interest_fruit_count" in home["tree"]["ornaments"]
 
     spend = client.post("/api/portal/spend", json={"minutes": 20, "summary": "上网"})
     assert spend.status_code == 200
@@ -174,9 +177,24 @@ def test_home_shows_balance_tree_and_actions(env):
     assert home2["balance"]["liability"] == 10
     assert home2["tree"]["ornaments"]["pest_count"] >= 1
 
-    repay = client.post("/api/portal/repay", json={"minutes": 10, "summary": "家务"})
-    assert repay.status_code == 200
-    assert client.get("/api/portal/home").json()["balance"]["liability"] == 0
+    deposit = client.post("/api/portal/deposit", json={"minutes": 10, "summary": "存入"})
+    assert deposit.status_code == 200
+    home3 = client.get("/api/portal/home").json()
+    # 存入优先还债：负债 10 全部还清，无超额进资产；资产仍为 100
+    assert home3["balance"]["liability"] == 0
+    assert home3["balance"]["asset"] == 100
+    assert home3["tree"]["ornaments"]["woodpecker_count"] >= 1
+    assert home3["tree"]["ornaments"]["pest_count"] == 0  # 还清负债消灭虫
+    assert home3["tree"]["ornaments"]["fruit_count"] >= 2  # 奖励存入 + 本次存入各 1 星
+
+    # 超额：无债后再存入 15 → 全部进资产
+    excess = client.post("/api/portal/repay", json={"minutes": 15, "summary": "存入"})
+    assert excess.status_code == 200
+    assert excess.json()["categories"] == ["deposit"]
+    home4 = client.get("/api/portal/home").json()
+    assert home4["balance"]["asset"] == 115
+    assert home4["balance"]["liability"] == 0
+
 
 
 # --- E8.4 / E8.5 ---
@@ -225,6 +243,23 @@ def test_portal_markup_has_shell_tabs_and_onboarding():
         "onboarding",
         "btn-spend",
         "btn-borrow",
-        "btn-repay",
+        "btn-deposit",
+        "ornament-counters",
+        "tree-art",
+        "keypad-modal",
+        "keypad-display",
+        "keypad-submit",
+        "settings-rules",
+        "rule-asset-rate",
+        "rule-liability-rate",
     ):
         assert needle in html
+    assert "存入" in html
+    assert "还入" not in html
+    assert "挂件积分" in html
+    assert "借用" in html and "强制消费" in html
+    assert "优先还清负债" in html
+    assert html.count('data-kind="') >= 5
+    assert "orn-star" in html and "orn-bird" in html
+    assert 'data-key="1"' in html and 'data-key="clear"' in html
+

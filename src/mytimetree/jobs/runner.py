@@ -1,4 +1,4 @@
-"""Job runner: midnight interest→snapshot→reconcile?→monthly_fruit?→backup; 01:00 auto-grant."""
+"""Job runner: midnight interest→snapshot→reconcile?→backup; 01:00 auto-grant."""
 
 from __future__ import annotations
 
@@ -33,7 +33,7 @@ class MidnightReport:
     reconcile: ReconcileReport | None = None
     backup_path: str | None = None
     interest_posted: dict[int, dict[str, int]] = field(default_factory=dict)
-    monthly_fruit_awarded: dict[int, int] = field(default_factory=dict)
+    interest_fruit_awarded: dict[int, int] = field(default_factory=dict)
 
 
 @dataclass
@@ -63,7 +63,7 @@ class JobRunner:
         now = ensure_app_tz(self._clock.now())
         report = MidnightReport()
 
-        # 1) interest
+        # 1) interest (+ 果 from cumulative net interest)
         report.steps.append("interest")
         for acc in self._accounts.list_accounts():
             rates = execute(
@@ -74,8 +74,11 @@ class JobRunner:
             ).fetchone()
             if rates is None:
                 continue
+            fruit_before = self._ledger.get_ornaments(acc.id).interest_fruit_count
             bal = self._ledger.get_balance(acc.id)
-            asset_i = daily_interest_minutes(bal.asset.value, float(rates["asset_interest_rate"]))
+            asset_i = daily_interest_minutes(
+                bal.asset.value, float(rates["asset_interest_rate"])
+            )
             liab_i = daily_interest_minutes(
                 bal.liability.value, float(rates["liability_interest_rate"])
             )
@@ -87,14 +90,19 @@ class JobRunner:
                 self._ledger.post_interest(acc.id, liab_i, side="liability")
                 posted["liability"] = liab_i
             report.interest_posted[acc.id] = posted
+            gained = (
+                self._ledger.get_ornaments(acc.id).interest_fruit_count - fruit_before
+            )
+            if gained:
+                report.interest_fruit_awarded[acc.id] = gained
 
-        # 2) daily asset snapshot for tree monthly average
+        # 2) daily asset snapshot
         if self._tree is not None:
             report.steps.append("daily_snapshot")
             for acc in self._accounts.list_accounts():
                 self._tree.record_daily_asset_snapshot(acc.id)
 
-        # 3) month-end reconcile + monthly fruit
+        # 3) month-end reconcile
         if is_month_end(now.date()):
             report.steps.append("reconcile")
             report.reconcile = reconcile_accounts(
@@ -102,14 +110,6 @@ class JobRunner:
             )
             save_month_end_snapshots(self._conn, ledger=self._ledger, now=now)
 
-            if self._tree is not None:
-                report.steps.append("monthly_fruit")
-                for acc in self._accounts.list_accounts():
-                    awarded = self._tree.try_award_monthly_fruit(acc.id)
-                    if awarded:
-                        report.monthly_fruit_awarded[acc.id] = awarded
-
-            # month-end reconcile artifact (in addition to daily backup below)
             create_daily_backup(
                 self._conn,
                 accounts=self._accounts,

@@ -216,6 +216,8 @@ def create_app(
                 "asset": state.asset_minutes,
                 "liability": state.liability_minutes,
                 "net": state.net_minutes,
+                "cumulative_interest": state.cumulative_interest,
+                "today_interest": state.today_interest,
             },
             "tree": {
                 "stage": state.stage.value,
@@ -224,17 +226,27 @@ def create_app(
                     "golden_fruit_count": o.golden_fruit_count,
                     "pest_count": o.pest_count,
                     "woodpecker_count": o.woodpecker_count,
+                    "interest_fruit_count": o.interest_fruit_count,
+                    # alias for older clients
+                    "monthly_fruit_count": o.interest_fruit_count,
                 },
             },
         }
 
     @app.post("/api/portal/deposit")
     def portal_deposit(body: MinutesBody) -> dict[str, Any]:
+        """存入：优先还负债，超额进资产（底层与 repay 相同）。"""
         acc_svc = _require(app.state.accounts, "accounts")
         ledger_svc = _require(app.state.ledger, "ledger")
         acc = acc_svc.require_current_account()
-        entry = ledger_svc.deposit(acc.id, minutes=body.minutes, summary=body.summary)
-        return {"id": entry.id, "category": entry.category.value}
+        entries = ledger_svc.deposit(
+            acc.id, minutes=body.minutes, summary=body.summary or "存入"
+        )
+        return {
+            "ids": [e.id for e in entries],
+            "count": len(entries),
+            "categories": [e.category.value for e in entries],
+        }
 
     @app.post("/api/portal/spend")
     def portal_spend(body: MinutesBody) -> dict[str, Any]:
@@ -250,15 +262,26 @@ def create_app(
         ledger_svc = _require(app.state.ledger, "ledger")
         acc = acc_svc.require_current_account()
         entries = ledger_svc.borrow(acc.id, minutes=body.minutes, summary=body.summary)
-        return {"ids": [e.id for e in entries], "count": len(entries)}
+        return {
+            "ids": [e.id for e in entries],
+            "count": len(entries),
+            "categories": [e.category.value for e in entries],
+        }
 
     @app.post("/api/portal/repay")
     def portal_repay(body: MinutesBody) -> dict[str, Any]:
+        """与存入同义：优先还负债，超额进资产。"""
         acc_svc = _require(app.state.accounts, "accounts")
         ledger_svc = _require(app.state.ledger, "ledger")
         acc = acc_svc.require_current_account()
-        entry = ledger_svc.repay(acc.id, minutes=body.minutes, summary=body.summary)
-        return {"id": entry.id, "category": entry.category.value}
+        entries = ledger_svc.repay(
+            acc.id, minutes=body.minutes, summary=body.summary or "存入"
+        )
+        return {
+            "ids": [e.id for e in entries],
+            "count": len(entries),
+            "categories": [e.category.value for e in entries],
+        }
 
     @app.get("/api/settings")
     def get_settings(account_id: int) -> dict[str, Any]:
@@ -400,6 +423,13 @@ def create_app(
         svc = _require(app.state.analytics, "analytics")
         return _trend_dict(svc.monthly_trend(account_id=account_id))
 
+    @app.get("/api/ornament-events")
+    def ornament_events(account_id: int, limit: int = 200) -> dict[str, Any]:
+        """挂件审计日志（星/太阳/虫/鸟）；门户不展示，供排查用。"""
+        ledger_svc = _require(app.state.ledger, "ledger")
+        items = ledger_svc.list_ornament_events(account_id, limit=min(limit, 500))
+        return {"items": items, "total": len(items)}
+
     return app
 
 
@@ -418,4 +448,14 @@ def _trend_dict(report: Any) -> dict[str, Any]:
         "ending_asset": report.ending_asset,
         "ending_liability": report.ending_liability,
         "ending_net": report.ending_net,
+        "series": [
+            {
+                "date": p.date,
+                "asset": p.asset,
+                "liability": p.liability,
+                "net": p.net,
+                "interest_net": p.interest_net,
+            }
+            for p in report.series
+        ],
     }

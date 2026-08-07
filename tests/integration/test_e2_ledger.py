@@ -63,11 +63,11 @@ def test_balance_recomputed_from_ledger(kid):
     ledger.deposit(acc.id, minutes=100, summary="in")
     ledger.spend(acc.id, minutes=30, summary="out")
     ledger.borrow(acc.id, minutes=20, summary="loan")
-    # borrow: +20 liability and -20 asset (forced spend)
+    # borrow: +20 liability, +20 asset, then spend 20 → asset unchanged by borrow
     bal = ledger.get_balance(acc.id)
-    assert bal.asset.value == 50  # 100 - 30 - 20
+    assert bal.asset.value == 70  # 100 - 30
     assert bal.liability.value == 20
-    assert bal.net.value == 30
+    assert bal.net.value == 50
 
 
 @pytest.mark.integration
@@ -101,25 +101,36 @@ def test_spend_insufficient_asset(kid):
 
 
 @pytest.mark.integration
-def test_borrow_writes_two_rows_same_correlation_and_one_pest(kid):
+def test_borrow_writes_three_rows_same_correlation_and_one_pest(kid):
     _, ledger, acc = kid
     ledger.deposit(acc.id, minutes=100)
     entries = ledger.borrow(acc.id, minutes=25, summary="上网")
-    assert len(entries) == 2
-    assert {e.category for e in entries} == {
+    assert len(entries) == 3
+    assert [e.category for e in entries] == [
         LedgerCategory.BORROW,
+        LedgerCategory.DEPOSIT,
         LedgerCategory.SPEND,
-    }
-    assert entries[0].correlation_id == entries[1].correlation_id
+    ]
+    assert entries[0].correlation_id == entries[1].correlation_id == entries[2].correlation_id
     assert entries[0].correlation_id
 
     bal = ledger.get_balance(acc.id)
-    assert bal.asset.value == 75
+    assert bal.asset.value == 100  # borrow credits then spends; net asset unchanged
     assert bal.liability.value == 25
 
     orn = ledger.get_ornaments(acc.id)
     assert orn.pest_count == 1
-    assert orn.fruit_count == 1  # deposit only
+    assert orn.fruit_count == 1  # parent deposit only (borrow's deposit leg has no fruit)
+
+
+@pytest.mark.integration
+def test_borrow_without_prior_asset(kid):
+    _, ledger, acc = kid
+    entries = ledger.borrow(acc.id, minutes=15, summary="先借")
+    assert len(entries) == 3
+    bal = ledger.get_balance(acc.id)
+    assert bal.asset.value == 0
+    assert bal.liability.value == 15
 
 
 @pytest.mark.integration
@@ -127,13 +138,48 @@ def test_repay_and_woodpecker_when_cleared(kid):
     _, ledger, acc = kid
     ledger.deposit(acc.id, minutes=100)
     ledger.borrow(acc.id, minutes=20)
-    ledger.repay(acc.id, minutes=10, summary="家务")
+    rows = ledger.repay(acc.id, minutes=10, summary="家务")
+    assert len(rows) == 1
+    assert rows[0].category == LedgerCategory.REPAY
     assert ledger.get_balance(acc.id).liability.value == 10
     assert ledger.get_ornaments(acc.id).woodpecker_count == 0
 
     ledger.repay(acc.id, minutes=10, summary="阅读")
     assert ledger.get_balance(acc.id).liability.value == 0
     assert ledger.get_ornaments(acc.id).woodpecker_count == 1
+    assert ledger.get_ornaments(acc.id).pest_count == 0  # 负债清零消灭虫
+
+
+@pytest.mark.integration
+def test_repay_excess_becomes_asset(kid):
+    _, ledger, acc = kid
+    ledger.borrow(acc.id, minutes=10)
+    rows = ledger.repay(acc.id, minutes=30, summary="存入超额")
+    assert [e.category for e in rows] == [
+        LedgerCategory.REPAY,
+        LedgerCategory.DEPOSIT,
+    ]
+    assert rows[0].amount_minutes == 10
+    assert rows[1].amount_minutes == 20
+    assert rows[0].correlation_id == rows[1].correlation_id
+    bal = ledger.get_balance(acc.id)
+    assert bal.liability.value == 0
+    assert bal.asset.value == 20
+    assert ledger.get_ornaments(acc.id).woodpecker_count == 1
+    assert ledger.get_ornaments(acc.id).fruit_count == 1  # 存入奖励 1 星
+
+
+@pytest.mark.integration
+def test_repay_with_zero_liability_only_deposits(kid):
+    _, ledger, acc = kid
+    rows = ledger.repay(acc.id, minutes=15, summary="无债存入")
+    assert len(rows) == 1
+    assert rows[0].category == LedgerCategory.DEPOSIT
+    assert rows[0].amount_minutes == 15
+    assert ledger.get_balance(acc.id).asset.value == 15
+    assert ledger.get_balance(acc.id).liability.value == 0
+    assert ledger.get_ornaments(acc.id).woodpecker_count == 0
+    assert ledger.get_ornaments(acc.id).fruit_count == 1  # 存入奖励星
 
 
 @pytest.mark.integration
@@ -147,13 +193,46 @@ def test_repay_preset_uses_default_repay_minutes(kid, conn):
     conn.commit()
     ledger.deposit(acc.id, minutes=100)
     ledger.borrow(acc.id, minutes=40)
-    e = ledger.repay_preset(acc.id, scene="做家务")
-    assert e.amount_minutes == 20
-    assert "做家务" in (e.summary or "")
+    rows = ledger.repay_preset(acc.id, scene="做家务")
+    assert len(rows) == 1
+    assert rows[0].amount_minutes == 20
+    assert "做家务" in (rows[0].summary or "")
 
 
 @pytest.mark.integration
-def test_deposit_and_auto_grant_add_fruit_interest_does_not(kid):
+def test_ornament_events_audit_star_sun_pest_bird(kid):
+    _, ledger, acc = kid
+    ledger.deposit(acc.id, minutes=10)
+    events = ledger.list_ornament_events(acc.id)
+    assert any(e["kind"] == "star" and e["delta"] == 1 and e["reason"] == "deposit" for e in events)
+
+    ledger.borrow(acc.id, minutes=5)
+    events = ledger.list_ornament_events(acc.id)
+    assert any(e["kind"] == "pest" and e["delta"] == 1 for e in events)
+
+    ledger.repay(acc.id, minutes=5)
+    events = ledger.list_ornament_events(acc.id)
+    assert any(e["kind"] == "woodpecker" and e["delta"] == 1 for e in events)
+    assert any(e["kind"] == "pest" and e["delta"] == -1 for e in events)
+    assert ledger.get_ornaments(acc.id).pest_count == 0
+
+    # 98 more stars → 2+98=100 → convert to sun
+    for _ in range(98):
+        ledger.deposit(acc.id, minutes=1)
+    orn = ledger.get_ornaments(acc.id)
+    assert orn.golden_fruit_count >= 1
+    events = ledger.list_ornament_events(acc.id)
+    assert any(e["kind"] == "sun" and e["reason"] == "star_conversion" for e in events)
+
+    # 果入审计：累积净利息满 100 → +1 果
+    ledger.post_interest(acc.id, minutes=100, side="asset")
+    events = ledger.list_ornament_events(acc.id)
+    assert any(e["kind"] == "fruit" and e["delta"] == 1 and e["reason"] == "interest" for e in events)
+    assert ledger.get_ornaments(acc.id).interest_fruit_count == 1
+
+
+@pytest.mark.integration
+def test_deposit_adds_star_auto_grant_and_interest_do_not(kid):
     _, ledger, acc = kid
     ledger.deposit(acc.id, minutes=10)
     ledger.auto_grant(acc.id, minutes=10)
@@ -161,8 +240,11 @@ def test_deposit_and_auto_grant_add_fruit_interest_does_not(kid):
     ledger.post_interest(acc.id, minutes=2, side="liability")
 
     orn = ledger.get_ornaments(acc.id)
-    assert orn.fruit_count == 2
+    assert orn.fruit_count == 1  # 仅手动存入发星
     assert orn.golden_fruit_count == 0
+    assert orn.interest_fruit_count == 0  # 净利息 3 < 100，不发果
+    events = ledger.list_ornament_events(acc.id)
+    assert all(e["reason"] != "auto_grant" for e in events)
 
     bal = ledger.get_balance(acc.id)
     assert bal.asset.value == 25  # 10+10+5

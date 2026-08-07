@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/static/portal/styles.css" />
+  <link rel="stylesheet" href="/static/portal/styles.css?v=20260807b" />
 </head>
 <body>
   <div id="portal" class="portal">
@@ -44,24 +44,61 @@
       <section id="tab-home" class="tab-panel active" role="tabpanel">
         <p class="tagline">时间也能存进树里</p>
         <div class="hero-tree" id="tree-stage" data-stage="seed">
-          <div class="tree-visual" aria-hidden="true"></div>
-          <p class="stage-label" id="stage-label">种子</p>
-          <p class="ornaments" id="ornaments-line"></p>
-        </div>
-        <div class="balances">
-          <div>
-            <span class="muted">资产</span>
-            <strong id="asset-min">0</strong><span class="unit">分</span>
+          <div class="tree-scene" aria-hidden="true">
+            <img class="tree-art" id="tree-art" src="/static/portal/tree/seed.svg?v=20260807b" alt="" />
+            <div class="tree-ornament-layer" id="tree-ornament-layer"></div>
           </div>
-          <div>
+          <p class="stage-label" id="stage-label">种子</p>
+          <ul class="ornament-counters" id="ornament-counters" aria-label="挂件计数">
+            <li data-kind="star">
+              <img src="/static/portal/ornaments/star.svg?v=20260807b" alt="" />
+              <span class="orn-label">星</span>
+              <strong id="orn-star">0</strong>
+            </li>
+            <li data-kind="sun">
+              <img src="/static/portal/ornaments/sun.svg?v=20260807b" alt="" />
+              <span class="orn-label">太阳</span>
+              <strong id="orn-sun">0</strong>
+            </li>
+            <li data-kind="fruit">
+              <img src="/static/portal/ornaments/fruit.svg?v=20260807b" alt="" />
+              <span class="orn-label">果</span>
+              <strong id="orn-fruit">0</strong>
+            </li>
+            <li data-kind="pest">
+              <img src="/static/portal/ornaments/pest.svg?v=20260807b" alt="" />
+              <span class="orn-label">虫</span>
+              <strong id="orn-pest">0</strong>
+            </li>
+            <li data-kind="bird">
+              <img src="/static/portal/ornaments/bird.svg?v=20260807b" alt="" />
+              <span class="orn-label">鸟</span>
+              <strong id="orn-bird">0</strong>
+            </li>
+          </ul>
+        </div>
+        <div class="balances" aria-label="余额与利息">
+          <div class="bal bal-asset">
+            <span class="muted">资产</span>
+            <div class="bal-row"><strong id="asset-min">0</strong><span class="unit">分</span></div>
+          </div>
+          <div class="bal bal-liab">
             <span class="muted">负债</span>
-            <strong id="liab-min">0</strong><span class="unit">分</span>
+            <div class="bal-row"><strong id="liab-min">0</strong><span class="unit">分</span></div>
+          </div>
+          <div class="bal bal-cum">
+            <span class="muted">累积利息</span>
+            <div class="bal-row"><strong id="cum-interest-min">0</strong><span class="unit">分</span></div>
+          </div>
+          <div class="bal bal-today">
+            <span class="muted">当日利息</span>
+            <div class="bal-row"><strong id="today-interest-min">0</strong><span class="unit">分</span></div>
           </div>
         </div>
         <div class="actions">
           <button type="button" class="btn" id="btn-spend">支出</button>
           <button type="button" class="btn" id="btn-borrow">借用</button>
-          <button type="button" class="btn" id="btn-repay">还入</button>
+          <button type="button" class="btn" id="btn-deposit">存入</button>
         </div>
         <p id="home-msg" class="msg" hidden></p>
       </section>
@@ -75,24 +112,83 @@
         <form id="settings-form" class="stack">
           <label>每日派发（分）<input name="daily_grant_minutes" type="number" min="0" /></label>
           <label>默认支出（分）<input name="default_spend_minutes" type="number" min="1" /></label>
-          <label>默认还入（分）<input name="default_repay_minutes" type="number" min="1" /></label>
+          <label>默认存入（分）<input name="default_repay_minutes" type="number" min="1" /></label>
           <button type="submit" class="btn primary">保存设置</button>
         </form>
         <p id="settings-msg" class="msg" hidden></p>
+
+        <aside id="settings-rules" class="rules-card" aria-label="当前规则说明">
+          <h2 class="rules-title">当前规则</h2>
+          <div class="rules-block">
+            <h3>利率（日利率）</h3>
+            <ul class="rules-list">
+              <li>资产利率：<strong id="rule-asset-rate">—</strong></li>
+              <li>负债利率：<strong id="rule-liability-rate">—</strong></li>
+            </ul>
+            <p class="rules-note">每日 0 点按本金分别计息；结息不加星。累积净利息（资产结息−负债结息）每 +100 分得 1 果。</p>
+          </div>
+          <div class="rules-block">
+            <h3>挂件积分</h3>
+            <ul class="rules-list">
+              <li><strong>星</strong>：仅手动存入 +1；100 星 → 1 太阳（自动派发不加星）</li>
+              <li><strong>太阳</strong>：由星自动转化</li>
+              <li><strong>果</strong>：累积净利息每 +100 分 +1；树上从 1 起每 +10 多挂 1 个（最多 10）</li>
+              <li><strong>虫</strong>：每次借用 +1；负债清零时虫数值清零</li>
+              <li><strong>鸟</strong>：存入后负债归零 +1</li>
+            </ul>
+          </div>
+          <div class="rules-block">
+            <h3>借用 / 存入</h3>
+            <ul class="rules-list">
+              <li><strong>借用</strong>：借入即强制消费（记借 + 入账 + 支出三笔，净资产因负债增加而下降）</li>
+              <li><strong>存入</strong>：优先还清负债；还清后多出的时间记入资产，并奖励星</li>
+            </ul>
+          </div>
+        </aside>
       </section>
 
       <section id="tab-analytics" class="tab-panel" role="tabpanel" hidden>
         <div class="analytics-block">
-          <h2>本周</h2>
+          <h2>本周趋势</h2>
+          <div id="chart-week" class="trend-chart" role="img" aria-label="本周资产负债净值利息趋势"></div>
           <pre id="analytics-week" class="brief"></pre>
         </div>
         <div class="analytics-block">
-          <h2>本月</h2>
+          <h2>本月趋势</h2>
+          <div id="chart-month" class="trend-chart" role="img" aria-label="本月资产负债净值利息趋势"></div>
           <pre id="analytics-month" class="brief"></pre>
         </div>
       </section>
     </main>
   </div>
+
+  <div id="keypad-modal" class="keypad-modal" hidden>
+    <div class="keypad-backdrop" data-keypad-dismiss></div>
+    <div class="keypad-sheet" role="dialog" aria-modal="true" aria-labelledby="keypad-title">
+      <header class="keypad-header">
+        <h2 id="keypad-title">输入分钟</h2>
+        <button type="button" class="keypad-close" data-keypad-dismiss aria-label="关闭">×</button>
+      </header>
+      <p class="keypad-hint" id="keypad-hint">默认值来自设置</p>
+      <div class="keypad-display" id="keypad-display" aria-live="polite">20</div>
+      <div class="keypad-grid" id="keypad-grid">
+        <button type="button" data-key="1">1</button>
+        <button type="button" data-key="2">2</button>
+        <button type="button" data-key="3">3</button>
+        <button type="button" data-key="4">4</button>
+        <button type="button" data-key="5">5</button>
+        <button type="button" data-key="6">6</button>
+        <button type="button" data-key="7">7</button>
+        <button type="button" data-key="8">8</button>
+        <button type="button" data-key="9">9</button>
+        <button type="button" data-key="clear" class="key-muted">C</button>
+        <button type="button" data-key="0">0</button>
+        <button type="button" data-key="back" class="key-muted">⌫</button>
+      </div>
+      <button type="button" class="btn primary keypad-submit" id="keypad-submit">输入</button>
+    </div>
+  </div>
+
   <script src="/static/portal/app.js"></script>
 </body>
 </html>

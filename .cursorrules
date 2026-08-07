@@ -112,10 +112,10 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 
 # Scratchpad
 
-## Task: Push mytimetree to GitHub Eskimocha/MyTimeTree then prepare Space deploy
-- Repo: git@github.com:Eskimocha/MyTimeTree.git
-- [ ] Ensure .gitignore excludes .env
-- [ ] git init / commit / push
-- [ ] Confirm public + ask service_name / branch for deploy
+## Task: Storybook art swap + UI tweaks
+- [ ] Replace tree/ornament art with storybook-quality assets (from design renders)
+- [ ] Counters: icons only (no labels); bird side-peck; pest on branch crawl
+- [ ] Tagline copy update; sync :8765
 
-## Previous: Space hosting limit=2, active=0
+## Previous: Main screen visual polish — done (too rough, replace)
+

@@ -201,6 +201,14 @@ def test_weekly_and_monthly_trends_fixed_dataset(env):
     assert week.interest_minutes == 5
     assert week.ending_asset == 75  # 100-30+5
     assert week.ending_liability == 0
+    assert len(week.series) == 7
+    by_day = {p.date: p for p in week.series}
+    assert by_day["2026-08-03"].asset == 100
+    assert by_day["2026-08-05"].asset == 70
+    assert by_day["2026-08-05"].net == 70
+    assert by_day["2026-08-07"].asset == 75
+    assert by_day["2026-08-07"].interest_net == 5
+    assert by_day["2026-08-09"].asset == 75  # carry forward
 
     clock.set(datetime(2026, 8, 31, 12, 0, 0, tzinfo=APP_TZ))
     month = analytics.monthly_trend(account_id=a.id, as_of=clock.now())
@@ -212,6 +220,9 @@ def test_weekly_and_monthly_trends_fixed_dataset(env):
     assert month.interest_minutes == 5
     assert month.ending_asset == 115
     assert month.ending_liability == 0
+    assert len(month.series) == 31
+    assert month.series[-1].asset == 115
+    assert month.series[-1].net == 115
 
 
 @pytest.mark.integration
@@ -239,7 +250,14 @@ def test_analytics_api(env):
     assert rw.status_code == 200
     assert rw.json()["entry_count"] == 1
     assert rw.json()["ending_asset"] == 60
+    assert "series" in rw.json()
+    assert len(rw.json()["series"]) == 7
 
     rm = client.get(f"/api/analytics/monthly?account_id={a.id}")
     assert rm.status_code == 200
     assert rm.json()["period_start"].startswith("2026-08")
+    assert len(rm.json()["series"]) >= 28
+
+    ev = client.get(f"/api/ornament-events?account_id={a.id}")
+    assert ev.status_code == 200
+    assert any(i["kind"] == "star" for i in ev.json()["items"])

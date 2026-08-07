@@ -142,7 +142,7 @@ def test_auto_grant_at_one_am(env):
     report = runner.run_auto_grant()
     assert report.granted[acc.id] == 15
     assert ledger.get_balance(acc.id).asset.value == 15
-    assert ledger.get_ornaments(acc.id).fruit_count == 1
+    assert ledger.get_ornaments(acc.id).fruit_count == 0  # 自动派发不发星
 
 
 @pytest.mark.integration
