@@ -76,6 +76,7 @@ MyTimeTree 帮家长用「时间分」记录孩子的日常：存入奖励、支
 
 ## 技术支持 URL / 营销 URL
 
-- 支持联系：`kaiak.fang@gmail.com`（可做一页「联系我们」挂同一站点）  
-- 隐私政策 URL：**必填**，指向托管后的  
-  `docs/app-store/privacy-policy.zh-Hans.html`
+- 支持联系：`kaiak.fang@gmail.com`  
+- 隐私政策 URL：**https://eskimocha.github.io/MyTimeTree/**  
+  （若 404：在 GitHub → Settings → Pages 将 Source 设为分支 `gh-pages` / root）
+

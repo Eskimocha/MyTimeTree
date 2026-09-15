@@ -26,7 +26,7 @@ MyTimeTree 是一款面向家长的离线「时间资产」记账工具：用「
 - 照片（添加）：仅当用户在系统分享中选择保存图片时使用。
 
 【隐私】
-隐私政策 URL：（粘贴你托管后的 HTTPS 链接）
+隐私政策 URL：（https://eskimocha.github.io/MyTimeTree/ ）
 数据主要存本机；可选同步至用户自己的 iCloud 容器 iCloud.com.mytimetree.app。
 
 【联系】
@@ -42,7 +42,7 @@ MyTimeTree is an offline parental “time wallet” app: track a child’s time 
 
 To review: open the app → create a child profile (name + parent password + recovery Q&A) → use Home / Settings. Face ID is optional. iCloud sync requires a signed-in iCloud account with iCloud Drive. Share exports a long image via the system share sheet and does NOT auto-save to Photos unless the reviewer chooses Save Image.
 
-Privacy Policy: (HTTPS URL)
+Privacy Policy: https://eskimocha.github.io/MyTimeTree/
 Contact: kaiak.fang@gmail.com
 ```
 

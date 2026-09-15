@@ -10,20 +10,30 @@
 | [review-notes.md](./review-notes.md) | **审核附注**可直接粘贴 |
 | [store-listing.zh-Hans.md](./store-listing.zh-Hans.md) | 副标题 / 描述 / 关键词等商店文案 |
 
-## 你需要亲手改的两处
+## 隐私政策 HTTPS（已推送 gh-pages）
+
+已将页面推送到仓库分支 **`gh-pages`**。正式地址（启用 Pages 后）：
+
+**https://eskimocha.github.io/MyTimeTree/**
+
+备用路径：
+
+**https://eskimocha.github.io/MyTimeTree/privacy-policy.zh-Hans.html**
+
+### 一次性启用（约 30 秒）
+
+若上述链接仍是 404，打开：
+
+https://github.com/Eskimocha/MyTimeTree/settings/pages
+
+1. **Build and deployment → Source** 选 **Deploy from a branch**
+2. Branch 选 **`gh-pages`**，文件夹 **`/ (root)`**
+3. Save，等待 1～2 分钟后再打开上面的 HTTPS 链接
+
+联系邮箱已写入政策页：`kaiak.fang@gmail.com`。
+
+## 你还需要填的
 
 1. ~~隐私政策联系邮箱~~ → 已设为 `kaiak.fang@gmail.com`  
-2. 审核备注、商店页里的「隐私政策 URL / 支持 URL / 版权署名」（URL 需托管后填入）
-
-## 隐私政策如何变成 HTTPS 链接（任选）
-
-- **GitHub Pages**：把 `privacy-policy.zh-Hans.html` 发到公开仓库 `docs/` 或 `gh-pages`，开启 Pages 后得到  
-  `https://<user>.github.io/<repo>/privacy-policy.zh-Hans.html`  
-- **自有域名 / 对象存储静态站**：上传该 HTML 即可  
-- 临时验证：用任意可公网访问的静态托管；审核期间链接必须能打开  
-
-本地预览：
-
-```bash
-open docs/app-store/privacy-policy.zh-Hans.html
-```
+2. Connect 里粘贴上述隐私政策 URL；支持 URL 可用同一链接或邮箱说明页  
+3. 审核备注、商店页版权署名（姓名/公司）
