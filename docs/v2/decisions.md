@@ -17,5 +17,6 @@
 | Q10 | 小红点 = 今日启用且未记录习惯数 |
 | Q11 | 线下庆祝 `image_key` + 文字 fallback |
 | Q12 | 本阶段仅 App 内 badge，不做 OS 推送 |
+| H2.4 | 停用兑换规则：`INACTIVE_RULE_PENDING_POLICY=keep_redeemable`（已有 pending 仍可兑；不可再 earn） |
 
 版本管理：见计划 §15（单仓库演进；tag `v1.0.0` 冻结 1.0）。

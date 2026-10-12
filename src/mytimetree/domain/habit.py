@@ -80,6 +80,51 @@ class HabitLog:
     day_key: str
 
 
+EXCHANGE_CADENCES: frozenset[str] = frozenset({"daily", "streak_n"})
+
+# H2.4: deactivate keeps existing pending credits redeemable; only blocks new earn.
+INACTIVE_RULE_PENDING_POLICY = "keep_redeemable"
+
+
+@dataclass(frozen=True, slots=True)
+class ExchangeRule:
+    id: int
+    account_id: int
+    habit_id: int
+    minutes_per_completion: int
+    cadence: str
+    auto_redeem: bool
+    daily_cap_minutes: int | None
+    active: bool
+
+
+def validate_exchange_rule_fields(
+    *,
+    minutes_per_completion: int,
+    cadence: str,
+    auto_redeem: bool,
+    daily_cap_minutes: int | None,
+) -> None:
+    del auto_redeem  # accepted for API symmetry; bool only
+    ensure(
+        isinstance(minutes_per_completion, int) and minutes_per_completion > 0,
+        ErrorCode.VALIDATION,
+        "minutes_per_completion must be > 0",
+    )
+    ensure(cadence in EXCHANGE_CADENCES, ErrorCode.VALIDATION, f"bad cadence: {cadence}")
+    if daily_cap_minutes is not None:
+        ensure(
+            isinstance(daily_cap_minutes, int) and daily_cap_minutes > 0,
+            ErrorCode.VALIDATION,
+            "daily_cap_minutes must be > 0 when set",
+        )
+        ensure(
+            daily_cap_minutes >= minutes_per_completion,
+            ErrorCode.VALIDATION,
+            "daily_cap_minutes must cover at least one completion",
+        )
+
+
 def is_micro(draft: HabitDraft) -> bool:
     """Ability gate: binary, ≤5 minutes, known micro taxonomy — no skill teaching."""
     if draft.est_minutes < 0 or draft.est_minutes > MAX_MICRO_EST_MINUTES:

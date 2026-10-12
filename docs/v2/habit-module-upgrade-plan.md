@@ -303,10 +303,10 @@ H5 扩展庆祝分层；**H9 新建**专责家长 Fogg（Prompt 小红点 / 话�
 
 | ID | 任务 | 验收 | 状态 |
 |----|------|------|------|
-| H2.1 | CRUD `ExchangeRule`；分钟 >0；绑定本账户 habit | 校验失败路径 | Todo |
-| H2.2 | 日上限 / 每习惯每日一次默认 | 超限 DomainError | Todo |
-| H2.3 | `auto_redeem` 标志持久化 | 读写往返 | Todo |
-| H2.4 | 停用规则：已有 pending 可 void 或仍可兑（策略测例写清） | 显式断言 | Todo |
+| H2.1 | CRUD `ExchangeRule`；分钟 >0；绑定本账户 habit | 校验失败路径 | Done |
+| H2.2 | 日上限 / 每习惯每日一次默认 | 超限 DomainError | Done |
+| H2.3 | `auto_redeem` 标志持久化 | 读写往返 | Done |
+| H2.4 | 停用规则：已有 pending 可 void 或仍可兑（策略测例写清） | 显式断言 | Done |
 
 ---
 
