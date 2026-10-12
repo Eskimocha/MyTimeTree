@@ -237,10 +237,18 @@ MIGRATIONS: list[tuple[int, list[str]]] = [
             """,
         ],
     ),
+    (
+        7,
+        [
+            """
+            ALTER TABLE habits ADD COLUMN est_minutes INTEGER NOT NULL DEFAULT 5
+            """,
+        ],
+    ),
 ]
 
 # Habit module schema version (H0+); keep in sync with domain.habit.HABIT_SCHEMA_VERSION_HINT
-HABIT_MIGRATION_VERSION = 6
+HABIT_MIGRATION_VERSION = 7
 
 
 def get_schema_version(conn: sqlite3.Connection) -> int:

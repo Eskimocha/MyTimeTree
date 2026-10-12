@@ -1,0 +1,930 @@
+[
+  {
+    "slug": "brush-teeth",
+    "title": "刷牙",
+    "category": "hygiene",
+    "ability_tier": "micro",
+    "est_minutes": 2,
+    "motivation_paths": [
+      {
+        "kind": "avoid",
+        "emotion_copy": "少牙痛",
+        "celebration_key": "teeth-sparkle"
+      },
+      {
+        "kind": "approach",
+        "emotion_copy": "口气清新",
+        "celebration_key": "teeth-sparkle"
+      }
+    ],
+    "incentive_notes": {
+      "small": "闪光牙齿",
+      "board": "卫生连点",
+      "offline": "击掌牙齿保卫战"
+    },
+    "default_minutes_hint": 5,
+    "prompt_hints": [
+      "记得完成：刷牙"
+    ],
+    "active": true
+  },
+  {
+    "slug": "wash-face",
+    "title": "洗脸",
+    "category": "hygiene",
+    "ability_tier": "micro",
+    "est_minutes": 2,
+    "motivation_paths": [
+      {
+        "kind": "avoid",
+        "emotion_copy": "少油腻难受",
+        "celebration_key": "splash"
+      },
+      {
+        "kind": "approach",
+        "emotion_copy": "脸清爽",
+        "celebration_key": "splash"
+      }
+    ],
+    "incentive_notes": {
+      "small": "水花音效",
+      "board": "卫生周复盘",
+      "offline": "击掌醒醒"
+    },
+    "default_minutes_hint": 5,
+    "prompt_hints": [
+      "记得完成：洗脸"
+    ],
+    "active": true
+  },
+  {
+    "slug": "wash-hands",
+    "title": "洗手",
+    "category": "hygiene",
+    "ability_tier": "micro",
+    "est_minutes": 1,
+    "motivation_paths": [
+      {
+        "kind": "avoid",
+        "emotion_copy": "少细菌捣乱",
+        "celebration_key": "soap-bubbles"
+      },
+      {
+        "kind": "approach",
+        "emotion_copy": "小手干净",
+        "celebration_key": "soap-bubbles"
+      }
+    ],
+    "incentive_notes": {
+      "small": "泡泡",
+      "board": "洗手次数条",
+      "offline": "碰拳干净手"
+    },
+    "default_minutes_hint": 5,
+    "prompt_hints": [
+      "记得完成：洗手"
+    ],
+    "active": true
+  },
+  {
+    "slug": "rinse-cup",
+    "title": "漱口杯冲一下",
+    "category": "hygiene",
+    "ability_tier": "micro",
+    "est_minutes": 1,
+    "motivation_paths": [
+      {
+        "kind": "avoid",
+        "emotion_copy": "少异味",
+        "celebration_key": "cup-shine"
+      },
+      {
+        "kind": "approach",
+        "emotion_copy": "杯子亮晶晶",
+        "celebration_key": "cup-shine"
+      }
+    ],
+    "incentive_notes": {
+      "small": "杯子闪光",
+      "board": "卫生小习惯墙",
+      "offline": "竖大拇指"
+    },
+    "default_minutes_hint": 5,
+    "prompt_hints": [
+      "记得完成：漱口杯冲一下"
+    ],
+    "active": true
+  },
+  {
+    "slug": "bedtime-on-time",
+    "title": "按时上床",
+    "category": "sleep",
+    "ability_tier": "micro",
+    "est_minutes": 2,
+    "motivation_paths": [
+      {
+        "kind": "avoid",
+        "emotion_copy": "少第二天没精神",
+        "celebration_key": "moon-sleep"
+      },
+      {
+        "kind": "approach",
+        "emotion_copy": "大脑充电",
+        "celebration_key": "moon-sleep"
+      }
+    ],
+    "incentive_notes": {
+      "small": "月亮入睡",
+      "board": "本周按时睡",
+      "offline": "肩碰肩充电成功"
+    },
+    "default_minutes_hint": 5,
+    "prompt_hints": [
+      "记得完成：按时上床"
+    ],
+    "active": true
+  },
+  {
+    "slug": "lights-out",
+    "title": "关灯准备睡",
+    "category": "sleep",
+    "ability_tier": "micro",
+    "est_minutes": 1,
+    "motivation_paths": [
+      {
+        "kind": "avoid",
+        "emotion_copy": "少熬夜眼睛酸",
+        "celebration_key": "lights-dim"
+      },
+      {
+        "kind": "approach",
+        "emotion_copy": "安心入梦",
+        "celebration_key": "lights-dim"
+      }
+    ],
+    "incentive_notes": {
+      "small": "关灯动画",
+      "board": "睡眠复盘",
+      "offline": "轻声击掌晚安"
+    },
+    "default_minutes_hint": 5,
+    "prompt_hints": [
+      "记得完成：关灯准备睡"
+    ],
+    "active": true
+  },
+  {
+    "slug": "put-phone-away",
+    "title": "睡前手机放充电处",
+    "category": "sleep",
+    "ability_tier": "micro",
+    "est_minutes": 1,
+    "motivation_paths": [
+      {
+        "kind": "avoid",
+        "emotion_copy": "少刷太久",
+        "celebration_key": "phone-dock"
+      },
+      {
+        "kind": "approach",
+        "emotion_copy": "明天更清醒",
+        "celebration_key": "phone-dock"
+      }
+    ],
+    "incentive_notes": {
+      "small": "手机归位",
+      "board": "睡前仪式条",
+      "offline": "击掌放下手机"
+    },
+    "default_minutes_hint": 5,
+    "prompt_hints": [
+      "记得完成：睡前手机放充电处"
+    ],
+    "active": true
+  },
+  {
+    "slug": "stretch-in-bed",
+    "title": "躺下伸个懒腰",
+    "category": "sleep",
+    "ability_tier": "micro",
+    "est_minutes": 1,
+    "motivation_paths": [
+      {
+        "kind": "avoid",
+        "emotion_copy": "少僵硬",
+        "celebration_key": "stretch"
+      },
+      {
+        "kind": "approach",
+        "emotion_copy": "身体放松",
+        "celebration_key": "stretch"
+      }
+    ],
+    "incentive_notes": {
+      "small": "伸展",
+      "board": "睡眠小动作",
+      "offline": "抱一抱枕头"
+    },
+    "default_minutes_hint": 5,
+    "prompt_hints": [
+      "记得完成：躺下伸个懒腰"
+    ],
+    "active": true
+  },
+  {
+    "slug": "read-one-page",
+    "title": "读一页书",
+    "category": "reading",
+    "ability_tier": "micro",
+    "est_minutes": 3,
+    "motivation_paths": [
+      {
+        "kind": "avoid",
+        "emotion_copy": "少完全没读的内疚",
+        "celebration_key": "page-flip"
+      },
+      {
+        "kind": "approach",
+        "emotion_copy": "故事前进一页",
+        "celebration_key": "page-flip"
+      }
+    ],
+    "incentive_notes": {
+      "small": "翻页音",
+      "board": "阅读次数复盘",
+      "offline": "跳一下又一页"
+    },
+    "default_minutes_hint": 5,
+    "prompt_hints": [
+      "记得完成：读一页书"
+    ],
+    "active": true
+  },
+  {
+    "slug": "read-cover",
+    "title": "看一眼封面与目录",
+    "category": "reading",
+    "ability_tier": "micro",
+    "est_minutes": 2,
+    "motivation_paths": [
+      {
+        "kind": "avoid",
+        "emotion_copy": "少不知从哪读",
+        "celebration_key": "book-cover"
+      },
+      {
+        "kind": "approach",
+        "emotion_copy": "找到入口",
+        "celebration_key": "book-cover"
+      }
+    ],
+    "incentive_notes": {
+      "small": "封面光",
+      "board": "阅读启动条",
+      "offline": "击掌开读"
+    },
+    "default_minutes_hint": 5,
+    "prompt_hints": [
+      "记得完成：看一眼封面与目录"
+    ],
+    "active": true
+  },
+  {
+    "slug": "listen-one-page",
+    "title": "听一页故事",
+    "category": "reading",
+    "ability_tier": "micro",
+    "est_minutes": 3,
+    "motivation_paths": [
+      {
+        "kind": "avoid",
+        "emotion_copy": "少没接触文字",
+        "celebration_key": "ear-story"
+      },
+      {
+        "kind": "approach",
+        "emotion_copy": "耳朵也在学",
+        "celebration_key": "ear-story"
+      }
+    ],
+    "incentive_notes": {
+      "small": "故事铃",
+      "board": "听读复盘",
+      "offline": "拍手好听"
+    },
+    "default_minutes_hint": 5,
+    "prompt_hints": [
+      "记得完成：听一页故事"
+    ],
+    "active": true
+  },
+  {
+    "slug": "bookmark-place",
+    "title": "夹好书签",
+    "category": "reading",
+    "ability_tier": "micro",
+    "est_minutes": 1,
+    "motivation_paths": [
+      {
+        "kind": "avoid",
+        "emotion_copy": "少找不到页",
+        "celebration_key": "bookmark"
+      },
+      {
+        "kind": "approach",
+        "emotion_copy": "下次马上续上",
+        "celebration_key": "bookmark"
+      }
+    ],
+    "incentive_notes": {
+      "small": "书签落位",
+      "board": "阅读整理",
+      "offline": "竖拇指整齐"
+    },
+    "default_minutes_hint": 5,
+    "prompt_hints": [
+      "记得完成：夹好书签"
+    ],
+    "active": true
+  },
+  {
+    "slug": "pack-bag",
+    "title": "收书包",
+    "category": "chores",
+    "ability_tier": "micro",
+    "est_minutes": 3,
+    "motivation_paths": [
+      {
+        "kind": "avoid",
+        "emotion_copy": "少明天手忙脚乱",
+        "celebration_key": "bag-zip"
+      },
+      {
+        "kind": "approach",
+        "emotion_copy": "东西齐了",
+        "celebration_key": "bag-zip"
+      }
+    ],
+    "incentive_notes": {
+      "small": "拉链响",
+      "board": "家务微习惯墙",
+      "offline": "击掌收好了"
+    },
+    "default_minutes_hint": 5,
+    "prompt_hints": [
+      "记得完成：收书包"
+    ],
+    "active": true
+  },
+  {
+    "slug": "put-shoes",
+    "title": "鞋子摆整齐",
+    "category": "chores",
+    "ability_tier": "micro",
+    "est_minutes": 1,
+    "motivation_paths": [
+      {
+        "kind": "avoid",
+        "emotion_copy": "少绊倒乱",
+        "celebration_key": "shoes-pair"
+      },
+      {
+        "kind": "approach",
+        "emotion_copy": "门口清爽",
+        "celebration_key": "shoes-pair"
+      }
+    ],
+    "incentive_notes": {
+      "small": "鞋子对齐",
+      "board": "家务条",
+      "offline": "碰拳整齐"
+    },
+    "default_minutes_hint": 5,
+    "prompt_hints": [
+      "记得完成：鞋子摆整齐"
+    ],
+    "active": true
+  },
+  {
+    "slug": "clear-desk",
+    "title": "桌面收三样",
+    "category": "chores",
+    "ability_tier": "micro",
+    "est_minutes": 3,
+    "motivation_paths": [
+      {
+        "kind": "avoid",
+        "emotion_copy": "少乱到找不到",
+        "celebration_key": "desk-clear"
+      },
+      {
+        "kind": "approach",
+        "emotion_copy": "书桌透气",
+        "celebration_key": "desk-clear"
+      }
+    ],
+    "incentive_notes": {
+      "small": "桌面清空",
+      "board": "整理复盘",
+      "offline": "击掌清爽"
+    },
+    "default_minutes_hint": 5,
+    "prompt_hints": [
+      "记得完成：桌面收三样"
+    ],
+    "active": true
+  },
+  {
+    "slug": "trash-out",
+    "title": "扔一小袋垃圾",
+    "category": "chores",
+    "ability_tier": "micro",
+    "est_minutes": 2,
+    "motivation_paths": [
+      {
+        "kind": "avoid",
+        "emotion_copy": "少家里臭臭",
+        "celebration_key": "trash-bin"
+      },
+      {
+        "kind": "approach",
+        "emotion_copy": "空气更好",
+        "celebration_key": "trash-bin"
+      }
+    ],
+    "incentive_notes": {
+      "small": "丢进桶",
+      "board": "家务周记",
+      "offline": "跳一下扔掉"
+    },
+    "default_minutes_hint": 5,
+    "prompt_hints": [
+      "记得完成：扔一小袋垃圾"
+    ],
+    "active": true
+  },
+  {
+    "slug": "ten-jumps",
+    "title": "跳十下",
+    "category": "sport_micro",
+    "ability_tier": "micro",
+    "est_minutes": 1,
+    "motivation_paths": [
+      {
+        "kind": "avoid",
+        "emotion_copy": "少整天不动",
+        "celebration_key": "jump"
+      },
+      {
+        "kind": "approach",
+        "emotion_copy": "身体醒了",
+        "celebration_key": "jump"
+      }
+    ],
+    "incentive_notes": {
+      "small": "弹跳",
+      "board": "运动微打卡",
+      "offline": "跳起来肩碰肩"
+    },
+    "default_minutes_hint": 5,
+    "prompt_hints": [
+      "记得完成：跳十下"
+    ],
+    "active": true
+  },
+  {
+    "slug": "touch-toes",
+    "title": "弯腰摸脚尖",
+    "category": "sport_micro",
+    "ability_tier": "micro",
+    "est_minutes": 1,
+    "motivation_paths": [
+      {
+        "kind": "avoid",
+        "emotion_copy": "少僵硬",
+        "celebration_key": "toe-touch"
+      },
+      {
+        "kind": "approach",
+        "emotion_copy": "身体更软",
+        "celebration_key": "toe-touch"
+      }
+    ],
+    "incentive_notes": {
+      "small": "拉伸",
+      "board": "柔韧条",
+      "offline": "击掌拉伸好"
+    },
+    "default_minutes_hint": 5,
+    "prompt_hints": [
+      "记得完成：弯腰摸脚尖"
+    ],
+    "active": true
+  },
+  {
+    "slug": "wall-pushups",
+    "title": "靠墙撑三下",
+    "category": "sport_micro",
+    "ability_tier": "micro",
+    "est_minutes": 1,
+    "motivation_paths": [
+      {
+        "kind": "avoid",
+        "emotion_copy": "少没力气感",
+        "celebration_key": "wall-push"
+      },
+      {
+        "kind": "approach",
+        "emotion_copy": "胳膊有劲",
+        "celebration_key": "wall-push"
+      }
+    ],
+    "incentive_notes": {
+      "small": "撑墙",
+      "board": "力量微打卡",
+      "offline": "碰拳有力"
+    },
+    "default_minutes_hint": 5,
+    "prompt_hints": [
+      "记得完成：靠墙撑三下"
+    ],
+    "active": true
+  },
+  {
+    "slug": "walk-to-door",
+    "title": "走到门口再回来",
+    "category": "sport_micro",
+    "ability_tier": "micro",
+    "est_minutes": 2,
+    "motivation_paths": [
+      {
+        "kind": "avoid",
+        "emotion_copy": "少窝着",
+        "celebration_key": "short-walk"
+      },
+      {
+        "kind": "approach",
+        "emotion_copy": "腿动起来",
+        "celebration_key": "short-walk"
+      }
+    ],
+    "incentive_notes": {
+      "small": "小步行",
+      "board": "走动复盘",
+      "offline": "击掌走一圈"
+    },
+    "default_minutes_hint": 5,
+    "prompt_hints": [
+      "记得完成：走到门口再回来"
+    ],
+    "active": true
+  },
+  {
+    "slug": "say-thanks",
+    "title": "说一句谢谢",
+    "category": "emotion",
+    "ability_tier": "micro",
+    "est_minutes": 1,
+    "motivation_paths": [
+      {
+        "kind": "avoid",
+        "emotion_copy": "少忽略别人好",
+        "celebration_key": "thanks"
+      },
+      {
+        "kind": "approach",
+        "emotion_copy": "心里暖暖",
+        "celebration_key": "thanks"
+      }
+    ],
+    "incentive_notes": {
+      "small": "暖心星",
+      "board": "感恩条",
+      "offline": "击掌谢谢你"
+    },
+    "default_minutes_hint": 5,
+    "prompt_hints": [
+      "记得完成：说一句谢谢"
+    ],
+    "active": true
+  },
+  {
+    "slug": "name-feeling",
+    "title": "说出此刻心情词",
+    "category": "emotion",
+    "ability_tier": "micro",
+    "est_minutes": 1,
+    "motivation_paths": [
+      {
+        "kind": "avoid",
+        "emotion_copy": "少闷着难受",
+        "celebration_key": "feel-word"
+      },
+      {
+        "kind": "approach",
+        "emotion_copy": "情绪有名字",
+        "celebration_key": "feel-word"
+      }
+    ],
+    "incentive_notes": {
+      "small": "心情泡泡",
+      "board": "情绪复盘",
+      "offline": "拥抱一下"
+    },
+    "default_minutes_hint": 5,
+    "prompt_hints": [
+      "记得完成：说出此刻心情词"
+    ],
+    "active": true
+  },
+  {
+    "slug": "three-breaths",
+    "title": "深呼吸三次",
+    "category": "emotion",
+    "ability_tier": "micro",
+    "est_minutes": 1,
+    "motivation_paths": [
+      {
+        "kind": "avoid",
+        "emotion_copy": "少慌乱",
+        "celebration_key": "breathe"
+      },
+      {
+        "kind": "approach",
+        "emotion_copy": "平静一点",
+        "celebration_key": "breathe"
+      }
+    ],
+    "incentive_notes": {
+      "small": "呼吸圈",
+      "board": "平静打卡",
+      "offline": "肩碰肩放松"
+    },
+    "default_minutes_hint": 5,
+    "prompt_hints": [
+      "记得完成：深呼吸三次"
+    ],
+    "active": true
+  },
+  {
+    "slug": "smile-mirror",
+    "title": "对镜子笑一下",
+    "category": "emotion",
+    "ability_tier": "micro",
+    "est_minutes": 1,
+    "motivation_paths": [
+      {
+        "kind": "avoid",
+        "emotion_copy": "少绷着脸",
+        "celebration_key": "smile"
+      },
+      {
+        "kind": "approach",
+        "emotion_copy": "自己鼓励自己",
+        "celebration_key": "smile"
+      }
+    ],
+    "incentive_notes": {
+      "small": "笑脸",
+      "board": "情绪小庆祝",
+      "offline": "竖拇指好看"
+    },
+    "default_minutes_hint": 5,
+    "prompt_hints": [
+      "记得完成：对镜子笑一下"
+    ],
+    "active": true
+  },
+  {
+    "slug": "one-word",
+    "title": "记一个新词",
+    "category": "study_micro",
+    "ability_tier": "micro",
+    "est_minutes": 2,
+    "motivation_paths": [
+      {
+        "kind": "avoid",
+        "emotion_copy": "少今天零学习",
+        "celebration_key": "word-card"
+      },
+      {
+        "kind": "approach",
+        "emotion_copy": "词汇+1",
+        "celebration_key": "word-card"
+      }
+    ],
+    "incentive_notes": {
+      "small": "词卡翻转",
+      "board": "学习微墙",
+      "offline": "击掌学会了"
+    },
+    "default_minutes_hint": 5,
+    "prompt_hints": [
+      "记得完成：记一个新词"
+    ],
+    "active": true
+  },
+  {
+    "slug": "one-math",
+    "title": "算一道小题",
+    "category": "study_micro",
+    "ability_tier": "micro",
+    "est_minutes": 3,
+    "motivation_paths": [
+      {
+        "kind": "avoid",
+        "emotion_copy": "少完全没练",
+        "celebration_key": "math-spark"
+      },
+      {
+        "kind": "approach",
+        "emotion_copy": "脑子转起来",
+        "celebration_key": "math-spark"
+      }
+    ],
+    "incentive_notes": {
+      "small": "数字火花",
+      "board": "练习复盘",
+      "offline": "碰拳算对"
+    },
+    "default_minutes_hint": 5,
+    "prompt_hints": [
+      "记得完成：算一道小题"
+    ],
+    "active": true
+  },
+  {
+    "slug": "review-flash",
+    "title": "看一眼昨天笔记",
+    "category": "study_micro",
+    "ability_tier": "micro",
+    "est_minutes": 2,
+    "motivation_paths": [
+      {
+        "kind": "avoid",
+        "emotion_copy": "少忘光",
+        "celebration_key": "flash-note"
+      },
+      {
+        "kind": "approach",
+        "emotion_copy": "回忆一下",
+        "celebration_key": "flash-note"
+      }
+    ],
+    "incentive_notes": {
+      "small": "笔记闪光",
+      "board": "复习条",
+      "offline": "击掌复习好"
+    },
+    "default_minutes_hint": 5,
+    "prompt_hints": [
+      "记得完成：看一眼昨天笔记"
+    ],
+    "active": true
+  },
+  {
+    "slug": "ask-one-q",
+    "title": "问一个小问题",
+    "category": "study_micro",
+    "ability_tier": "micro",
+    "est_minutes": 2,
+    "motivation_paths": [
+      {
+        "kind": "avoid",
+        "emotion_copy": "少不懂装懂",
+        "celebration_key": "question"
+      },
+      {
+        "kind": "approach",
+        "emotion_copy": "好奇心亮了",
+        "celebration_key": "question"
+      }
+    ],
+    "incentive_notes": {
+      "small": "问号弹",
+      "board": "提问复盘",
+      "offline": "跳一下好问题"
+    },
+    "default_minutes_hint": 5,
+    "prompt_hints": [
+      "记得完成：问一个小问题"
+    ],
+    "active": true
+  },
+  {
+    "slug": "water-sip",
+    "title": "喝一小杯水",
+    "category": "other_micro",
+    "ability_tier": "micro",
+    "est_minutes": 1,
+    "motivation_paths": [
+      {
+        "kind": "avoid",
+        "emotion_copy": "少口干",
+        "celebration_key": "water"
+      },
+      {
+        "kind": "approach",
+        "emotion_copy": "身体补水",
+        "celebration_key": "water"
+      }
+    ],
+    "incentive_notes": {
+      "small": "水滴",
+      "board": "其他微习惯",
+      "offline": "击掌喝水"
+    },
+    "default_minutes_hint": 5,
+    "prompt_hints": [
+      "记得完成：喝一小杯水"
+    ],
+    "active": true
+  },
+  {
+    "slug": "greet-family",
+    "title": "跟家人打个招呼",
+    "category": "other_micro",
+    "ability_tier": "micro",
+    "est_minutes": 1,
+    "motivation_paths": [
+      {
+        "kind": "avoid",
+        "emotion_copy": "少冷冷的",
+        "celebration_key": "hello"
+      },
+      {
+        "kind": "approach",
+        "emotion_copy": "家里有连接",
+        "celebration_key": "hello"
+      }
+    ],
+    "incentive_notes": {
+      "small": "招呼铃",
+      "board": "连接条",
+      "offline": "挥手你好"
+    },
+    "default_minutes_hint": 5,
+    "prompt_hints": [
+      "记得完成：跟家人打个招呼"
+    ],
+    "active": true
+  },
+  {
+    "slug": "plant-look",
+    "title": "看一眼小植物",
+    "category": "other_micro",
+    "ability_tier": "micro",
+    "est_minutes": 1,
+    "motivation_paths": [
+      {
+        "kind": "avoid",
+        "emotion_copy": "少忘记照料",
+        "celebration_key": "plant"
+      },
+      {
+        "kind": "approach",
+        "emotion_copy": "绿意提醒",
+        "celebration_key": "plant"
+      }
+    ],
+    "incentive_notes": {
+      "small": "小叶子",
+      "board": "照料复盘",
+      "offline": "轻触叶子"
+    },
+    "default_minutes_hint": 5,
+    "prompt_hints": [
+      "记得完成：看一眼小植物"
+    ],
+    "active": true
+  },
+  {
+    "slug": "tidy-one-toy",
+    "title": "收起一个玩具",
+    "category": "other_micro",
+    "ability_tier": "micro",
+    "est_minutes": 2,
+    "motivation_paths": [
+      {
+        "kind": "avoid",
+        "emotion_copy": "少满地绊脚",
+        "celebration_key": "toy-box"
+      },
+      {
+        "kind": "approach",
+        "emotion_copy": "地面干净一点",
+        "celebration_key": "toy-box"
+      }
+    ],
+    "incentive_notes": {
+      "small": "玩具入盒",
+      "board": "整理庆祝",
+      "offline": "击掌收好"
+    },
+    "default_minutes_hint": 5,
+    "prompt_hints": [
+      "记得完成：收起一个玩具"
+    ],
+    "active": true
+  }
+]
