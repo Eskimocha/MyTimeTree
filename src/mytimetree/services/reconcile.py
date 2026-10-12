@@ -30,7 +30,11 @@ def _entry_effects(category: str, amount: int, meta_json: str) -> tuple[int, int
     cat = LedgerCategory(category)
     if cat == LedgerCategory.SPEND:
         return -amount, 0
-    if cat in (LedgerCategory.DEPOSIT, LedgerCategory.AUTO_GRANT):
+    if cat in (
+        LedgerCategory.DEPOSIT,
+        LedgerCategory.AUTO_GRANT,
+        LedgerCategory.HABIT_REWARD,
+    ):
         return amount, 0
     if cat == LedgerCategory.BORROW:
         return 0, amount

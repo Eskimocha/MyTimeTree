@@ -57,6 +57,7 @@ class LedgerService:
             if e.category in (
                 LedgerCategory.DEPOSIT,
                 LedgerCategory.AUTO_GRANT,
+                LedgerCategory.HABIT_REWARD,
                 LedgerCategory.SPEND,
             ):
                 if e.category == LedgerCategory.SPEND:

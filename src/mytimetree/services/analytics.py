@@ -134,7 +134,11 @@ class AnalyticsService:
 def _effects(category: LedgerCategory, amount: int, side: str | None) -> tuple[int, int]:
     if category == LedgerCategory.SPEND:
         return -amount, 0
-    if category in (LedgerCategory.DEPOSIT, LedgerCategory.AUTO_GRANT):
+    if category in (
+        LedgerCategory.DEPOSIT,
+        LedgerCategory.AUTO_GRANT,
+        LedgerCategory.HABIT_REWARD,
+    ):
         return amount, 0
     if category == LedgerCategory.BORROW:
         return 0, amount

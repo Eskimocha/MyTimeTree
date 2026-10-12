@@ -121,7 +121,126 @@ MIGRATIONS: list[tuple[int, list[str]]] = [
             """,
         ],
     ),
+    (
+        6,
+        [
+            """
+            CREATE TABLE IF NOT EXISTS habit_templates (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                slug TEXT NOT NULL UNIQUE,
+                title TEXT NOT NULL,
+                category TEXT NOT NULL,
+                ability_tier TEXT NOT NULL DEFAULT 'micro',
+                est_minutes INTEGER NOT NULL DEFAULT 5,
+                motivation_paths_json TEXT NOT NULL DEFAULT '[]',
+                incentive_notes_json TEXT NOT NULL DEFAULT '{}',
+                default_minutes_hint INTEGER,
+                prompt_hints_json TEXT NOT NULL DEFAULT '[]',
+                active INTEGER NOT NULL DEFAULT 1
+            )
+            """,
+            """
+            CREATE TABLE IF NOT EXISTS habits (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                account_id INTEGER NOT NULL,
+                template_id INTEGER,
+                title TEXT NOT NULL,
+                category TEXT NOT NULL,
+                motivation_override_json TEXT,
+                archived_at TEXT,
+                created_at TEXT NOT NULL,
+                FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE,
+                FOREIGN KEY (template_id) REFERENCES habit_templates(id)
+            )
+            """,
+            """
+            CREATE INDEX IF NOT EXISTS idx_habits_account
+            ON habits(account_id)
+            """,
+            """
+            CREATE TABLE IF NOT EXISTS exchange_rules (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                account_id INTEGER NOT NULL,
+                habit_id INTEGER NOT NULL,
+                minutes_per_completion INTEGER NOT NULL,
+                cadence TEXT NOT NULL DEFAULT 'daily',
+                auto_redeem INTEGER NOT NULL DEFAULT 0,
+                daily_cap_minutes INTEGER,
+                active INTEGER NOT NULL DEFAULT 1,
+                FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE,
+                FOREIGN KEY (habit_id) REFERENCES habits(id) ON DELETE CASCADE
+            )
+            """,
+            """
+            CREATE TABLE IF NOT EXISTS habit_logs (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                account_id INTEGER NOT NULL,
+                habit_id INTEGER NOT NULL,
+                completed_at TEXT NOT NULL,
+                source TEXT NOT NULL DEFAULT 'parent',
+                day_key TEXT NOT NULL,
+                meta_json TEXT NOT NULL DEFAULT '{}',
+                voided_at TEXT,
+                FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE,
+                FOREIGN KEY (habit_id) REFERENCES habits(id) ON DELETE CASCADE
+            )
+            """,
+            """
+            CREATE UNIQUE INDEX IF NOT EXISTS idx_habit_logs_account_habit_day
+            ON habit_logs(account_id, habit_id, day_key)
+            WHERE voided_at IS NULL
+            """,
+            """
+            CREATE TABLE IF NOT EXISTS earned_credits (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                account_id INTEGER NOT NULL,
+                habit_log_id INTEGER NOT NULL UNIQUE,
+                minutes INTEGER NOT NULL,
+                status TEXT NOT NULL DEFAULT 'pending',
+                ledger_entry_id INTEGER,
+                redeemed_at TEXT,
+                FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE,
+                FOREIGN KEY (habit_log_id) REFERENCES habit_logs(id) ON DELETE CASCADE,
+                FOREIGN KEY (ledger_entry_id) REFERENCES ledger_entries(id)
+            )
+            """,
+            """
+            CREATE TABLE IF NOT EXISTS parent_scripts (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                slug TEXT NOT NULL UNIQUE,
+                habit_category TEXT,
+                situation TEXT NOT NULL,
+                script_text TEXT NOT NULL,
+                tone TEXT NOT NULL DEFAULT 'warm'
+            )
+            """,
+            """
+            CREATE TABLE IF NOT EXISTS offline_celebration_hints (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                slug TEXT NOT NULL UNIQUE,
+                title TEXT NOT NULL,
+                body TEXT NOT NULL,
+                image_key TEXT,
+                effort TEXT NOT NULL DEFAULT 'playful',
+                suitable_for TEXT NOT NULL DEFAULT 'after_log'
+            )
+            """,
+            """
+            CREATE TABLE IF NOT EXISTS parent_prompt_state (
+                account_id INTEGER PRIMARY KEY,
+                badge_count INTEGER NOT NULL DEFAULT 0,
+                last_nudge_at TEXT,
+                snoozed_until TEXT,
+                meta_json TEXT NOT NULL DEFAULT '{}',
+                FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE
+            )
+            """,
+        ],
+    ),
 ]
+
+# Habit module schema version (H0+); keep in sync with domain.habit.HABIT_SCHEMA_VERSION_HINT
+HABIT_MIGRATION_VERSION = 6
 
 
 def get_schema_version(conn: sqlite3.Connection) -> int:

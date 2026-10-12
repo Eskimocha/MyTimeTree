@@ -12,6 +12,12 @@ class ErrorCode(str, Enum):
     INVALID_BALANCE = "invalid_balance"
     FORBIDDEN = "forbidden"
     INTERNAL = "internal"
+    # Habit module (H0+) — specific codes for TDD assertions
+    HABIT_NOT_MICRO = "habit_not_micro"
+    HABIT_ALREADY_LOGGED = "habit_already_logged"
+    HABIT_ARCHIVED = "habit_archived"
+    CREDIT_NOT_REDEEMABLE = "credit_not_redeemable"
+    EXCHANGE_RULE_INACTIVE = "exchange_rule_inactive"
 
 
 class DomainError(Exception):

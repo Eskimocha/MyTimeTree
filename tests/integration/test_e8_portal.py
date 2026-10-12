@@ -21,8 +21,9 @@ from mytimetree.services.security import ConfirmTokenService
 from mytimetree.services.settings import SettingsService
 from mytimetree.services.tree import TreeService
 
-CHECKLIST = Path("/Users/fangkai/编程/mytimetree-tdd/docs/portal-design-checklist.md")
-STATIC = Path("/Users/fangkai/编程/mytimetree-tdd/src/mytimetree/static/portal")
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+CHECKLIST = _REPO_ROOT / "docs" / "portal-design-checklist.md"
+STATIC = _REPO_ROOT / "src" / "mytimetree" / "static" / "portal"
 
 
 @pytest.fixture

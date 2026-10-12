@@ -110,7 +110,7 @@ def test_membership_does_not_block_main_path(env):
 
 @pytest.mark.unit
 def test_remote_sync_stub_is_noop_with_documented_hooks():
-    src = Path("/Users/fangkai/编程/mytimetree-tdd/src/mytimetree/services/remote_sync.py")
+    src = Path(__file__).resolve().parents[2] / "src" / "mytimetree" / "services" / "remote_sync.py"
     text = src.read_text(encoding="utf-8")
     for needle in (
         "SYNC_POINT",

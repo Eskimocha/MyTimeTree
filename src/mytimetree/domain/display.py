@@ -68,7 +68,11 @@ def display_tone_for_category(
     *,
     side: str | None = None,
 ) -> DisplayTone:
-    if category in (LedgerCategory.DEPOSIT, LedgerCategory.AUTO_GRANT):
+    if category in (
+        LedgerCategory.DEPOSIT,
+        LedgerCategory.AUTO_GRANT,
+        LedgerCategory.HABIT_REWARD,
+    ):
         return DisplayTone.INCOME
     if category == LedgerCategory.SPEND:
         return DisplayTone.EXPENSE

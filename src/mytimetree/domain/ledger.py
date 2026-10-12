@@ -13,6 +13,7 @@ class LedgerCategory(str, Enum):
     DEPOSIT = "deposit"
     AUTO_GRANT = "auto_grant"
     AUTO_INTEREST = "auto_interest"
+    HABIT_REWARD = "habit_reward"  # Q1 Accepted: habit → time exchange
 
 
 @dataclass(frozen=True, slots=True)
