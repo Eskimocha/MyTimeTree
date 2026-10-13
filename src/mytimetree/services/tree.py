@@ -58,11 +58,13 @@ class TreeService:
             today_interest=today,
         )
 
-    def record_daily_asset_snapshot(self, account_id: int) -> None:
-        """Persist today's settled balance (kind=daily) for analytics / reconcile."""
+    def record_daily_asset_snapshot(
+        self, account_id: int, *, as_of: str | None = None
+    ) -> None:
+        """Persist day's settled balance (kind=daily) for analytics / reconcile."""
         self._accounts.get_account(account_id)
         bal = self._ledger.get_balance(account_id)
-        as_of = ensure_app_tz(self._clock.now()).date().isoformat()
+        day = as_of or ensure_app_tz(self._clock.now()).date().isoformat()
         execute(
             self._conn,
             "INSERT INTO balance_snapshots "
@@ -71,6 +73,6 @@ class TreeService:
             "ON CONFLICT(account_id, as_of, kind) DO UPDATE SET "
             "asset_minutes = excluded.asset_minutes, "
             "liability_minutes = excluded.liability_minutes",
-            (account_id, as_of, bal.asset.value, bal.liability.value, "daily"),
+            (account_id, day, bal.asset.value, bal.liability.value, "daily"),
         )
         self._conn.commit()

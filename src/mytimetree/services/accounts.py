@@ -10,7 +10,7 @@ from mytimetree.db.connection import execute
 from mytimetree.domain.account import Account
 from mytimetree.domain.errors import DomainError, ErrorCode, ensure
 from mytimetree.domain.time import Clock, SystemClock, ensure_app_tz
-from mytimetree.services.password import hash_password
+from mytimetree.services.password import hash_password, verify_password
 
 CURRENT_ACCOUNT_KEY = "current_account_id"
 
@@ -24,7 +24,7 @@ class AccountService:
         self,
         *,
         name: str,
-        password: str,
+        password: str | None = None,
         asset_interest_rate: float,
         attributes: dict[str, Any] | None = None,
     ) -> Account:
@@ -32,17 +32,31 @@ class AccountService:
 
         ``asset_interest_rate`` is a **daily** rate (e.g. 0.01 = 1%/天).
         Liability daily rate defaults to half of the asset daily rate.
+
+        Parent password is app-wide: required only for the first account.
+        Additional children reuse the existing password hash.
         """
         cleaned = name.strip()
         ensure(bool(cleaned), ErrorCode.VALIDATION, "账户名不能为空")
-        ensure(bool(password), ErrorCode.VALIDATION, "密码不能为空")
         ensure(asset_interest_rate >= 0, ErrorCode.VALIDATION, "资产日利率不能为负")
+
+        existing = self.list_accounts()
+        if not existing:
+            ensure(bool(password), ErrorCode.VALIDATION, "密码不能为空")
+            pw_hash = hash_password(str(password))
+        else:
+            # Additional child: reuse first account's hash (shared parent password).
+            row = execute(
+                self._conn,
+                "SELECT password_hash FROM accounts ORDER BY id ASC LIMIT 1",
+            ).fetchone()
+            ensure(row is not None, ErrorCode.INTERNAL, "无法读取家长密码")
+            pw_hash = str(row["password_hash"])
 
         # 负债日利率默认 = 资产日利率 × 1/2（D4）
         liability_rate = asset_interest_rate / 2.0
         attrs = dict(attributes or {})
         now = ensure_app_tz(self._clock.now()).isoformat()
-        pw_hash = hash_password(password)
 
         try:
             cur = execute(
@@ -108,6 +122,53 @@ class AccountService:
         )
         self._conn.commit()
         return Account(id=acc.id, name=acc.name, attributes=merged)
+
+    def delete_account(self, account_id: int, *, password: str) -> dict[str, Any]:
+        """Delete a child account and cascaded data. Requires matching account password.
+
+        If this was the last account, clears ``current_account_id``.
+        Otherwise switches current to another remaining account when needed.
+        """
+        ensure(bool(password), ErrorCode.VALIDATION, "请输入家长密码")
+        row = execute(
+            self._conn,
+            "SELECT id, name, password_hash FROM accounts WHERE id = ?",
+            (account_id,),
+        ).fetchone()
+        if row is None:
+            raise DomainError(ErrorCode.NOT_FOUND, f"账户不存在: {account_id}")
+
+        # Accept password for this account, or any sibling (shared parent password model).
+        hashes = execute(
+            self._conn,
+            "SELECT password_hash FROM accounts",
+        ).fetchall()
+        ok = any(verify_password(password, str(h["password_hash"] or "")) for h in hashes)
+        ensure(ok, ErrorCode.FORBIDDEN, "家长密码不正确")
+
+        name = str(row["name"])
+        was_current = self.current_account_id() == account_id
+        execute(self._conn, "DELETE FROM accounts WHERE id = ?", (account_id,))
+
+        remaining = self.list_accounts()
+        if not remaining:
+            execute(
+                self._conn,
+                "DELETE FROM app_state WHERE key = ?",
+                (CURRENT_ACCOUNT_KEY,),
+            )
+            self._conn.commit()
+            return {"deleted_id": account_id, "deleted_name": name, "remaining": []}
+
+        if was_current:
+            self._set_state(CURRENT_ACCOUNT_KEY, str(remaining[0].id))
+        self._conn.commit()
+        return {
+            "deleted_id": account_id,
+            "deleted_name": name,
+            "remaining": [{"id": a.id, "name": a.name} for a in remaining],
+            "current_account_id": self.current_account_id(),
+        }
 
     def list_ledger_for_current(self) -> list[sqlite3.Row]:
         acc = self.require_current_account()

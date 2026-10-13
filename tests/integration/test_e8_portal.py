@@ -236,6 +236,9 @@ def test_portal_markup_has_shell_tabs_and_onboarding():
     html = (STATIC / "index.html").read_text(encoding="utf-8")
     for needle in (
         "account-shell",
+        "share-page-btn",
+        "account-manage-btn",
+        "account-modal",
         "tab-home",
         "tab-ledger",
         "tab-settings",
@@ -244,6 +247,8 @@ def test_portal_markup_has_shell_tabs_and_onboarding():
         "btn-spend",
         "btn-borrow",
         "btn-deposit",
+        "stage-label",
+        "stage-net",
         "ornament-counters",
         "tree-art",
         "keypad-modal",

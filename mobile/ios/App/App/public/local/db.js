@@ -1,0 +1,492 @@
+/**
+ * Local SQLite (sql.js).
+ * Native (Capacitor): persist whole DB file via ICloudDb plugin (local + iCloud Documents).
+ * Web fallback: localStorage.
+ */
+(function (global) {
+  "use strict";
+
+  const STORAGE_KEY = "mytimetree.sqlite.v1";
+  const MIGRATIONS = [
+    {
+      version: 1,
+      sql: [
+        `CREATE TABLE IF NOT EXISTS schema_migrations (
+          version INTEGER PRIMARY KEY,
+          applied_at TEXT NOT NULL
+        )`,
+        `CREATE TABLE IF NOT EXISTS accounts (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          name TEXT NOT NULL UNIQUE,
+          password_hash TEXT NOT NULL,
+          attributes_json TEXT NOT NULL DEFAULT '{}',
+          created_at TEXT NOT NULL
+        )`,
+        `CREATE TABLE IF NOT EXISTS settings (
+          account_id INTEGER PRIMARY KEY,
+          daily_grant_minutes INTEGER NOT NULL DEFAULT 0,
+          default_spend_minutes INTEGER NOT NULL DEFAULT 20,
+          default_repay_minutes INTEGER NOT NULL DEFAULT 20,
+          asset_interest_rate REAL NOT NULL DEFAULT 0,
+          liability_interest_rate REAL NOT NULL DEFAULT 0,
+          repay_presets_json TEXT NOT NULL DEFAULT '[]',
+          display_colors_json TEXT NOT NULL DEFAULT '{}',
+          extra_json TEXT NOT NULL DEFAULT '{}',
+          FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE
+        )`,
+        `CREATE TABLE IF NOT EXISTS ledger_entries (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          account_id INTEGER NOT NULL,
+          category TEXT NOT NULL,
+          amount_minutes INTEGER NOT NULL,
+          summary TEXT,
+          correlation_id TEXT,
+          meta_json TEXT NOT NULL DEFAULT '{}',
+          created_at TEXT NOT NULL,
+          FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE
+        )`,
+        `CREATE INDEX IF NOT EXISTS idx_ledger_account_created
+          ON ledger_entries(account_id, created_at)`,
+      ],
+    },
+    {
+      version: 2,
+      sql: [
+        `CREATE TABLE IF NOT EXISTS app_state (
+          key TEXT PRIMARY KEY,
+          value TEXT NOT NULL
+        )`,
+      ],
+    },
+    {
+      version: 3,
+      sql: [
+        `CREATE TABLE IF NOT EXISTS tree_ornaments (
+          account_id INTEGER PRIMARY KEY,
+          fruit_count INTEGER NOT NULL DEFAULT 0,
+          golden_fruit_count INTEGER NOT NULL DEFAULT 0,
+          pest_count INTEGER NOT NULL DEFAULT 0,
+          woodpecker_count INTEGER NOT NULL DEFAULT 0,
+          FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE
+        )`,
+      ],
+    },
+    {
+      version: 4,
+      sql: [
+        `CREATE TABLE IF NOT EXISTS balance_snapshots (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          account_id INTEGER NOT NULL,
+          as_of TEXT NOT NULL,
+          asset_minutes INTEGER NOT NULL,
+          liability_minutes INTEGER NOT NULL,
+          kind TEXT NOT NULL,
+          UNIQUE(account_id, as_of, kind),
+          FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE
+        )`,
+      ],
+    },
+    {
+      version: 5,
+      sql: [
+        `CREATE TABLE IF NOT EXISTS membership (
+          id INTEGER PRIMARY KEY CHECK (id = 1),
+          plan TEXT NOT NULL DEFAULT 'none',
+          status TEXT NOT NULL DEFAULT 'not_enabled',
+          expires_at TEXT,
+          remote_customer_id TEXT,
+          meta_json TEXT NOT NULL DEFAULT '{}',
+          updated_at TEXT NOT NULL
+        )`,
+        `INSERT OR IGNORE INTO membership (id, plan, status, updated_at)
+         VALUES (1, 'none', 'not_enabled', datetime('now'))`,
+      ],
+    },
+    {
+      version: 6,
+      sql: [
+        `CREATE TABLE IF NOT EXISTS ornament_events (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          account_id INTEGER NOT NULL,
+          kind TEXT NOT NULL,
+          delta INTEGER NOT NULL,
+          reason TEXT,
+          correlation_id TEXT,
+          meta_json TEXT NOT NULL DEFAULT '{}',
+          created_at TEXT NOT NULL,
+          FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE
+        )`,
+        `CREATE INDEX IF NOT EXISTS idx_ornament_events_account_created
+          ON ornament_events(account_id, created_at)`,
+      ],
+    },
+    {
+      version: 7,
+      sql: [
+        `ALTER TABLE tree_ornaments
+         ADD COLUMN interest_fruit_count INTEGER NOT NULL DEFAULT 0`,
+      ],
+    },
+  ];
+
+  let lastSyncMeta = {
+    backend: "localStorage",
+    iCloudAvailable: false,
+    lastSave: null,
+    lastLoadSource: null,
+    lastError: null,
+  };
+
+  function plugin(name) {
+    try {
+      const Cap = global.Capacitor;
+      if (!Cap) return null;
+      if (typeof Cap.registerPlugin === "function") return Cap.registerPlugin(name);
+      return (Cap.Plugins && Cap.Plugins[name]) || null;
+    } catch {
+      return null;
+    }
+  }
+
+  function isNative() {
+    try {
+      return Boolean(
+        global.Capacitor &&
+          global.Capacitor.isNativePlatform &&
+          global.Capacitor.isNativePlatform()
+      );
+    } catch {
+      return false;
+    }
+  }
+
+  function b64FromBytes(bytes) {
+    let binary = "";
+    const chunk = 0x8000;
+    for (let i = 0; i < bytes.length; i += chunk) {
+      binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
+    }
+    return btoa(binary);
+  }
+
+  function bytesFromB64(b64) {
+    const binary = atob(b64);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+    return bytes;
+  }
+
+  async function nativeLoad() {
+    const ICloudDb = plugin("ICloudDb");
+    if (!ICloudDb || typeof ICloudDb.load !== "function") return null;
+    const res = await ICloudDb.load();
+    lastSyncMeta.backend = "icloud-file";
+    lastSyncMeta.iCloudAvailable = Boolean(res && res.iCloudAvailable);
+    lastSyncMeta.lastLoadSource = res && res.source;
+    if (res && typeof res.data === "string" && res.data.length) {
+      return res.data;
+    }
+    return "";
+  }
+
+  async function nativeSave(b64) {
+    const ICloudDb = plugin("ICloudDb");
+    if (!ICloudDb || typeof ICloudDb.save !== "function") {
+      throw new Error("ICloudDb 插件未就绪（save）");
+    }
+    const res = await ICloudDb.save({ base64: b64 });
+    if (!res || res.ok === false || res.local !== true) {
+      throw new Error(
+        (res && res.iCloudReason) || "原生保存未确认写入本机"
+      );
+    }
+    lastSyncMeta.backend = "icloud-file";
+    lastSyncMeta.iCloudAvailable = Boolean(res.iCloudAvailable);
+    lastSyncMeta.lastSave = {
+      at: res.lastWriteAt || new Date().toISOString(),
+      iCloud: Boolean(res.iCloud),
+      bytes: res.bytes,
+    };
+    lastSyncMeta.lastError = res.iCloud ? null : res.iCloudReason || null;
+    return res;
+  }
+
+  async function nativeStatus() {
+    const ICloudDb = plugin("ICloudDb");
+    if (!ICloudDb || typeof ICloudDb.status !== "function") {
+      return { ...lastSyncMeta, plugin: false };
+    }
+    const st = await ICloudDb.status();
+    lastSyncMeta.iCloudAvailable = Boolean(st && st.iCloudAvailable);
+    return {
+      ...lastSyncMeta,
+      plugin: true,
+      ...(st || {}),
+      iCloudAvailable: Boolean(st && st.iCloudAvailable),
+      localExists: Boolean(st && st.localExists),
+      iCloudExists: Boolean(st && st.iCloudExists),
+    };
+  }
+
+  function createApi(db) {
+    let persistTimer = 0;
+    let persistChain = Promise.resolve();
+
+    function persistNow() {
+      const data = db.export();
+      const b64 = b64FromBytes(data);
+      if (isNative()) {
+        persistChain = persistChain.then(() => nativeSave(b64)).catch((err) => {
+          console.error("[MyTimeTree DB] native persist failed", err);
+          lastSyncMeta.lastError = String(err && err.message ? err.message : err);
+          try {
+            localStorage.setItem(STORAGE_KEY, b64);
+          } catch (_) {
+            /* ignore */
+          }
+          // Rethrow so /api/sync/flush and callers can surface failure.
+          throw err;
+        });
+        return persistChain;
+      }
+      try {
+        localStorage.setItem(STORAGE_KEY, b64);
+        lastSyncMeta.backend = "localStorage";
+        lastSyncMeta.lastSave = { at: new Date().toISOString(), iCloud: false };
+      } catch (err) {
+        console.error("[MyTimeTree DB] persist failed", err);
+        lastSyncMeta.lastError = String(err && err.message ? err.message : err);
+      }
+      return Promise.resolve();
+    }
+
+    function persist() {
+      // Debounce iCloud writes; still flush soon after mutations
+      clearTimeout(persistTimer);
+      persistTimer = setTimeout(() => {
+        Promise.resolve(persistNow()).catch(() => {
+          /* lastError already set */
+        });
+      }, 200);
+    }
+
+    function exec(sql, params) {
+      db.run(sql, params || []);
+    }
+
+    function query(sql, params) {
+      const stmt = db.prepare(sql);
+      try {
+        if (params && params.length) stmt.bind(params);
+        const rows = [];
+        while (stmt.step()) {
+          rows.push(stmt.getAsObject());
+        }
+        return rows;
+      } finally {
+        stmt.free();
+      }
+    }
+
+    function queryOne(sql, params) {
+      const rows = query(sql, params);
+      return rows.length ? rows[0] : null;
+    }
+
+    function getSchemaVersion() {
+      const table = queryOne(
+        "SELECT name FROM sqlite_master WHERE type = ? AND name = ?",
+        ["table", "schema_migrations"]
+      );
+      if (!table) return 0;
+      const row = queryOne("SELECT COALESCE(MAX(version), 0) AS v FROM schema_migrations");
+      return row ? Number(row.v) : 0;
+    }
+
+    function migrate() {
+      let current = getSchemaVersion();
+      for (const m of MIGRATIONS) {
+        if (m.version <= current) continue;
+        for (const sql of m.sql) {
+          try {
+            exec(sql);
+          } catch (err) {
+            if (!String(err && err.message).includes("duplicate column")) throw err;
+          }
+        }
+        exec(
+          "INSERT INTO schema_migrations (version, applied_at) VALUES (?, datetime('now'))",
+          [m.version]
+        );
+        current = m.version;
+      }
+      persist();
+      return current;
+    }
+
+    // Flush immediately when app backgrounds / page hides
+    function flushOnLeave() {
+      clearTimeout(persistTimer);
+      return Promise.resolve(persistNow()).catch(() => {
+        /* lastError already set */
+      });
+    }
+    if (typeof document !== "undefined" && document.addEventListener) {
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "hidden") flushOnLeave();
+      });
+    }
+    if (typeof window !== "undefined" && typeof window.addEventListener === "function") {
+      window.addEventListener("pagehide", flushOnLeave);
+    }
+
+    return {
+      db,
+      exec,
+      query,
+      queryOne,
+      persist,
+      persistNow,
+      flushOnLeave,
+      migrate,
+      getSchemaVersion,
+      getSyncMeta: () => ({ ...lastSyncMeta }),
+    };
+  }
+
+  async function getSqlJs() {
+    if (typeof initSqlJs !== "function") {
+      throw new Error("sql.js 未加载（initSqlJs 缺失）");
+    }
+    return initSqlJs({
+      locateFile: (file) => `./local/${file}`,
+    });
+  }
+
+  function peekImportedDb(SQL, bytes) {
+    const db = new SQL.Database(bytes);
+    try {
+      const table = db.exec(
+        "SELECT name FROM sqlite_master WHERE type='table' AND name='accounts'"
+      );
+      if (!table.length || !table[0].values.length) {
+        throw new Error("不是有效的 MyTimeTree 数据库（缺少 accounts 表）");
+      }
+      let accountCount = 0;
+      const cnt = db.exec("SELECT COUNT(*) FROM accounts");
+      if (cnt.length && cnt[0].values.length) {
+        accountCount = Number(cnt[0].values[0][0] || 0);
+      }
+      if (accountCount < 1) {
+        throw new Error("导入库中没有账户数据");
+      }
+      return { accountCount };
+    } finally {
+      db.close();
+    }
+  }
+
+  async function openLocalDb() {
+    const SQL = await getSqlJs();
+
+    let saved = null;
+    if (isNative()) {
+      try {
+        saved = await nativeLoad();
+      } catch (err) {
+        console.warn("[MyTimeTree DB] native load failed, try localStorage", err);
+        lastSyncMeta.lastError = String(err && err.message ? err.message : err);
+      }
+      // One-time migrate from localStorage → native file
+      if ((saved == null || saved === "") && localStorage.getItem(STORAGE_KEY)) {
+        saved = localStorage.getItem(STORAGE_KEY);
+        lastSyncMeta.lastLoadSource = "localStorage-migrate";
+        try {
+          await nativeSave(saved);
+          console.info("[MyTimeTree DB] migrated localStorage → native/iCloud file");
+        } catch (err) {
+          console.warn("[MyTimeTree DB] migrate save failed", err);
+        }
+      }
+    } else {
+      saved = localStorage.getItem(STORAGE_KEY);
+      lastSyncMeta.backend = "localStorage";
+      lastSyncMeta.lastLoadSource = saved ? "localStorage" : "empty";
+    }
+
+    let db;
+    if (saved) {
+      db = new SQL.Database(bytesFromB64(saved));
+    } else {
+      db = new SQL.Database();
+    }
+    const api = createApi(db);
+    api.exec("PRAGMA foreign_keys = ON");
+    api.migrate();
+    return api;
+  }
+
+  /**
+   * Replace in-memory DB with raw SQLite bytes (e.g. desktop .local-data/mytimetree.db).
+   * Caller must persist and rebind store references.
+   */
+  async function replaceFromBytes(bytes) {
+    const SQL = await getSqlJs();
+    const raw =
+      bytes instanceof Uint8Array
+        ? bytes
+        : bytes instanceof ArrayBuffer
+          ? new Uint8Array(bytes)
+          : null;
+    if (!raw || !raw.length) {
+      throw new Error("导入文件为空");
+    }
+    const peek = peekImportedDb(SQL, raw);
+    const db = new SQL.Database(raw);
+    const api = createApi(db);
+    api.exec("PRAGMA foreign_keys = ON");
+    const schemaVersion = api.migrate();
+    // migrate() already schedules persist; force flush so native file is replaced
+    if (typeof api.persistNow === "function") {
+      await api.persistNow();
+    }
+    lastSyncMeta.lastLoadSource = "import-sqlite";
+    lastSyncMeta.lastError = null;
+    return {
+      api,
+      accountCount: peek.accountCount,
+      schemaVersion,
+      bytes: raw.length,
+    };
+  }
+
+  async function restoreFromICloud() {
+    const ICloudDb = plugin("ICloudDb");
+    if (!ICloudDb || typeof ICloudDb.restoreFromICloud !== "function") {
+      throw new Error("ICloudDb 插件未就绪（请 Clean Build 后重新 Run）");
+    }
+    const res = await ICloudDb.restoreFromICloud();
+    if (!res || typeof res.data !== "string" || !res.data.length) {
+      throw new Error("iCloud 中没有可恢复的数据库");
+    }
+    const out = await replaceFromBytes(bytesFromB64(res.data));
+    lastSyncMeta.lastLoadSource = "icloud-restore";
+    lastSyncMeta.iCloudAvailable = true;
+    lastSyncMeta.lastSave = {
+      at: res.lastWriteAt || new Date().toISOString(),
+      iCloud: true,
+      bytes: res.bytes,
+    };
+    lastSyncMeta.lastError = null;
+    return { ...out, source: "icloud-restore" };
+  }
+
+  global.MyTimeTreeDb = {
+    open: openLocalDb,
+    replaceFromBytes,
+    restoreFromICloud,
+    STORAGE_KEY,
+    status: nativeStatus,
+    getSyncMeta: () => ({ ...lastSyncMeta }),
+  };
+})(window);

@@ -162,6 +162,44 @@ def test_attributes_preserve_unknown_fields(accounts):
 
 
 @pytest.mark.integration
+def test_add_second_account_without_password(accounts):
+    accounts.open_account(name="小明", password="secret", asset_interest_rate=0.01)
+    b = accounts.open_account(name="小红", password=None, asset_interest_rate=0.02)
+    assert b.name == "小红"
+    assert {a.name for a in accounts.list_accounts()} == {"小明", "小红"}
+
+
+@pytest.mark.integration
+def test_delete_account_requires_password_and_switches(accounts, conn):
+    a = accounts.open_account(name="小明", password="secret", asset_interest_rate=0.01)
+    b = accounts.open_account(name="小红", password="secret", asset_interest_rate=0.02)
+    assert accounts.current_account_id() == b.id
+
+    with pytest.raises(DomainError) as ei:
+        accounts.delete_account(b.id, password="wrong")
+    assert ei.value.code == ErrorCode.FORBIDDEN
+
+    result = accounts.delete_account(b.id, password="secret")
+    assert result["deleted_id"] == b.id
+    assert {x["name"] for x in result["remaining"]} == {"小明"}
+    assert accounts.current_account_id() == a.id
+    assert accounts.list_accounts()[0].name == "小明"
+
+    # Cascaded settings gone
+    row = execute(conn, "SELECT 1 FROM settings WHERE account_id = ?", (b.id,)).fetchone()
+    assert row is None
+
+
+@pytest.mark.integration
+def test_delete_last_account_clears_current(accounts):
+    a = accounts.open_account(name="小明", password="secret", asset_interest_rate=0.01)
+    result = accounts.delete_account(a.id, password="secret")
+    assert result["remaining"] == []
+    assert accounts.current_account_id() is None
+    assert accounts.list_accounts() == []
+
+
+@pytest.mark.integration
 def test_current_account_persists_across_service_instances(conn, clock):
     s1 = AccountService(conn, clock=clock)
     acc = s1.open_account(name="小明", password="p1", asset_interest_rate=0.01)

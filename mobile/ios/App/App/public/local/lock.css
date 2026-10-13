@@ -1,0 +1,688 @@
+/* Capacitor WKWebView layout shell (local-only).
+   Horizontal safe-area env can be wrong on some simulators and push the UI right;
+   use fixed side gutters. Slight zoom so the full width fits the screen. */
+
+html {
+  width: 100vw;
+  max-width: 100vw;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+body {
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  overscroll-behavior: none;
+  position: relative;
+  left: 0;
+  top: 0;
+  transform: none;
+}
+
+#portal.portal,
+.portal {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  position: relative !important;
+  overflow-x: hidden !important;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: none;
+  box-sizing: border-box;
+  /* Fixed symmetric gutters — do not use env(safe-area-inset-left/right) here */
+  padding-left: 12px !important;
+  padding-right: 12px !important;
+}
+
+#portal .topbar,
+.portal .topbar {
+  flex: 0 0 auto !important;
+  gap: 0.35rem !important;
+}
+
+#portal .main,
+.portal .main {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+}
+
+#portal.portal > *,
+.portal > * {
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+
+/* Topbar: brand shrinks; account select shrinks; ⋯ stays fully visible */
+#portal .brand-lockup,
+.portal .brand-lockup {
+  flex: 1 1 0 !important;
+  max-width: 50% !important;
+  min-width: 0 !important;
+}
+#portal .account-shell,
+.portal .account-shell {
+  display: flex !important;
+  flex: 0 0 auto !important;
+  max-width: none !important;
+  min-width: 0 !important;
+  margin-left: 0 !important;
+  gap: 0.55rem !important;
+  overflow: visible !important;
+}
+#portal .account-shell select,
+.portal .account-shell select {
+  width: auto !important;
+  flex: 0 1 auto !important;
+  min-width: 0 !important;
+  max-width: 4.8rem !important;
+}
+#portal .account-icon-btn,
+.portal .account-icon-btn {
+  flex: 0 0 2rem !important;
+  width: 2rem !important;
+  height: 2rem !important;
+  /* Extra invisible hit padding without eating the gap visually */
+  position: relative;
+}
+#portal .account-icon-btn::before,
+.portal .account-icon-btn::before {
+  content: "";
+  position: absolute;
+  inset: -0.2rem;
+}
+
+/* Phase 2 — parent lock overlay */
+
+html.is-locked #portal,
+html.is-locked .keypad-modal,
+html.is-locked .account-modal {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.app-lock {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding:
+    calc(1rem + env(safe-area-inset-top, 0px))
+    calc(1.25rem + env(safe-area-inset-right, 0px))
+    calc(1rem + env(safe-area-inset-bottom, 0px))
+    calc(1.25rem + env(safe-area-inset-left, 0px));
+  background:
+    radial-gradient(120% 80% at 10% -10%, #fff6d6 0%, transparent 45%),
+    linear-gradient(165deg, #d8eefc, #eef8f1 55%, #f4faf6);
+  box-sizing: border-box;
+}
+
+.app-lock[hidden] {
+  display: none !important;
+}
+
+/* display:grid on cards would otherwise override the hidden attribute */
+.app-lock-card[hidden] {
+  display: none !important;
+}
+
+.app-lock-card {
+  width: min(100%, 22rem);
+  /* Solid bg — backdrop-filter breaks Chinese IME in iOS WKWebView */
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 1.35rem 1.2rem 1.4rem;
+  box-shadow: 0 12px 36px #1a3d3218;
+  display: grid;
+  gap: 0.85rem;
+}
+
+.app-lock-brand {
+  margin: 0;
+  font-family: "Fredoka", "Avenir Next", "PingFang SC", sans-serif;
+  font-size: 1.55rem;
+  font-weight: 700;
+  color: #1a3d32;
+  text-align: center;
+}
+
+.app-lock-lede {
+  margin: 0;
+  text-align: center;
+  color: #5a7268;
+  font-size: 0.95rem;
+}
+
+.app-lock-form {
+  margin: 0;
+}
+
+.app-lock-form label,
+.app-lock .stack label {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+  color: #5a7268;
+}
+
+.app-lock-form input,
+.app-lock-form textarea,
+.app-lock-form select,
+.app-lock .stack input,
+.app-lock .stack textarea,
+.app-lock .stack select {
+  border: 1px solid #c9ddd3;
+  border-radius: 12px;
+  padding: 0.7rem 0.8rem;
+  /* ≥16px prevents iOS WKWebView from auto-zooming on focus (and staying zoomed). */
+  font-size: 16px;
+  font-family: "PingFang SC", "Noto Sans SC", system-ui, sans-serif;
+  line-height: 1.35;
+  color: #1a3d32;
+  background: #fff;
+  width: 100%;
+  box-sizing: border-box;
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+.app-lock-form textarea,
+.app-lock .stack textarea {
+  resize: none;
+  min-height: 2.6rem;
+  line-height: 1.35;
+  field-sizing: content;
+}
+
+.app-lock-form select,
+.app-lock .stack select {
+  padding-right: 2.4rem;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%231a6b48' d='M1.4 1.6 6 6.2l4.6-4.6 1.1 1.1L6 8.4.3 2.7z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.9rem center;
+  background-size: 12px 8px;
+}
+
+.app-lock-form input:focus,
+.app-lock-form textarea:focus,
+.app-lock-form select:focus,
+.app-lock .stack input:focus,
+.app-lock .stack textarea:focus,
+.app-lock .stack select:focus {
+  outline: 2px solid #2f9e6b55;
+  border-color: #2f9e6b;
+}
+
+.app-lock-hint {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #5a7268;
+  text-align: center;
+}
+
+.app-lock .error {
+  margin: 0;
+  color: #e53935;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.app-lock .muted {
+  color: #5a7268;
+}
+
+.app-lock .btn {
+  border: 0;
+  border-radius: 14px;
+  padding: 0.85rem 1rem;
+  font: inherit;
+  font-weight: 600;
+  background: #dff3e8;
+  color: #1a6b48;
+  cursor: pointer;
+}
+
+.app-lock .btn.primary {
+  background: linear-gradient(135deg, #2f9e6b, #1a6b48);
+  color: #fff;
+}
+
+.app-lock .btn.linkish,
+.app-lock .btn.secondary {
+  background: transparent;
+  color: #1a6b48;
+  text-decoration: underline;
+  box-shadow: none;
+}
+
+.app-lock .btn.danger {
+  background: #e53935;
+  color: #fff;
+}
+
+.app-lock .stack {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.security-settings {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #c9ddd3;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.security-settings .faceid-toggle-row {
+  margin-bottom: 0;
+}
+
+.security-settings .security-note {
+  margin: 0;
+  line-height: 1.35;
+}
+
+.security-settings .security-note:empty,
+.security-settings .security-note[hidden] {
+  display: none;
+}
+
+.security-settings #password-change-form {
+  margin-top: 0.15rem;
+  gap: 0.55rem;
+}
+
+.security-title {
+  margin: 0;
+  font-size: 1.05rem;
+  color: #1a3d32;
+}
+
+.sync-settings {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #c9ddd3;
+  display: grid;
+  gap: 0.65rem;
+}
+
+.sync-settings .security-note {
+  margin: 0;
+  line-height: 1.35;
+}
+
+.sync-settings .security-note:empty,
+.sync-settings .security-note[hidden] {
+  display: none;
+}
+
+.sync-status-line {
+  margin: 0;
+  color: #1a3d32;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.sync-status-dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  flex: 0 0 auto;
+  background: #9aab9f;
+  box-shadow: 0 0 0 2px #c9ddd355;
+}
+
+.sync-status-dot.ok {
+  background: #2f9e6b;
+  box-shadow: 0 0 0 2px #2f9e6b33;
+}
+
+.sync-status-dot.bad {
+  background: #e53935;
+  box-shadow: 0 0 0 2px #e5393533;
+}
+
+.sync-status-dot.warn {
+  background: #c9a227;
+  box-shadow: 0 0 0 2px #c9a22733;
+}
+
+.sync-time-list {
+  margin: 0;
+  padding: 0.55rem 0.75rem;
+  list-style: none;
+  border: 1px solid #c9ddd3;
+  border-radius: 12px;
+  background: #f3faf6;
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.92rem;
+  color: #1a3d32;
+}
+
+.sync-time-list strong {
+  font-weight: 700;
+  color: #0f2f26;
+}
+
+.sync-actions {
+  display: grid;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.sync-actions-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  align-items: stretch;
+  width: 100%;
+}
+
+.sync-actions .btn,
+.sync-actions-row .btn {
+  min-width: 0;
+  width: 100%;
+}
+
+.sync-flush-btn,
+#sync-flush-btn.btn.primary {
+  /* Same as portal .btn.primary / 「保存设置」 */
+  background: linear-gradient(135deg, #2f9e6b, #1a6b48) !important;
+  color: #fff !important;
+  box-shadow: none;
+}
+
+.sync-restore-main {
+  margin-top: 0;
+  background: #dff3e8 !important;
+  color: #1a6b48 !important;
+  font-weight: 700;
+  box-shadow: none;
+}
+
+.sync-restore-pass {
+  display: none !important;
+}
+
+.sync-password-modal[hidden] {
+  display: none !important;
+}
+
+.sync-password-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  align-items: center;
+  justify-items: center;
+  padding: 1.25rem;
+  box-sizing: border-box;
+}
+
+.sync-password-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: #1a3d3288;
+}
+
+.sync-password-modal-sheet {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 22rem;
+  box-sizing: border-box;
+  padding: 1.1rem 1.15rem 1.2rem;
+  border-radius: 18px;
+  background: #f7fcf8;
+  box-shadow: 0 16px 40px #1a3d3228;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.sync-password-modal-sheet h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #1a3d32;
+}
+
+.sync-password-modal-sheet p {
+  margin: 0;
+  color: #5a7268;
+  font-size: 0.92rem;
+  line-height: 1.4;
+}
+
+.sync-password-modal-sheet label {
+  display: grid;
+  gap: 0.35rem;
+  color: #1a3d32;
+  font-weight: 600;
+}
+
+.sync-password-modal-sheet input[type="password"] {
+  font-size: 16px;
+  border: 1px solid #c9ddd3;
+  border-radius: 12px;
+  padding: 0.7rem 0.8rem;
+  background: #fff;
+  color: #1a3d32;
+}
+
+.sync-password-modal-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.sync-password-modal-actions .btn.primary {
+  background: linear-gradient(135deg, #2f9e6b, #1a6b48);
+  color: #fff;
+}
+
+.sync-password-modal .error {
+  margin: 0;
+  color: #e53935;
+  font-size: 0.9rem;
+}
+
+.import-settings {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #c9ddd3;
+  display: grid;
+  gap: 0.65rem;
+}
+
+.import-settings code {
+  font-size: 0.85em;
+}
+
+.import-file-label {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.import-file-label input[type="file"] {
+  font-size: 16px;
+  max-width: 100%;
+}
+
+.faceid-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.faceid-toggle-label {
+  color: #1a3d32;
+  font-weight: 600;
+}
+
+.faceid-switch {
+  position: relative;
+  display: inline-flex;
+  flex: 0 0 auto;
+  width: 51px;
+  height: 31px;
+}
+
+.faceid-switch input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.faceid-switch-track {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: #c9ddd3;
+  transition: background 0.2s ease;
+  box-shadow: inset 0 0 0 1px #b7cec355;
+}
+
+.faceid-switch-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 27px;
+  height: 27px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px #1a3d3240, 0 1px 1px #1a3d3220;
+  transition: transform 0.2s ease;
+}
+
+.faceid-switch input:checked + .faceid-switch-track {
+  background: linear-gradient(135deg, #2f9e6b, #1a6b48);
+  box-shadow: none;
+}
+
+.faceid-switch input:checked + .faceid-switch-track .faceid-switch-thumb {
+  transform: translateX(20px);
+}
+
+.faceid-switch input:focus-visible + .faceid-switch-track {
+  outline: 2px solid #2f9e6b55;
+  outline-offset: 2px;
+}
+
+.sr-only-select {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.question-picker {
+  position: relative;
+  width: 100%;
+}
+
+.question-picker-btn {
+  border: 1px solid #c9ddd3;
+  border-radius: 12px;
+  padding: 0.75rem 2.4rem 0.75rem 0.85rem;
+  min-height: 2.75rem;
+  font: inherit;
+  font-size: 16px;
+  line-height: 1.35;
+  text-align: left;
+  width: 100%;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%231a6b48' d='M1.4 1.6 6 6.2l4.6-4.6 1.1 1.1L6 8.4.3 2.7z'/%3E%3C/svg%3E")
+    no-repeat right 0.9rem center / 12px 8px;
+  color: #1a3d32;
+  box-sizing: border-box;
+}
+
+.question-picker-btn:focus {
+  outline: 2px solid #2f9e6b55;
+  border-color: #2f9e6b;
+}
+
+.question-picker-list,
+.question-picker-menu {
+  list-style: none;
+  margin: 0.4rem 0 0;
+  padding: 0.4rem;
+  border: 1px solid #c9ddd3;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 8px 24px #1a3d3214;
+  display: grid;
+  gap: 0.25rem;
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  max-height: 16rem;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.question-picker-list[hidden],
+.question-picker-menu[hidden] {
+  display: none;
+}
+
+.question-picker-list li,
+.question-picker-menu li {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.question-picker-list button,
+.question-picker-menu button {
+  border: 0;
+  background: transparent;
+  text-align: left;
+  padding: 0.85rem 0.9rem;
+  min-height: 2.75rem;
+  border-radius: 10px;
+  font: inherit;
+  font-size: 16px;
+  line-height: 1.35;
+  color: #1a3d32;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.question-picker-list button[aria-selected="true"],
+.question-picker-menu button[aria-selected="true"],
+.question-picker-list button:active,
+.question-picker-menu button:active {
+  background: #dff3e8;
+}

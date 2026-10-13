@@ -1,0 +1,13 @@
+{
+  "appId": "com.mytimetree.app",
+  "appName": "MyTimeTree",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "ios": {
+    "contentInset": "never",
+    "scheme": "MyTimeTree"
+  },
+  "server": {
+    "androidScheme": "https"
+  }
+}

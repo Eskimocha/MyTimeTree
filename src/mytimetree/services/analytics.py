@@ -9,6 +9,7 @@ from dataclasses import dataclass, field
 from datetime import date, datetime, timedelta
 
 from mytimetree.db.connection import execute
+from mytimetree.domain.interest import daily_interest_minutes
 from mytimetree.domain.ledger import LedgerCategory
 from mytimetree.domain.time import Clock, SystemClock, ensure_app_tz
 from mytimetree.services.accounts import AccountService
@@ -143,6 +144,21 @@ class AnalyticsService:
         if last_date is not None:
             _flush_day(last_date)
 
+        rates = execute(
+            self._conn,
+            "SELECT asset_interest_rate, liability_interest_rate FROM settings "
+            "WHERE account_id = ?",
+            (account_id,),
+        ).fetchone()
+        asset_rate = float(rates["asset_interest_rate"]) if rates else 0.0
+        liab_rate = float(rates["liability_interest_rate"]) if rates else 0.0
+
+        def projected_interest_net(asset: int, liability: int) -> int:
+            """Same daily preview as ledger: floor(asset×rate) − floor(liab×rate)."""
+            return daily_interest_minutes(asset, asset_rate) - daily_interest_minutes(
+                liability, liab_rate
+            )
+
         # Carry forward balances for days with no ledger activity
         series: list[DailyPoint] = []
         cursor = start
@@ -157,14 +173,20 @@ class AnalyticsService:
             day_s = cursor.isoformat()
             if day_s in balance_by_day:
                 cur_asset, cur_liab = balance_by_day[day_s]
-            # Future days beyond "today": still show last known (or zeros)
+            if day_s in interest_by_day:
+                interest_net = interest_by_day[day_s]
+            else:
+                # No posted interest that day: show projected daily accrual from
+                # carried balance (same formula as the nightly job preview).
+                # Otherwise past-only weeks with no job run yet show an empty bar series.
+                interest_net = projected_interest_net(cur_asset, cur_liab)
             series.append(
                 DailyPoint(
                     date=day_s,
                     asset=cur_asset,
                     liability=cur_liab,
                     net=cur_asset - cur_liab,
-                    interest_net=interest_by_day.get(day_s, 0),
+                    interest_net=interest_net,
                 )
             )
             cursor += timedelta(days=1)

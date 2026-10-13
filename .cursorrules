@@ -52,7 +52,7 @@ print(response)
 
 ## LLM
 
-You always have an LLM at your side to help you with the task. For simple tasks, you could invoke the LLM by running the following command:
+You always have an LLM at your side to help you with the task. You could invoke the LLM by running the following command:
 ```
 venv/bin/python3 ./tools/llm_api.py --prompt "What is the capital of France?" --provider "anthropic"
 ```
@@ -109,13 +109,45 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 - Space OpenAI-compatible base URL: `https://space.ai-builders.com/backend/v1` with `AI_BUILDER_TOKEN`
 - Cursor MCP for AI Builder: `.cursor/mcp.json` → `npx -y @aibuilders/mcp-coach-server` with `AI_BUILDER_TOKEN`
 - If MCP shows `spawn npx ENOENT`, system has no Node/npm; install Node to `~/.local/node` and point mcp.json at absolute `mcp-coach-server` or `scripts/run-ai-builder-mcp.sh` (loads `.env`)
+- After macOS arch switch, local venvs may keep x86_64 `pydantic_core` wheels; force-reinstall FastAPI/Pydantic/uvicorn as arm64 before starting uvicorn
+- Capacitor iOS: use SPM (`npm run add:ios` / `scripts/add-ios-spm.mjs`); `npx cap add ios --packagemanager SPM` is broken (CLI lowercases arg → still requires CocoaPods)
+- Mobile Node path: `export PATH="$HOME/.local/node/bin:$PATH"` (system may have no node/npm)
+- Building iOS needs full Xcode.app, not only Command Line Tools
+- Capacitor sync-web must rewrite `/static/portal/` in **app.js** (STAGE_ART/ORN_ICON), not only index.html; otherwise tree/ornament PNGs 404 in the simulator
+- iOS WKWebView + CJK IME: avoid `autocapitalize/autocorrect="off"` on Chinese answer fields; after typing book-title mark `《`, keyboard can stick in Latin/punct mode. Prefer `<textarea rows="1" lang="zh-CN">` over `<input>`; also avoid `backdrop-filter` on focused panels
+- iOS WKWebView: keyboard focus scrolls the document; after dismiss/unlock, top of UI can clip — reset scrollY (bridge `resetMyTimeTreeViewport`), `history.scrollRestoration=manual`, and `position:fixed` while `html.is-locked`
+- iOS WKWebView focus zoom: inputs/selects with font-size < 16px auto-zoom on focus and often stay zoomed after unlock — set form controls to `font-size: 16px`; Capacitor viewport uses `maximum-scale=1`; remove temporary `zoom: 0.9` workaround
+- iOS WKWebView “偏右”: avoid horizontal `env(safe-area-inset-left/right)` if it mis-reports; use fixed side gutters; flex children need `min-width:0`
+- Capacitor 7 local plugins: must subclass CAPBridgeViewController as MainViewController, override capacitorDidLoad(), bridge?.registerPluginInstance(...); point Main.storyboard at MainViewController (App module). CAPBridgedPlugin alone is not enough.
+- Newer Xcode (SDK 27 / Xcode 26+): App `IPHONEOS_DEPLOYMENT_TARGET` must be ≥ 15.0 (14.0 rejected). Keep CapApp-SPM `platforms: [.iOS(.v15)]` in sync; `cap sync` may rewrite Package.swift — re-check after sync.
+- Phase 3 iCloud: keep sql.js in-memory; whole-DB file via custom ICloudDb plugin (Application Support + iCloud Documents, newer-wins); JS registerPlugin('ICloudDb'); entitlements CloudDocuments + container iCloud.com.mytimetree.app
+- CapApp-SPM “Missing package product”: usually stale DerivedData / failed GitHub fetch (e.g. ion-ios-filesystem). Fix: quit Xcode → delete `~/Library/Developer/Xcode/DerivedData/App-*` → File → Packages → Reset Package Caches → Resolve Package Versions → Clean Build → Run. Or `xcodebuild -resolvePackageDependencies -project ios/App/App.xcodeproj -scheme App`
+- Share long-screenshot pale/gray: html2canvas poorly composites `backdrop-filter` + `rgba` surfaces; more critically, **cloned nodes restart CSS animations at keyframe 0** (e.g. `.tab-panel { animation: rise }` starts at `opacity:0`) → gray veil. Fix: `html.share-capture` kills animations + opaque paints before capture; strengthen `onclone` the same way. Share button missing in export is intentional.
+- Custom recovery question picker: JS list class must match CSS (was `question-picker-list` vs `.question-picker-menu`) — mismatch falls back to native `<ul>` bullets outside the styled panel.
+
+
+- iOS 27 / Xcode 27 SDK：未接入 UIScene 会在启动时 `EXC_BREAKPOINT`（`UIApplicationEvaluateRuntimeIssueForNoSceneLifecycleAdoption`）。必须加 `UIApplicationSceneManifest` + `SceneDelegate` + AppDelegate `configurationForConnecting`；审核真机 iOS 27 会直接拒（Guideline 2.1 crash on launch）。Capacitor 8.5 才有官方 migrator；Cap 7 可手写 SceneDelegate 并继续用 `ApplicationDelegateProxy`。
 
 # Scratchpad
 
-## Task: Storybook art swap + UI tweaks
-- [ ] Replace tree/ornament art with storybook-quality assets (from design renders)
-- [ ] Counters: icons only (no labels); bird side-peck; pest on branch crawl
-- [ ] Tagline copy update; sync :8765
+## Task: iOS offline App — step by step
+- Decision 2026-08-16: **专心 iOS**；微信小程序搁置
+- [X] Phase 0 scaffold + Run
+- [X] Phase 1：sql.js SQLite + 领域移植 + MyTimeTreeLocal
+- [X] Phase 1 QA / safe-area / 资源路径
+- [X] Phase 2：家长密码 + Face ID + 安全问题找回（polish：IME 书名号卡住）
+- [X] Phase 3：iCloud 整库同步 + 「从 iCloud 恢复」
+- [X] Phase 4：整库导入 API 已实现；正式 UI「从电脑导入」已隐藏（`__MYTIMETREE_SHOW_IMPORT__` 可开）
+- [ ] Phase 5：TestFlight → App Store
 
-## Previous: Main screen visual polish — done (too rough, replace)
+## Task now: 审核拒因 — iOS 27 UIScene 启动崩溃 + 新图标
+- [X] 解析 crashlog：`UIApplicationEvaluateRuntimeIssueForNoSceneLifecycleAdoption`
+- [X] 加 SceneDelegate + Info.plist Scene Manifest；armv7→arm64；Build → 6
+- [X] App Icon 换成 SkyPine2；Splash 同步
+- Next: 真机冷启动确认 → Archive 上传 Build 6 → 回复审核说明已适配 UIScene
 
+## Phase 5（并行）
+- [X] 隐私政策 / 截图材料已备
+- Decision: 首发仅 iPhone；iPad 以后再开
+
+Decisions locked: 对外版本 1.0.0；联系邮箱 kaiak.fang@gmail.com。

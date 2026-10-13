@@ -10,6 +10,8 @@ from fastapi import FastAPI
 from mytimetree.api.app import create_app
 from mytimetree.db.connection import connect
 from mytimetree.db.migrate import apply_migrations
+from mytimetree.domain.time import SystemClock
+from mytimetree.jobs.runner import JobRunner
 from mytimetree.services.accounts import AccountService
 from mytimetree.services.analytics import AnalyticsService
 from mytimetree.services.ledger import LedgerService
@@ -29,21 +31,30 @@ def build_app() -> FastAPI:
     db_path = data_dir / "mytimetree.db"
     backup_dir = data_dir / "backups"
 
+    clock = SystemClock()
     conn = connect(db_path)
     apply_migrations(conn)
 
-    accounts = AccountService(conn)
-    ledger = LedgerService(conn, accounts=accounts)
-    tree = TreeService(conn, accounts=accounts, ledger=ledger)
-    tokens = ConfirmTokenService(conn, accounts=accounts)
-    settings = SettingsService(conn, accounts=accounts, tokens=tokens)
+    accounts = AccountService(conn, clock=clock)
+    ledger = LedgerService(conn, accounts=accounts, clock=clock)
+    tree = TreeService(conn, accounts=accounts, ledger=ledger, clock=clock)
+    tokens = ConfirmTokenService(conn, accounts=accounts, clock=clock)
+    settings = SettingsService(conn, accounts=accounts, tokens=tokens, clock=clock)
     persistence = PersistenceGuard(settings=settings)
     ledger_query = LedgerQueryService(conn, accounts=accounts)
-    analytics = AnalyticsService(conn, accounts=accounts, ledger=ledger)
+    analytics = AnalyticsService(conn, accounts=accounts, ledger=ledger, clock=clock)
     membership = MembershipService(conn)
     remote_sync = RemoteSyncClient(
         base_url=os.getenv("REMOTE_SYNC_BASE_URL"),
         token=os.getenv("REMOTE_SYNC_TOKEN"),
+    )
+    jobs = JobRunner(
+        conn,
+        accounts=accounts,
+        ledger=ledger,
+        backup_dir=backup_dir,
+        clock=clock,
+        tree=tree,
     )
 
     # Honor PORT for platforms that inspect the app module (uvicorn still uses CLI PORT).
@@ -52,6 +63,7 @@ def build_app() -> FastAPI:
     return create_app(
         conn=conn,
         backup_dir=backup_dir,
+        clock=clock,
         accounts=accounts,
         ledger=ledger,
         settings=settings,
@@ -61,6 +73,7 @@ def build_app() -> FastAPI:
         tree=tree,
         membership=membership,
         remote_sync=remote_sync,
+        jobs=jobs,
     )
 
 

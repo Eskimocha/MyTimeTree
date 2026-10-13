@@ -13,12 +13,24 @@
   --radius: 18px;
   --font-display: "Fredoka", "Noto Sans SC", sans-serif;
   --font-body: "Noto Sans SC", system-ui, sans-serif;
+  /* WKWebView: do not store env(safe-area-*) in custom props — they resolve to 0 */
+  --gutter-x: 0.75rem;
+  /* Scheme A: same breathing pad S above title and below home actions */
+  --frame-pad: 0.55rem;
+  --gutter-top: var(--frame-pad);
+  --gutter-bottom: var(--frame-pad);
+  --safe-top-min: 0px;
+  --home-tree-min: 9.5rem;
 }
 
 * { box-sizing: border-box; }
 html, body {
   margin: 0;
+  padding: 0;
   min-height: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  overscroll-behavior-y: none;
   font-family: var(--font-body);
   color: var(--ink);
   background:
@@ -28,25 +40,53 @@ html, body {
 
 .portal {
   max-width: 430px;
+  width: 100%;
   margin: 0 auto;
   min-height: 100dvh;
-  padding: 1rem 1.1rem 2rem;
+  height: 100dvh;
+  padding-top: calc(var(--gutter-top) + max(env(safe-area-inset-top, 0px), var(--safe-top-min)));
+  padding-right: calc(var(--gutter-x) + env(safe-area-inset-right, 0px));
+  padding-bottom: calc(var(--gutter-bottom) + env(safe-area-inset-bottom, 0px));
+  padding-left: calc(var(--gutter-x) + env(safe-area-inset-left, 0px));
   display: flex;
   flex-direction: column;
-  gap: 0.85rem;
+  gap: 0.65rem;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  overflow-y: auto;
+  position: relative;
+}
+
+/* Flex column children default min-width:auto and can force the page wider than
+   the screen (topbar brand + account), which clips the right edge on iOS. */
+.portal > * {
+  min-width: 0;
+  max-width: 100%;
 }
 
 .topbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.75rem;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
-.brand-lockup { display: flex; align-items: center; gap: 0.5rem; }
+.brand-lockup {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-width: 0;
+  flex: 1 1 0;
+  max-width: 52%;
+}
 .brand-mark {
-  width: 1.35rem;
-  height: 1.35rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  flex: 0 0 auto;
   border-radius: 50% 50% 45% 55%;
   background:
     radial-gradient(circle at 35% 35%, #fff8 0 28%, transparent 30%),
@@ -57,21 +97,170 @@ html, body {
 .brand {
   margin: 0;
   font-family: var(--font-display);
-  font-size: 1.55rem;
+  font-size: clamp(1.05rem, 4.6vw, 1.4rem);
   font-weight: 700;
   letter-spacing: -0.02em;
   color: var(--brand);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
+/* Keep select + ⋯ entirely inside the topbar (⋯ must not clip past the right edge). */
+.account-shell {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.55rem;
+  flex: 0 1 auto;
+  max-width: 46%;
+  min-width: 0;
+  margin-left: auto;
+  box-sizing: border-box;
+}
 .account-shell select {
+  /* width:0 + flex:1 lets native <select> shrink instead of expanding the page */
+  width: 0;
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 7rem;
   border: 0;
   background: var(--surface);
   backdrop-filter: blur(8px);
   border-radius: 999px;
-  padding: 0.45rem 0.85rem;
+  padding: 0.35rem 0.5rem;
   font: inherit;
+  font-size: 16px;
   color: var(--ink);
   box-shadow: 0 1px 0 #fff8 inset, 0 6px 18px #1a3d3212;
+  box-sizing: border-box;
+}
+.account-icon-btn {
+  flex: 0 0 2rem;
+  width: 2rem;
+  height: 2rem;
+  border: 0;
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--leaf-deep);
+  font: inherit;
+  font-size: 1.05rem;
+  line-height: 1;
+  box-shadow: 0 1px 0 #fff8 inset, 0 6px 18px #1a3d3212;
+  cursor: pointer;
+  position: relative;
+}
+.account-icon-btn::before {
+  content: "";
+  position: absolute;
+  inset: -0.2rem;
+}
+.share-page-btn {
+  display: inline-grid;
+  place-items: center;
+  color: var(--leaf-deep);
+}
+.share-page-btn svg {
+  display: block;
+}
+.share-page-btn:disabled {
+  opacity: 0.55;
+}
+.share-toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  z-index: 80;
+  max-width: min(90vw, 22rem);
+  padding: 0.65rem 0.95rem;
+  border-radius: 12px;
+  background: #1a3d32e6;
+  color: #fff;
+  font-size: 0.9rem;
+  text-align: center;
+  box-shadow: 0 8px 24px #1a3d3233;
+  pointer-events: none;
+}
+.share-toast[hidden] { display: none !important; }
+
+.account-modal[hidden] { display: none !important; }
+.account-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  align-items: end;
+  justify-items: center;
+  padding: 0 calc(var(--gutter-x) + env(safe-area-inset-right, 0px)) 0 calc(var(--gutter-x) + env(safe-area-inset-left, 0px));
+  box-sizing: border-box;
+}
+.account-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: #1a3d3288;
+}
+.account-modal-sheet {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: min(calc(430px - 2.8rem), 100%);
+  box-sizing: border-box;
+  padding: 1rem 1.1rem calc(1.35rem + env(safe-area-inset-bottom, 0px));
+  border-radius: 22px 22px 0 0;
+  background: #f7fcf8;
+  box-shadow: 0 -12px 40px #1a3d3228;
+  animation: rise 0.22s ease;
+}
+.account-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+.account-modal-header h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+}
+.account-modal-body { display: grid; gap: 0.75rem; }
+.account-modal-body[hidden] { display: none !important; }
+.account-manage-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.45rem;
+}
+.account-manage-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid #c9ddd3;
+}
+.account-manage-list .name { font-weight: 600; color: var(--ink); }
+.account-manage-list .current-tag {
+  margin-left: 0.35rem;
+  font-size: 0.75rem;
+  color: var(--leaf-deep);
+  font-weight: 500;
+}
+.account-manage-note { margin: 0; font-size: 0.85rem; }
+.account-delete-target { margin: 0; font-weight: 600; color: var(--danger); }
+.account-delete-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+.btn.danger {
+  background: var(--danger);
+  color: #fff;
+  border: 0;
 }
 
 .panel, .tab-panel {
@@ -82,10 +271,133 @@ html, body {
   box-shadow: 0 10px 30px #1a3d3210;
 }
 
+.main {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  touch-action: pan-y;
+}
+
+.main[hidden] {
+  display: none !important;
+}
+
+.tab-panel.active {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 .lede, .tagline {
   margin: 0 0 1rem;
   color: var(--muted);
   font-size: 0.98rem;
+}
+.tagline {
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 1.02rem;
+  font-weight: 500;
+  color: var(--leaf-deep);
+  line-height: 1.45;
+  letter-spacing: 0.01em;
+}
+
+/* Home: leftover viewport height goes to the tree scene */
+#tab-home.tab-panel.active {
+  overflow: hidden;
+}
+
+#tab-home .tagline {
+  flex: 0 0 auto;
+  margin: 0 0 0.55rem;
+}
+
+#tab-home .hero-tree {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+#tab-home .tree-scene {
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: var(--home-tree-min);
+  /* Drop fixed 5:4 so the scene can grow on tall phones */
+  aspect-ratio: auto;
+  height: auto;
+}
+
+#tab-home .stage-label,
+#tab-home .stage-net,
+#tab-home .ornament-counters {
+  flex: 0 0 auto;
+}
+
+#tab-home .balances,
+#tab-home .actions,
+#tab-home .msg {
+  flex: 0 0 auto;
+}
+
+#tab-home .balances {
+  margin: 0.55rem 0 0.65rem;
+}
+
+/* Version overlays the bottom breathing pad only — centered in (S + home-indicator),
+   not in flex flow and not overlapping the main card. */
+.app-version {
+  position: absolute;
+  left: 0;
+  right: 0;
+  /* Midpoint of bottom pad, then shift down by half line so glyph center sits mid-gap */
+  bottom: calc((env(safe-area-inset-bottom, 0px) + var(--gutter-bottom)) / 2);
+  transform: translateY(50%);
+  z-index: 2;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  font-size: 0.58rem;
+  line-height: 1;
+  height: 0.58rem;
+  overflow: hidden;
+  color: var(--muted);
+  opacity: 0.68;
+  letter-spacing: 0.03em;
+  user-select: none;
+  pointer-events: none;
+}
+
+@media (max-height: 720px) {
+  #tab-home.tab-panel.active {
+    overflow-y: auto;
+  }
+  :root {
+    --home-tree-min: 8rem;
+    --frame-pad: 0.45rem;
+  }
+  #tab-home .tagline {
+    margin: 0 0 0.35rem;
+    font-size: 0.95rem;
+  }
+  #tab-home .balances {
+    margin: 0.4rem 0 0.5rem;
+  }
+  #tab-home .ornament-counters {
+    margin-top: 0.45rem;
+  }
+  #tab-home .ornament-counters li {
+    padding: 0.35rem 0.1rem 0.3rem;
+  }
+  .app-version {
+    font-size: 0.55rem;
+    height: 0.55rem;
+  }
 }
 
 .stack { display: grid; gap: 0.75rem; }
@@ -95,12 +407,49 @@ html, body {
   font-size: 0.9rem;
   color: var(--muted);
 }
-.stack input {
+.stack input,
+.stack textarea,
+.stack select {
   border: 1px solid #c9ddd3;
   border-radius: 12px;
   padding: 0.7rem 0.8rem;
-  font: inherit;
+  /* ≥16px: iOS zooms focused inputs smaller than 16px and often never zooms back out */
+  font-size: 16px;
+  font-family: inherit;
+  line-height: 1.35;
+  color: var(--ink);
   background: #fff;
+  width: 100%;
+  box-sizing: border-box;
+}
+.stack textarea {
+  resize: none;
+  min-height: 2.6rem;
+  line-height: 1.35;
+  field-sizing: content;
+}
+.stack select {
+  padding-right: 2.4rem;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%231a6b48' d='M1.4 1.6 6 6.2l4.6-4.6 1.1 1.1L6 8.4.3 2.7z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.9rem center;
+  background-size: 12px 8px;
+  cursor: pointer;
+}
+.stack select:focus,
+.stack input:focus,
+.stack textarea:focus {
+  outline: 2px solid #2f9e6b55;
+  border-color: #2f9e6b;
+}
+
+/* backdrop-filter breaks CJK IME in WKWebView — use solid surface on forms */
+.panel.onboarding {
+  background: #ffffff;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 .btn {
@@ -118,14 +467,14 @@ html, body {
 .btn.primary {
   background: linear-gradient(135deg, var(--leaf), var(--leaf-deep));
   color: #fff;
-  box-shadow: 0 8px 18px #2f9e6b44;
 }
 
 .tabs {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 0.35rem;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.55rem;
+  flex: 0 0 auto;
 }
 .tab {
   border: 0;
@@ -150,7 +499,8 @@ html, body {
 .hero-tree {
   text-align: center;
   position: relative;
-  padding: 0.85rem 0.65rem 0.75rem;
+  /* 左右内缩：场景不溢出蓝色主屏圆角卡 */
+  padding: 0.45rem 0.75rem 0.7rem;
   border-radius: 22px;
   overflow: hidden;
   background:
@@ -185,25 +535,32 @@ html, body {
 }
 .tree-scene {
   position: relative;
-  width: min(16.5rem, 84vw);
-  height: min(16.5rem, 84vw);
-  margin: 0 auto 0.35rem;
+  /* 与蓝卡内容区同宽；高度由 5:4 决定，树图 cover 铺满 */
+  width: 100%;
+  aspect-ratio: 5 / 4;
+  margin: 0 0 0.35rem;
   z-index: 1;
-  animation: tree-breathe 3.6s ease-in-out infinite;
-  filter: drop-shadow(0 8px 14px #1a3d3220);
+  overflow: hidden;
+  border-radius: 14px;
 }
 .tree-art {
+  position: absolute;
+  inset: 0;
+  display: block;
   width: 100%;
   height: 100%;
-  display: block;
-  object-fit: contain;
+  /* 保持素材宽高比；贴底避免早期阶段下方空白 */
+  object-fit: cover;
+  object-position: center bottom;
+  border-radius: 0;
   animation: fade-in 0.45s ease;
   user-select: none;
   pointer-events: none;
 }
 .tree-ornament-layer {
   position: absolute;
-  inset: 0;
+  /* 左右内缩，避免星/太阳/虫贴边被 tree-scene overflow 裁切 */
+  inset: 0.2rem 0.65rem 0.15rem 0.65rem;
   pointer-events: none;
 }
 .tree-ornament-layer .float-orn {
@@ -232,28 +589,64 @@ html, body {
   margin-left: -1.07rem;
   margin-top: -1.07rem;
 }
-.tree-ornament-layer .float-orn.kind-pest,
+.tree-ornament-layer .float-orn.kind-pest {
+  width: 2.35rem;
+  height: 2.35rem;
+  margin-left: -1.17rem;
+  margin-top: -1.17rem;
+  animation: orn-crawl 3.4s ease-in-out infinite;
+}
 .tree-ornament-layer .float-orn.kind-bird {
-  width: 2.05rem;
-  height: 2.05rem;
-  margin-left: -1.02rem;
-  margin-top: -1.02rem;
+  width: 2.55rem;
+  height: 2.55rem;
+  margin-left: -1.27rem;
+  margin-top: -1.27rem;
+  animation: orn-peck 2.6s ease-in-out infinite;
+  z-index: 2;
+}
+/* 非树阶段与星/太阳并排悬挂时，用浮动而非爬行/啄树 */
+.tree-ornament-layer .float-orn.hang.kind-pest,
+.tree-ornament-layer .float-orn.hang.kind-bird {
+  animation: orn-float 2.8s ease-in-out infinite;
 }
 .tree-ornament-layer .float-orn img {
   width: 100%;
   height: 100%;
   display: block;
+  object-fit: contain;
   transform-origin: center center;
 }
 .stage-label {
   position: relative;
   z-index: 1;
-  margin: 0.15rem 0 0;
+  margin: 0.2rem 0 0;
   font-family: var(--font-display);
   font-size: 1.4rem;
   color: var(--leaf-deep);
   text-shadow: 0 1px 0 #fff8;
 }
+.stage-net {
+  position: relative;
+  z-index: 1;
+  margin: 0.15rem 0 0;
+  font-size: 0.82rem;
+  color: var(--muted);
+  line-height: 1.35;
+  letter-spacing: 0.01em;
+}
+.stage-net strong {
+  color: var(--ink);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.rules-sublist {
+  margin: 0.35rem 0 0;
+  padding-left: 1.1rem;
+  color: var(--muted);
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+.rules-sublist strong { color: var(--ink); font-weight: 600; }
 .ornament-counters {
   list-style: none;
   margin: 0.7rem 0 0;
@@ -267,28 +660,25 @@ html, body {
 .ornament-counters li {
   display: grid;
   justify-items: center;
-  gap: 0.1rem;
-  padding: 0.45rem 0.1rem 0.4rem;
+  gap: 0.15rem;
+  padding: 0.5rem 0.1rem 0.4rem;
   border-radius: 14px;
   background: rgba(255, 255, 255, 0.78);
   box-shadow: 0 1px 0 #fff inset, 0 4px 12px #1a3d3210;
   backdrop-filter: blur(6px);
 }
 .ornament-counters img {
-  width: 1.55rem;
-  height: 1.55rem;
+  width: 1.85rem;
+  height: 1.85rem;
+  object-fit: contain;
   filter: drop-shadow(0 1px 1px #1a3d3222);
-}
-.ornament-counters .orn-label {
-  font-size: 0.66rem;
-  color: var(--muted);
-  line-height: 1.1;
 }
 .ornament-counters strong {
   font-family: var(--font-display);
   font-size: 1.05rem;
   color: var(--ink);
   font-variant-numeric: tabular-nums;
+  line-height: 1;
 }
 
 .balances {
@@ -351,7 +741,7 @@ html, body {
   align-items: end;
   justify-items: center;
   /* 与 .portal 同宽同边距，避免计算器超出主屏白框 */
-  padding: 0 1.1rem;
+  padding: 0 calc(var(--gutter-x) + env(safe-area-inset-right, 0px)) 0 calc(var(--gutter-x) + env(safe-area-inset-left, 0px));
   box-sizing: border-box;
   pointer-events: none;
 }
@@ -367,9 +757,9 @@ html, body {
   z-index: 1;
   width: 100%;
   /* portal max-width 430px 减去左右 padding 1.1rem*2 */
-  max-width: min(calc(430px - 2.2rem), 100%);
+  max-width: min(calc(430px - 2.8rem), 100%);
   box-sizing: border-box;
-  padding: 1rem 1.1rem 1.35rem;
+  padding: 1rem 1.1rem calc(1.35rem + env(safe-area-inset-bottom, 0px));
   border-radius: 22px 22px 0 0;
   background: #f7fcf8;
   box-shadow: 0 -12px 40px #1a3d3228;
@@ -450,6 +840,14 @@ html, body {
   display: grid;
   gap: 0.55rem;
 }
+.ledger-meta {
+  margin: 0 0 0.55rem;
+  font-size: 0.82rem;
+}
+#ledger-more {
+  width: 100%;
+  margin-top: 0.75rem;
+}
 .ledger-list li {
   display: flex;
   justify-content: space-between;
@@ -496,13 +894,52 @@ html, body {
   from { opacity: 0.4; transform: scale(0.94); }
   to { opacity: 1; transform: scale(1); }
 }
-@keyframes tree-breathe {
-  0%, 100% { transform: translateY(0) scale(1); }
-  50% { transform: translateY(-3px) scale(1.015); }
-}
 @keyframes orn-float {
   0%, 100% { transform: translateY(0) rotate(-2deg); }
   50% { transform: translateY(-5px) rotate(2deg); }
+}
+@keyframes orn-crawl {
+  0%, 100% { transform: translate(0, 0) rotate(-8deg); }
+  50% { transform: translate(6px, -2px) rotate(-4deg); }
+}
+@keyframes orn-peck {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  40% { transform: translate(-3px, 1px) rotate(-6deg); }
+  55% { transform: translate(0, 0) rotate(0deg); }
+}
+
+/* html2canvas: cloned nodes restart CSS animations at keyframe 0 (often opacity:0 → gray veil).
+   Also flatten translucent/backdrop surfaces while capturing. */
+html.share-capture *,
+html.share-capture *::before,
+html.share-capture *::after {
+  animation: none !important;
+  transition: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+html.share-capture .tab-panel,
+html.share-capture .panel,
+html.share-capture .tree-art,
+html.share-capture .float-orn,
+html.share-capture .brand-mark {
+  opacity: 1 !important;
+  transform: none !important;
+  filter: none !important;
+}
+html.share-capture .panel,
+html.share-capture .tab-panel {
+  background: #f7fcf8 !important;
+}
+html.share-capture .account-shell select,
+html.share-capture .account-icon-btn,
+html.share-capture .balances .bal,
+html.share-capture .ornament-counters li,
+html.share-capture .tab.active {
+  background: #ffffff !important;
+}
+html.share-capture body {
+  background: #eef8f1 !important;
 }
 
 .analytics-block h2 {
@@ -536,9 +973,30 @@ html, body {
   border-radius: 50%;
   display: inline-block;
 }
+.chart-legend-item i.chart-swatch-line {
+  height: 0.2rem;
+  width: 0.7rem;
+  border-radius: 2px;
+  align-self: center;
+}
+.chart-legend-item i.chart-swatch-bar {
+  width: 0.4rem;
+  height: 0.55rem;
+  border-radius: 2px;
+}
+.chart-legend-item i.chart-swatch-forecast {
+  width: 0.7rem;
+  height: 0;
+  border-radius: 0;
+  border-top: 2px dashed #7a8f84;
+  background: transparent !important;
+}
 .chart-axis {
   font-size: 9px;
   fill: var(--muted);
+}
+.chart-axis-right {
+  fill: #5c6bc0;
 }
 .chart-empty {
   margin: 0.4rem;
@@ -579,5 +1037,10 @@ html, body {
 }
 
 @media (min-width: 720px) {
-  .portal { padding-top: 1.5rem; }
+  .portal {
+    height: auto;
+    min-height: 100dvh;
+    padding-top: calc(var(--frame-pad) + max(env(safe-area-inset-top, 0px), var(--safe-top-min)));
+    padding-bottom: calc(var(--frame-pad) + env(safe-area-inset-bottom, 0px));
+  }
 }

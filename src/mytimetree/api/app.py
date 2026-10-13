@@ -2,9 +2,12 @@
 
 from __future__ import annotations
 
+import logging
 import sqlite3
+import threading
+from contextlib import asynccontextmanager
 from pathlib import Path
-from typing import Any
+from typing import Any, AsyncIterator
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, JSONResponse
@@ -13,6 +16,7 @@ from pydantic import BaseModel, Field
 
 from mytimetree.domain.errors import DomainError, ErrorCode
 from mytimetree.domain.time import Clock, SystemClock
+from mytimetree.jobs.runner import JobRunner
 from mytimetree.services.accounts import AccountService
 from mytimetree.services.analytics import AnalyticsService
 from mytimetree.services.backup import BackupService
@@ -24,18 +28,25 @@ from mytimetree.services.remote_sync import RemoteSyncClient
 from mytimetree.services.settings import SettingsService
 from mytimetree.services.tree import TreeService
 
+logger = logging.getLogger(__name__)
+
 STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
 PORTAL_DIR = STATIC_DIR / "portal"
 
 
 class OpenAccountBody(BaseModel):
     name: str
-    password: str
+    password: str | None = None
     asset_interest_rate: float = 0.0
 
 
 class SwitchAccountBody(BaseModel):
     account_id: int
+
+
+class DeleteAccountBody(BaseModel):
+    account_id: int
+    password: str
 
 
 class MinutesBody(BaseModel):
@@ -85,6 +96,7 @@ def create_app(
     tree: TreeService | None = None,
     membership: MembershipService | None = None,
     remote_sync: RemoteSyncClient | None = None,
+    jobs: JobRunner | None = None,
 ) -> FastAPI:
     """Build API app. Tests inject services; production wires DB later."""
     clock = clock or SystemClock()
@@ -92,7 +104,39 @@ def create_app(
     backup_svc = backups or BackupService(backup_dir=backup_dir_path)
     remote_svc = remote_sync or RemoteSyncClient()
 
-    app = FastAPI(title="MyTimeTree", version="0.1.0")
+    @asynccontextmanager
+    async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+        """Startup: catch up missed 结息/派发; background tick every 60s while up."""
+        runner: JobRunner | None = getattr(app.state, "jobs", None)
+        stop = threading.Event()
+        thread: threading.Thread | None = None
+
+        if runner is not None:
+            try:
+                report = runner.catch_up()
+                if report.events:
+                    logger.info("startup catch-up events=%s", report.events)
+            except Exception:
+                logger.exception("startup job catch-up failed")
+
+            def _loop() -> None:
+                while not stop.wait(60.0):
+                    try:
+                        runner.catch_up()
+                    except Exception:
+                        logger.exception("periodic job catch-up failed")
+
+            thread = threading.Thread(
+                target=_loop, name="mytimetree-jobs", daemon=True
+            )
+            thread.start()
+
+        yield
+        stop.set()
+        if thread is not None:
+            thread.join(timeout=2.0)
+
+    app = FastAPI(title="MyTimeTree", version="1.0.0", lifespan=lifespan)
     app.state.conn = conn
     app.state.clock = clock
     app.state.accounts = accounts
@@ -105,6 +149,7 @@ def create_app(
     app.state.tree = tree
     app.state.membership = membership
     app.state.remote_sync = remote_svc
+    app.state.jobs = jobs
 
     if STATIC_DIR.is_dir():
         app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
@@ -202,6 +247,11 @@ def create_app(
         acc_svc = _require(app.state.accounts, "accounts")
         acc = acc_svc.switch_account(body.account_id)
         return {"id": acc.id, "name": acc.name}
+
+    @app.post("/api/accounts/delete")
+    def delete_account(body: DeleteAccountBody) -> dict[str, Any]:
+        acc_svc = _require(app.state.accounts, "accounts")
+        return acc_svc.delete_account(body.account_id, password=body.password)
 
     @app.get("/api/portal/home")
     def portal_home() -> dict[str, Any]:

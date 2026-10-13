@@ -83,7 +83,7 @@ class LedgerQueryService:
             self._conn,
             f"SELECT id, account_id, category, amount_minutes, summary, correlation_id, "
             f"created_at, meta_json FROM ledger_entries {where} "
-            f"ORDER BY id DESC LIMIT ? OFFSET ?",
+            f"ORDER BY created_at DESC, id DESC LIMIT ? OFFSET ?",
             (*params, limit, offset),
         ).fetchall()
 

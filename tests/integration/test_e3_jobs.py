@@ -162,16 +162,94 @@ def test_job_runner_tick_dispatches_by_shanghai_hour(env):
 
     clock.set(datetime(2026, 8, 5, 0, 0, 0, tzinfo=APP_TZ))
     events = runner.tick()
-    assert "midnight" in events
+    assert any(e.startswith("midnight:") for e in events)
 
     clock.set(datetime(2026, 8, 5, 1, 0, 0, tzinfo=APP_TZ))
     events2 = runner.tick()
-    assert "auto_grant" in events2
+    assert any(e.startswith("auto_grant:") for e in events2)
     assert ledger.get_balance(acc.id).asset.value == 10
 
     events3 = runner.tick()
     assert events3 == []
     assert ledger.get_balance(acc.id).asset.value == 10
+
+
+@pytest.mark.integration
+def test_catch_up_settles_missed_days_when_service_was_down(env):
+    """Offline / missed 0:00 window: catch_up compounds one day of interest per missed day."""
+    accounts, ledger, runner, clock = (
+        env["accounts"],
+        env["ledger"],
+        env["runner"],
+        env["clock"],
+    )
+    # Open on Aug 1 noon; never run midnight; come back Aug 4 afternoon
+    clock.set(datetime(2026, 8, 1, 12, 0, 0, tzinfo=APP_TZ))
+    acc = accounts.open_account(name="小明", password="p", asset_interest_rate=0.01)
+    ledger.deposit(acc.id, minutes=1000)
+    before = ledger.get_balance(acc.id).asset.value
+
+    clock.set(datetime(2026, 8, 4, 15, 0, 0, tzinfo=APP_TZ))
+    report = runner.catch_up()
+    # Due midnight days: Aug 1,2,3,4 (4 days); grant: Aug 1,2,3 (hour<1 so not today? hour=15 >=1 so through Aug 4)
+    assert report.midnight_dates == [
+        "2026-08-01",
+        "2026-08-02",
+        "2026-08-03",
+        "2026-08-04",
+    ]
+    assert "2026-08-04" in report.grant_dates
+
+    # Compounding 1%/day for 4 days on asset (liability 0)
+    expected = before
+    for _ in range(4):
+        expected += daily_interest_minutes(expected, 0.01)
+    # auto_grant default may also add — check settings default
+    after = ledger.get_balance(acc.id).asset.value
+    # Interest only portion: count auto_interest entries
+    interest_entries = [
+        e
+        for e in ledger.list_entries(acc.id)
+        if e.category == LedgerCategory.AUTO_INTEREST
+    ]
+    assert len(interest_entries) == 4  # asset side only each day
+    assert sum(e.amount_minutes for e in interest_entries) == expected - before
+
+    # Idempotent
+    again = runner.catch_up()
+    assert again.events == []
+    assert ledger.get_balance(acc.id).asset.value == after
+
+
+@pytest.mark.integration
+def test_catch_up_after_hour_zero_missed_still_posts_today(env):
+    """If process was down all of hour==0, afternoon start still settles today's midnight."""
+    accounts, ledger, runner, clock = (
+        env["accounts"],
+        env["ledger"],
+        env["runner"],
+        env["clock"],
+    )
+    clock.set(datetime(2026, 8, 5, 0, 0, 0, tzinfo=APP_TZ))
+    acc = accounts.open_account(name="小明", password="p", asset_interest_rate=0.01)
+    ledger.deposit(acc.id, minutes=500)
+    # Pretend yesterday already settled
+    env["conn"].execute(
+        "INSERT INTO app_state (key, value) VALUES (?, ?)",
+        ("job_last_midnight_date", "2026-08-04"),
+    )
+    env["conn"].commit()
+
+    clock.set(datetime(2026, 8, 5, 10, 0, 0, tzinfo=APP_TZ))
+    report = runner.catch_up()
+    assert report.midnight_dates == ["2026-08-05"]
+    asset_interest = [
+        e
+        for e in ledger.list_entries(acc.id)
+        if e.category == LedgerCategory.AUTO_INTEREST
+    ]
+    assert len(asset_interest) == 1
+    assert asset_interest[0].amount_minutes == daily_interest_minutes(500, 0.01)
 
 
 @pytest.mark.integration

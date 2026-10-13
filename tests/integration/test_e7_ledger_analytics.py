@@ -226,6 +226,41 @@ def test_weekly_and_monthly_trends_fixed_dataset(env):
 
 
 @pytest.mark.integration
+def test_future_days_interest_net_uses_projection(env):
+    """无结息流水的日期，净利息用当日结转本金×日利率预测。"""
+    from mytimetree.domain.interest import daily_interest_minutes
+
+    accounts, ledger, clock, analytics, conn = (
+        env["accounts"],
+        env["ledger"],
+        env["clock"],
+        env["analytics"],
+        env["conn"],
+    )
+    # Monday Aug 10 2026 — week ends Sunday Aug 16
+    clock.set(datetime(2026, 8, 10, 10, 0, 0, tzinfo=APP_TZ))
+    a = accounts.open_account(name="小明", password="p", asset_interest_rate=0.01)
+    conn.execute(
+        "UPDATE settings SET liability_interest_rate = 0.005 WHERE account_id = ?",
+        (a.id,),
+    )
+    conn.commit()
+    ledger.deposit(a.id, minutes=1000)
+    # Posted interest only for "today"
+    ledger.post_interest(a.id, minutes=10, side="asset")
+
+    week = analytics.weekly_trend(account_id=a.id, as_of=clock.now())
+    by_day = {p.date: p for p in week.series}
+    assert by_day["2026-08-10"].interest_net == 10  # actual
+    # After deposit+interest, asset=1010; other days project from carried balance
+    expected = daily_interest_minutes(1010, 0.01) - daily_interest_minutes(0, 0.005)
+    assert expected == 10
+    assert by_day["2026-08-11"].asset == 1010
+    assert by_day["2026-08-11"].interest_net == expected
+    assert by_day["2026-08-16"].interest_net == expected
+
+
+@pytest.mark.integration
 def test_analytics_api(env):
     accounts, ledger, clock = env["accounts"], env["ledger"], env["clock"]
     a = accounts.open_account(name="小明", password="p", asset_interest_rate=0.0)

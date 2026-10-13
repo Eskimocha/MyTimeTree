@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import sqlite3
 import uuid
+from datetime import datetime
 from typing import Literal
 
 from mytimetree.db.connection import execute
@@ -298,11 +299,37 @@ class LedgerService:
         """存入与 repay 同语义：优先还债，超额进资产，并奖励星。"""
         return self.repay(account_id, minutes=minutes, summary=summary)
 
+    def post_interest(
+        self,
+        account_id: int,
+        minutes: int,
+        side: Literal["asset", "liability"],
+        *,
+        at: datetime | None = None,
+    ) -> LedgerEntry:
+        """Post interest; sync 果 from cumulative net interest (no star)."""
+        ensure(minutes > 0, ErrorCode.VALIDATION, "结息分钟必须为正")
+        meta: dict = {"side": side}
+        if at is not None:
+            meta["settlement_date"] = ensure_app_tz(at).date().isoformat()
+        entry = self._append(
+            account_id,
+            LedgerCategory.AUTO_INTEREST,
+            minutes,
+            summary=f"结息-{side}",
+            meta=meta,
+            at=at,
+        )
+        self.sync_interest_fruits(account_id)
+        return entry
+
     def auto_grant(
         self,
         account_id: int,
         minutes: int,
         summary: str | None = "自动派发",
+        *,
+        at: datetime | None = None,
     ) -> LedgerEntry:
         """Daily auto-grant adds asset only — no star (stars are for manual 存入)."""
         ensure(minutes > 0, ErrorCode.VALIDATION, "派发分钟必须为正")
@@ -311,25 +338,8 @@ class LedgerService:
             LedgerCategory.AUTO_GRANT,
             minutes,
             summary=summary,
+            at=at,
         )
-
-    def post_interest(
-        self,
-        account_id: int,
-        minutes: int,
-        side: Literal["asset", "liability"],
-    ) -> LedgerEntry:
-        """Post interest; sync 果 from cumulative net interest (no star)."""
-        ensure(minutes > 0, ErrorCode.VALIDATION, "结息分钟必须为正")
-        entry = self._append(
-            account_id,
-            LedgerCategory.AUTO_INTEREST,
-            minutes,
-            summary=f"结息-{side}",
-            meta={"side": side},
-        )
-        self.sync_interest_fruits(account_id)
-        return entry
 
     # --- internals ---
 
@@ -343,11 +353,12 @@ class LedgerService:
         correlation_id: str | None = None,
         meta: dict | None = None,
         commit: bool = True,
+        at: datetime | None = None,
     ) -> LedgerEntry:
         self._accounts.get_account(account_id)
         ensure(amount > 0, ErrorCode.VALIDATION, "交易分钟必须为正")
         clean_summary = sanitize_summary(summary)
-        now = ensure_app_tz(self._clock.now()).isoformat()
+        stamp = ensure_app_tz(at if at is not None else self._clock.now()).isoformat()
         meta_json = json.dumps(meta or {}, ensure_ascii=False)
         cur = execute(
             self._conn,
@@ -361,7 +372,7 @@ class LedgerService:
                 clean_summary,
                 correlation_id,
                 meta_json,
-                now,
+                stamp,
             ),
         )
         if commit:
@@ -373,7 +384,7 @@ class LedgerService:
             amount_minutes=amount,
             summary=clean_summary,
             correlation_id=correlation_id,
-            created_at=now,
+            created_at=stamp,
             meta_json=meta_json,
         )
 

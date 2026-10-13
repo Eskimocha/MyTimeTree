@@ -45,6 +45,7 @@
 | E3.2 | 工作流：结息写流水 →（月末则对账）→ 备份 | 顺序断言 | Done |
 | E3.3 | 01:00（Asia/Shanghai）自动派发 | 只跑目标账户 | Done |
 | E3.4 | Job runner 可手动触发；Clock 固定 UTC+8 | 便于 TDD/运维 | Done |
+| E3.5 | 启动/tick **补结息**：回放漏掉日历日；挂到 uvicorn lifespan | 宕机跨天仍复利；幂等 | Done |
 
 ## E4 — 魔法树
 

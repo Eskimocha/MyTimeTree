@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/static/portal/styles.css?v=20260807b" />
+  <link rel="stylesheet" href="/static/portal/styles.css?v=20260911g" />
 </head>
 <body>
   <div id="portal" class="portal">
@@ -17,8 +17,12 @@
         <h1 class="brand">MyTimeTree</h1>
       </div>
       <div id="account-shell" class="account-shell" hidden>
+        <button type="button" id="share-page-btn" class="account-icon-btn share-page-btn" aria-label="分享当前页" title="分享当前页长图">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg>
+        </button>
         <label class="sr-only" for="account-select">切换账户</label>
         <select id="account-select"></select>
+        <button type="button" id="account-manage-btn" class="account-icon-btn" aria-label="管理孩子账户" title="管理孩子">⋯</button>
       </div>
     </header>
 
@@ -27,6 +31,15 @@
       <form id="onboarding-form" class="stack">
         <label>孩子昵称<input name="name" required maxlength="32" placeholder="例如：小明" /></label>
         <label>家长密码<input name="password" type="password" required minlength="4" /></label>
+        <label>安全问题（忘记密码时用）
+          <select name="recovery_question" required>
+            <option value="你母亲的姓名是？">你母亲的姓名是？</option>
+            <option value="你就读的小学叫什么？">你就读的小学叫什么？</option>
+            <option value="你喜欢的一本书是？">你喜欢的一本书是？</option>
+            <option value="你喜欢的一部电影是？">你喜欢的一部电影是？</option>
+          </select>
+        </label>
+        <label>安全问题答案<textarea name="recovery_answer" rows="1" lang="zh-CN" enterkeyhint="done" required minlength="2" placeholder="请牢记答案（建议不用《》书名号）" autocomplete="off" spellcheck="false"></textarea></label>
         <label>资产日利率<input name="asset_interest_rate" type="number" step="0.001" min="0" value="0.01" /></label>
         <button type="submit" class="btn primary">开始种植</button>
       </form>
@@ -42,37 +55,33 @@
       </nav>
 
       <section id="tab-home" class="tab-panel active" role="tabpanel">
-        <p class="tagline">时间也能存进树里</p>
+        <p class="tagline">每天存一点时间，未来还你一棵大树</p>
         <div class="hero-tree" id="tree-stage" data-stage="seed">
           <div class="tree-scene" aria-hidden="true">
-            <img class="tree-art" id="tree-art" src="/static/portal/tree/seed.svg?v=20260807b" alt="" />
+            <img class="tree-art" id="tree-art" src="/static/portal/tree/seed.png?v=20260811e" alt="" />
             <div class="tree-ornament-layer" id="tree-ornament-layer"></div>
           </div>
           <p class="stage-label" id="stage-label">种子</p>
+          <p class="stage-net" id="stage-net">净资产 0 分 · 本阶段 0–19 分</p>
           <ul class="ornament-counters" id="ornament-counters" aria-label="挂件计数">
-            <li data-kind="star">
-              <img src="/static/portal/ornaments/star.svg?v=20260807b" alt="" />
-              <span class="orn-label">星</span>
+            <li data-kind="star" title="星">
+              <img src="/static/portal/ornaments/star.png?v=20260811e" alt="星" />
               <strong id="orn-star">0</strong>
             </li>
-            <li data-kind="sun">
-              <img src="/static/portal/ornaments/sun.svg?v=20260807b" alt="" />
-              <span class="orn-label">太阳</span>
+            <li data-kind="sun" title="太阳">
+              <img src="/static/portal/ornaments/sun.png?v=20260811e" alt="太阳" />
               <strong id="orn-sun">0</strong>
             </li>
-            <li data-kind="fruit">
-              <img src="/static/portal/ornaments/fruit.svg?v=20260807b" alt="" />
-              <span class="orn-label">果</span>
+            <li data-kind="fruit" title="果">
+              <img src="/static/portal/ornaments/fruit.png?v=20260811e" alt="果" />
               <strong id="orn-fruit">0</strong>
             </li>
-            <li data-kind="pest">
-              <img src="/static/portal/ornaments/pest.svg?v=20260807b" alt="" />
-              <span class="orn-label">虫</span>
+            <li data-kind="pest" title="虫">
+              <img src="/static/portal/ornaments/pest.png?v=20260811e" alt="虫" />
               <strong id="orn-pest">0</strong>
             </li>
-            <li data-kind="bird">
-              <img src="/static/portal/ornaments/bird.svg?v=20260807b" alt="" />
-              <span class="orn-label">鸟</span>
+            <li data-kind="bird" title="鸟">
+              <img src="/static/portal/ornaments/bird.png?v=20260811e" alt="鸟" />
               <strong id="orn-bird">0</strong>
             </li>
           </ul>
@@ -104,8 +113,10 @@
       </section>
 
       <section id="tab-ledger" class="tab-panel" role="tabpanel" hidden>
+        <p class="ledger-meta muted" id="ledger-meta" hidden></p>
         <ul id="ledger-list" class="ledger-list"></ul>
         <p id="ledger-empty" class="muted" hidden>暂无流水</p>
+        <button type="button" class="btn" id="ledger-more" hidden>加载更早流水</button>
       </section>
 
       <section id="tab-settings" class="tab-panel" role="tabpanel" hidden>
@@ -125,14 +136,21 @@
               <li>资产利率：<strong id="rule-asset-rate">—</strong></li>
               <li>负债利率：<strong id="rule-liability-rate">—</strong></li>
             </ul>
-            <p class="rules-note">每日 0 点按本金分别计息；结息不加星。累积净利息（资产结息−负债结息）每 +100 分得 1 果。</p>
+            <p class="rules-note">每日 0 点按本金分别计息（启动时会补结漏掉的日子）；结息不加星。</p>
           </div>
           <div class="rules-block">
             <h3>挂件积分</h3>
             <ul class="rules-list">
               <li><strong>星</strong>：仅手动存入 +1；100 星 → 1 太阳（自动派发不加星）</li>
               <li><strong>太阳</strong>：由星自动转化</li>
-              <li><strong>果</strong>：累积净利息每 +100 分 +1；树上从 1 起每 +10 多挂 1 个（最多 10）</li>
+              <li>
+                <strong>果</strong>（水果挂件）获得规则：
+                <ul class="rules-sublist">
+                  <li>库存：累积净利息（资产结息 − 负债结息）每增加 <strong>100</strong> 分 → +1 果（只增不减）</li>
+                  <li>树上：库存 ≥1 起挂；每再 +10 库存多挂 1 个，最多同时挂 <strong>10</strong> 个</li>
+                  <li>例：净利息 147 → 库存 1 果，树上挂 1 个；满 200 净利息 → 库存 2 果</li>
+                </ul>
+              </li>
               <li><strong>虫</strong>：每次借用 +1；负债清零时虫数值清零</li>
               <li><strong>鸟</strong>：存入后负债归零 +1</li>
             </ul>
@@ -150,16 +168,17 @@
       <section id="tab-analytics" class="tab-panel" role="tabpanel" hidden>
         <div class="analytics-block">
           <h2>本周趋势</h2>
-          <div id="chart-week" class="trend-chart" role="img" aria-label="本周资产负债净值利息趋势"></div>
+          <div id="chart-week" class="trend-chart" role="img" aria-label="本周资产负债折线与每日利息柱状图"></div>
           <pre id="analytics-week" class="brief"></pre>
         </div>
         <div class="analytics-block">
           <h2>本月趋势</h2>
-          <div id="chart-month" class="trend-chart" role="img" aria-label="本月资产负债净值利息趋势"></div>
+          <div id="chart-month" class="trend-chart" role="img" aria-label="本月资产负债折线与每日利息柱状图"></div>
           <pre id="analytics-month" class="brief"></pre>
         </div>
       </section>
     </main>
+    <p class="app-version" id="app-version" aria-label="应用版本">v1.0.0</p>
   </div>
 
   <div id="keypad-modal" class="keypad-modal" hidden>
@@ -189,6 +208,46 @@
     </div>
   </div>
 
-  <script src="/static/portal/app.js"></script>
+  <div id="account-modal" class="account-modal" hidden>
+    <div class="account-modal-backdrop" data-account-dismiss></div>
+    <div class="account-modal-sheet" role="dialog" aria-modal="true" aria-labelledby="account-modal-title">
+      <header class="account-modal-header">
+        <h2 id="account-modal-title">管理孩子账户</h2>
+        <button type="button" class="keypad-close" data-account-dismiss aria-label="关闭">×</button>
+      </header>
+
+      <div id="account-panel-list" class="account-modal-body">
+        <ul id="account-manage-list" class="account-manage-list"></ul>
+        <button type="button" class="btn primary" id="account-show-add">添加孩子</button>
+        <p class="muted account-manage-note">删除会清除该孩子的树、流水与设置，不可恢复。</p>
+      </div>
+
+      <div id="account-panel-add" class="account-modal-body" hidden>
+        <form id="account-add-form" class="stack">
+          <label>孩子昵称<input name="name" required maxlength="32" placeholder="例如：小红" /></label>
+          <label>资产日利率<input name="asset_interest_rate" type="number" step="0.001" min="0" value="0.01" /></label>
+          <div class="account-delete-actions">
+            <button type="button" class="btn" id="account-add-cancel">返回</button>
+            <button type="submit" class="btn primary">确认添加</button>
+          </div>
+        </form>
+      </div>
+
+      <div id="account-panel-delete" class="account-modal-body" hidden>
+        <form id="account-delete-form" class="stack">
+          <p id="account-delete-target" class="account-delete-target"></p>
+          <label>家长密码<input name="password" type="password" required minlength="4" autocomplete="current-password" /></label>
+          <div class="account-delete-actions">
+            <button type="button" class="btn" id="account-delete-cancel">返回</button>
+            <button type="submit" class="btn danger">确认删除</button>
+          </div>
+        </form>
+      </div>
+
+      <p id="account-manage-error" class="error" hidden></p>
+    </div>
+  </div>
+
+  <script src="/static/portal/app.js?v=20260911d"></script>
 </body>
 </html>
