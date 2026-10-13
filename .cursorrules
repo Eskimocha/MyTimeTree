@@ -135,7 +135,7 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 - [X] migration v8 + content seed + habits.js 自动兑
 - [X] 主屏 strip / 庆祝 overlay / 设置清单 / 分析复盘
 - [X] `npm run smoke:habits` + `sync-web` + ios public
-- [ ] 推送 PR；Kai 明早 Xcode 测
+- [X] 推送 `ac306e7`；PR#2 已更新；待 Kai 明早 Xcode 测
 
 ## Lessons (this task)
 - Content tables: `docs/v2/content/*.md` → `build-habit-content.mjs` → `habit-seed.js`；`sync-web` 必须先 build
