@@ -1,0 +1,99 @@
+# MyTimeTree 2.0 — 习惯养成 · iOS 单端交付计划
+
+- 文档类型：交付规划（**本文件为工程真源**；产品 Fogg / 三通道 / Q1–Q12 仍有效）
+- 修订日期：2026-10-13
+- 触发：Kai 确认正式 iOS 在 `feature/v1-tdd`；关闭 Web 习惯 PR #1；单端离线 App
+- 基线分支：`feature/v1-tdd`（Capacitor · 本机 SQLite/sql.js · Face ID · iCloud · PNG 树/挂件 · `docs/ui-theme.md`）
+- 产品规则真源（语义）：Agent Store / 历史计划中的 Fogg、三通道、总表大庆祝、家长话术；决策表见 `docs/v2/decisions.md`
+- 开发模式：TDD-first（先契约/红灯 → 最小绿 → 重构），测在 **mobile 本地域 + UI**，不新建在线 Portal 演进线
+
+---
+
+## 1. 目标一句话
+
+在 **已上架路径的 iOS 离线家长端**上，把「微习惯 → 可兑时间 → 账本/魔法树」做成主路径；激励仍为三通道（时间兑换 · 内生情绪 · 小/大庆祝），并降低家长记录摩擦（小红点、一键记、话术、线下庆祝指引）。
+
+## 2. 明确不做
+
+| 不做 | 说明 |
+|------|------|
+| 继续演进 Web Portal 产品 UI/API | Portal **冻结**；不作为 2.0 合入目标 |
+| 双端并行维护 Python 习惯服务 + iOS | Python/PR#1 仅参考与沙盒试玩 |
+| 孩子独立端完整 App | Q2：仅家长代打 |
+| OS 推送 | Q12：仅 App 内 badge |
+| 改 D1–D7 账本/树核心语义 | 习惯只挂钩，不重写结息/派发规则 |
+
+## 3. 现状分叉（为何要重开）
+
+```
+a772b25 (早期 Web Portal)
+   ├─► feature/v1-tdd …… iOS 正式壳 + 素材 + 离线库  ← 1.0 / 2.0 基线
+   └─► cursor/habit-h0-scaffold-5c97 …… Python 习惯 + 草稿 SPA Tab  ← 已关 PR#1，沙盒参考
+```
+
+草稿 Portal 看起来「不像正式 App」，是因为习惯做在了错误基线上；不是 iOS 1.0 被降级。
+
+## 4. 工程约定（取代旧 §15 中「扩 Python Portal」部分）
+
+| # | 约定 |
+|---|------|
+| E1 | **单仓库** `Eskimocha/MyTimeTree`；开发支自 `feature/v1-tdd`（或合入后的默认支）开 `cursor/habit-ios-*-5c97` |
+| E2 | **实现面**：`mobile/`（Capacitor）+ 打包进 App 的 `public/`（或 `www` 同步源）+ 本地 DB schema 迁移 |
+| E3 | **视觉真源**：`docs/ui-theme.md`、树/挂件 PNG、`docs/tree-visual-design-options.md`；习惯 UI 必须贴合现有主屏气质，禁止回到 CSS 圆树草稿风 |
+| E4 | **数据**：在现有离线 SQLite 上迁移加表（habits / rules / logs / credits / prompt_state 等），整库仍走 iCloud 备份路径 |
+| E5 | **账本**：写入与 iOS 现网一致的流水模型；类别名对齐 Q1：`habit_reward`（或该端等价枚举） |
+| E6 | **Web Portal**：只读沙盒——可用现有隧道/本地起服务给 Kai 试交互找改进点；**不**再合入功能 PR |
+| E7 | **参考实现**：关闭的 PR #1 / 分支 `cursor/habit-h0-scaffold-5c97` 可对照领域行为与测试意图，**禁止**整包合并进 iOS 线当交付 |
+
+## 5. 建议 Epic（iOS 重开编号 IH0–IH9）
+
+> 语义对齐原 H0–H9；实现栈换成 mobile。里程碑名保留 M1–M5 含义。
+
+| Epic | 内容 | Done 信号（摘要） |
+|------|------|-------------------|
+| **IH0** | 决策已锁 + 本地 schema 草案 + 与现库迁移策略 + UI 清单（习惯 Tab 贴合 ui-theme） | 文档 + 空迁移红灯 |
+| **IH1** | 微习惯种子 / Ability 门禁 / 启用·归档 | 本地可列出种子并启用 |
+| **IH2** | 兑换规则 CRUD、日上限、停用策略 | 规则可测 |
+| **IH3** | 完成习惯 → EarnedCredit；`auto_redeem` 默认关 | 打卡产 credit |
+| **IH4** | 手动兑换 → `habit_reward` 入账 + 果实钩子 | 资产/树可见变化 |
+| **IH5** | 情绪路径 + 小庆祝 / 总表大庆祝事件 | 可断言 payload |
+| **IH6** | 时间线 / 分类 / 日成就查询 | 本地 query |
+| **IH7** | 习惯 Tab UI：今日清单、兑入账、总表、规则、badge | 真机/模拟器主路径 |
+| **IH8** | 种子充实（≥50）；分析挂钩（若 1.0 分析页可扩） | 种子门槛 |
+| **IH9** | 家长话术 + 线下庆祝 hint（配图位用正式素材体系）+ snooze | 记录后可见引导 |
+
+### 里程碑
+
+| 里程碑 | 含义 |
+|--------|------|
+| M1 规则可兑 | IH0–IH4：记→兑→账本 |
+| M2 动机可测 | IH5 |
+| M3 总表 + App UI | IH6–IH7（**iOS**，非 Portal） |
+| M4 家长可坚持 | IH9 |
+| M5 种子充实 | IH8 |
+
+## 6. 从 PR#1 / Web 沙盒吸收什么
+
+| 吸收 | 不吸收 |
+|------|--------|
+| Q 表、Fogg、三通道、庆祝口径 | FastAPI 习惯路由当运行时 |
+| 「记录→待兑→入账」状态机与边界（日一次、禁补打） | 草稿 SPA 视觉与 Space 部署假设 |
+| Kai 在 Web 沙盒上发现的 **UX 改进点**（记入本计划附录后再做进 iOS） | 将 Python 测试当 iOS 唯一测试 |
+
+## 7. 开工前检查清单
+
+- [x] P-D1…P-D5 已采纳（2026-10-13）
+- [x] PR #1 已关闭
+- [x] iOS 基线分支可拉取：`origin/feature/v1-tdd`
+- [ ] （下一步）差距盘点：`mobile/.../public` 账本/设置 API 形状 vs IH 领域表
+- [ ] （下一步）Kai 确认 IH0 文档与迁移草图后，再开实现支 `cursor/habit-ios-ih0-*-5c97`
+
+## 8. 建议的下一步（实现前）
+
+1. **差距盘点报告**（短）：本地 `db.js` schema、流水写入点、主屏 Tab 扩展位。  
+2. **IH0 红灯**：迁移 SQL + 最小领域模块骨架契约（可用 Node/JS 单测或现有 mobile smoke）。  
+3. **再写实现 PR**（勿把旧 habit 分支直接 merge）。
+
+---
+
+*计划状态：交付面已按 iOS 单端锁定；**待差距盘点后开 IH0**。*
