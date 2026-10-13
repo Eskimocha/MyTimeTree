@@ -68,6 +68,8 @@ def test_portal_markup_has_habits_tab():
     js = (STATIC / "app.js").read_text(encoding="utf-8")
     assert "refreshHabits" in js
     assert "/api/portal/habits/complete" in js
+    css = (STATIC / "styles.css").read_text(encoding="utf-8")
+    assert ".tab-badge[hidden]" in css
 
 
 @pytest.mark.integration

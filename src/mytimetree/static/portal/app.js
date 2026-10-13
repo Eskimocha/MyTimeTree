@@ -166,6 +166,7 @@
       badge.textContent = String(n);
     } else {
       badge.hidden = true;
+      badge.textContent = "";
     }
   }
 

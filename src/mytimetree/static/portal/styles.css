@@ -254,6 +254,10 @@ html, body {
   font-weight: 700;
   vertical-align: middle;
 }
+/* author display must not override the hidden attribute (snooze / zero badge) */
+.tab-badge[hidden] {
+  display: none !important;
+}
 .habit-list {
   list-style: none;
   margin: 0 0 0.85rem;
