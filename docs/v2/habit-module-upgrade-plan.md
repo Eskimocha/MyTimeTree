@@ -325,10 +325,10 @@ H5 扩展庆祝分层；**H9 新建**专责家长 Fogg（Prompt 小红点 / 话�
 
 | ID | 任务 | 验收 | 状态 |
 |----|------|------|------|
-| H4.1 | `redeem(credit_id)` → Ledger；credit→redeemed | 余额 +N；幂等第二次失败 | Todo |
-| H4.2 | 流水类别按 Q1 默认实现；`meta` 含 habit_log_id | 查询可回溯 | Todo |
-| H4.3 | 果实副作用按 Q3 | 与 E2 ornament 断言一致或显式豁免 | Todo |
-| H4.4 | 账户隔离与密码/会话门禁（沿用 E5） | 越权 403 | Todo |
+| H4.1 | `redeem(credit_id)` → Ledger；credit→redeemed | 余额 +N；幂等第二次失败 | Done |
+| H4.2 | 流水类别按 Q1 默认实现；`meta` 含 habit_log_id | 查询可回溯 | Done |
+| H4.3 | 果实副作用按 Q3 | 与 E2 ornament 断言一致或显式豁免 | Done |
+| H4.4 | 账户隔离与密码/会话门禁（沿用 E5） | 越权 403 | Done |
 
 ---
 

@@ -159,7 +159,6 @@ class HabitService:
         day_key = now.date().isoformat()
         completed_at = now.isoformat()
         try:
-            self._conn.execute("BEGIN")
             cur = execute(
                 self._conn,
                 "INSERT INTO habit_logs (account_id, habit_id, completed_at, source, day_key) "
@@ -418,6 +417,54 @@ class HabitService:
         if row is None:
             raise DomainError(ErrorCode.NOT_FOUND, f"积分不存在: {credit_id}")
         return str(row["status"]) == "pending"
+
+    def redeem(self, account_id: int, credit_id: int) -> EarnedCredit:
+        """H4: pending credit → habit_reward ledger; idempotent fail on second call."""
+        ensure(
+            self._ledger is not None,
+            ErrorCode.INTERNAL,
+            "redeem 需要 LedgerService",
+        )
+        credit = self.get_credit(account_id, credit_id)
+        ensure(
+            credit.status == "pending",
+            ErrorCode.CREDIT_NOT_REDEEMABLE,
+            f"积分不可兑换: status={credit.status}",
+        )
+        try:
+            entry = self._ledger.habit_reward(
+                account_id,
+                credit.minutes,
+                habit_log_id=credit.habit_log_id,
+                commit=False,
+            )
+            redeemed_at = ensure_app_tz(self._clock.now()).isoformat()
+            cur = execute(
+                self._conn,
+                "UPDATE earned_credits SET status = ?, ledger_entry_id = ?, "
+                "redeemed_at = ? WHERE id = ? AND account_id = ? AND status = ?",
+                ("redeemed", entry.id, redeemed_at, credit_id, account_id, "pending"),
+            )
+            ensure(
+                cur.rowcount == 1,
+                ErrorCode.CREDIT_NOT_REDEEMABLE,
+                "积分兑换未生效（可能已兑换）",
+            )
+            self._conn.commit()
+        except Exception:
+            self._conn.rollback()
+            raise
+        return self.get_credit(account_id, credit_id)
+
+    def list_pending_credits(self, account_id: int) -> list[EarnedCredit]:
+        self._accounts.get_account(account_id)
+        rows = execute(
+            self._conn,
+            "SELECT id, account_id, habit_log_id, minutes, status, ledger_entry_id, redeemed_at "
+            "FROM earned_credits WHERE account_id = ? AND status = 'pending' ORDER BY id ASC",
+            (account_id,),
+        ).fetchall()
+        return [self._row_to_credit(r) for r in rows]
 
     def assert_within_daily_cap(
         self,
