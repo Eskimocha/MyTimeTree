@@ -314,10 +314,10 @@ H5 扩展庆祝分层；**H9 新建**专责家长 Fogg（Prompt 小红点 / 话�
 
 | ID | 任务 | 验收 | 状态 |
 |----|------|------|------|
-| H3.1 | `complete_habit(account, habit, at=Clock)` → HabitLog | 固定 Clock；同日重复失败 | Todo |
-| H3.2 | 由规则生成 `EarnedCredit(pending)` | 分钟=规则；无规则则仅记录不入账 | Todo |
-| H3.3 | `auto_redeem=true` → 同事务入账 | 原子：有 Log 必有 Ledger 或全回滚 | Todo |
-| H3.4 | 日界线：23:59 与 00:01 分属两日 | Shanghai 边界用例 | Todo |
+| H3.1 | `complete_habit(account, habit, at=Clock)` → HabitLog | 固定 Clock；同日重复失败 | Done |
+| H3.2 | 由规则生成 `EarnedCredit(pending)` | 分钟=规则；无规则则仅记录不入账 | Done |
+| H3.3 | `auto_redeem=true` → 同事务入账 | 原子：有 Log 必有 Ledger 或全回滚 | Done |
+| H3.4 | 日界线：23:59 与 00:01 分属两日 | Shanghai 边界用例 | Done |
 
 ---
 
