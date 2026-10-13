@@ -130,24 +130,13 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 
 # Scratchpad
 
-## Task: iOS offline App — step by step
-- Decision 2026-08-16: **专心 iOS**；微信小程序搁置
-- [X] Phase 0 scaffold + Run
-- [X] Phase 1：sql.js SQLite + 领域移植 + MyTimeTreeLocal
-- [X] Phase 1 QA / safe-area / 资源路径
-- [X] Phase 2：家长密码 + Face ID + 安全问题找回（polish：IME 书名号卡住）
-- [X] Phase 3：iCloud 整库同步 + 「从 iCloud 恢复」
-- [X] Phase 4：整库导入 API 已实现；正式 UI「从电脑导入」已隐藏（`__MYTIMETREE_SHOW_IMPORT__` 可开）
-- [ ] Phase 5：TestFlight → App Store
+## Task: 习惯 2.0 — iOS 单端重规划（2026-10-13）
+- Kai：只做 iOS 离线；Web 不演进（可沙盒试玩）；PR#1 已关，在 `feature/v1-tdd` 重开
+- [X] 关闭 PR #1
+- [X] 分支 `cursor/habit-ios-replan-5c97` + `docs/v2/habit-ios-delivery-plan.md` 等
+- [ ] 差距盘点（db.js / Tab 扩展位）→ 再开 IH0 实现支
+- 计划：`docs/v2/habit-ios-delivery-plan.md` · 决策：`docs/v2/decisions.md`
 
-## Task now: 审核拒因 — iOS 27 UIScene 启动崩溃 + 新图标
-- [X] 解析 crashlog：`UIApplicationEvaluateRuntimeIssueForNoSceneLifecycleAdoption`
-- [X] 加 SceneDelegate + Info.plist Scene Manifest；armv7→arm64；Build → 6
-- [X] App Icon 换成 SkyPine2；Splash 同步
-- Next: 真机冷启动确认 → Archive 上传 Build 6 → 回复审核说明已适配 UIScene
-
-## Phase 5（并行）
-- [X] 隐私政策 / 截图材料已备
-- Decision: 首发仅 iPhone；iPad 以后再开
-
-Decisions locked: 对外版本 1.0.0；联系邮箱 kaiak.fang@gmail.com。
+## Archived: iOS 1.0 offline App phases
+- Phase 0–4 Done；Phase 5 TestFlight/App Store 材料已备；Build 6 + UIScene
+- Decisions: 对外 1.0.0；联系邮箱 kaiak.fang@gmail.com；首发仅 iPhone
