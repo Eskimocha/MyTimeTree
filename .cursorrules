@@ -131,9 +131,10 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 # Scratchpad
 
 ## Task: 习惯 2.0 iOS — 差距盘点 + 主屏 IA（2026-10-13）
-- Kai: iOS 单端；勿增「习惯」Tab；记录/庆祝/话术在主屏；复盘→分析
-- [X] UX 调研 → Tree Hero + Today Habit Strip（`internal/habit-home-ux-research.md`）
-- [X] 差距盘点 → `docs/v2/habit-ios-gap-analysis.md`；IA-D1/D2；PR #2 已更新
-- [ ] 下一步：IH0（migration v8 + habit_reward + 主屏 strip 壳）
+- Kai: iOS 单端；勿增「习惯」Tab；主屏记录；复盘→分析
+- [X] 记完自动兑（Q4′）；无「兑」UI（P-D7）
+- [X] 稍后提醒延期到闹钟版（Q13 / P-D6）
+- [X] 差距盘点 + UX；PR #2 文档已更新
+- [ ] 下一步：IH0（migration v8 + 自动入账 + 主屏 strip 壳；无兑/无 snooze）
 
 ## Archived: iOS 1.0 offline phases / Web habit PR#1 closed
