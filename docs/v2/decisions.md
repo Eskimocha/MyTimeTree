@@ -10,15 +10,17 @@
 | Q1 | 流水类别 `habit_reward`（新账本类别） |
 | Q2 | 仅家长代打；孩子入口本阶段不做 |
 | Q3 | 习惯入账 +果实（同 deposit） |
-| Q4 | `auto_redeem` 默认关 |
+| Q4 | ~~`auto_redeem` 默认关~~ → **修订见 Q4′** |
+| Q4′ | **记录好习惯后自动兑换入账**（无独立「兑」按钮 / 待兑池交互）；实现上可为 complete 同事务写 `habit_reward`，或 credit 立刻 auto-redeem（对家长不可见中间态） |
 | Q5 | 禁止跨日补打 |
 | Q6 | streak 本阶段仅展示；加奖后置 |
 | Q7 | 长度限制 + 既有 sanitize |
 | Q8 | 与 `auto_grant` 并存独立 |
 | Q9 | 周满 5 记触发一次 board 大庆祝 |
-| Q10 | 小红点 = 今日启用且未记录习惯数 |
+| Q10 | 小红点 = 今日启用且未记录习惯数（**不含**待兑；已无待兑主路径） |
 | Q11 | 线下庆祝 `image_key` + 文字 fallback |
 | Q12 | 本阶段仅 App 内 badge，不做 OS 推送 |
+| Q13 | **「稍后提醒」本阶段不做**；与下版**闹钟模块**一并设计（见 P-D6） |
 
 ## B. 交付面决策（2026-10-13 修订）
 
@@ -32,7 +34,9 @@
 | P-D4 | PR [#1](https://github.com/Eskimocha/MyTimeTree/pull/1) **已关闭**；习惯 2.0 在 **iOS 基线**（`feature/v1-tdd`）上重开 |
 | P-D5 | 1.0 正式交付面 = `feature/v1-tdd` @ App Store Build 6 快照（及后续该线 tip），**不是** 早期 Space SPA 草稿壳 |
 | IA-D1 | **不新增「习惯」根 Tab**；每日记录/庆祝/话术/线下 hint 在**主屏**；总表/时间线/大庆祝复盘在**分析**；规则/种子在**设置** |
-| IA-D2 | 默认交互：**Tree Hero + Today Habit Strip** + 单层庆祝 overlay（见 gap / UX 调研） |
+| IA-D2 | 默认交互：**Tree Hero + Today Habit Strip** + 单层庆祝 overlay（见 gap / UX 调研）；**无「兑」快捷按钮** |
+| P-D6 | **稍后提醒 / snooze 延期**：依赖下版本闹钟模块；本阶段 UI 与 `parent_prompt_state.snoozed_until` 主路径均可不做 |
+| P-D7 | **兑换路径简化**：记完即入账（Q4′）；不设计批量「兑换待入账」、单笔「兑 N 分」或庆祝层「去兑换」 |
 
 版本 / 文件管理：见 `habit-ios-delivery-plan.md` §工程约定。  
 差距盘点：`habit-ios-gap-analysis.md`。

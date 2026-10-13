@@ -13,6 +13,8 @@
 | 产品 Q1–Q12 | Accepted（保留） |
 | 交付面改 iOS 单端 | Accepted（2026-10-13） |
 | IA：主屏记录、勿增习惯 Tab | Accepted（IA-D1/D2） |
+| 记完自动兑；无「兑」UI | Accepted（Q4′ / P-D7） |
+| 稍后提醒延期（闹钟版） | Accepted（Q13 / P-D6） |
 | 差距盘点 | Done — `docs/v2/habit-ios-gap-analysis.md` |
 | UX 调研（主屏优先） | Done — store `internal/habit-home-ux-research.md` |
 | IH0 实现（migration v8 等） | 未开始 |

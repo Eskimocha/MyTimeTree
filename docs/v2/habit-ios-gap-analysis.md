@@ -16,10 +16,11 @@ Kai：**不要**新增「习惯」第二 Tab。
 |------|------|
 | 今日待记 / 一键记录 | **主屏** strip |
 | 小庆祝 + 家长话术 + 线下动作 hint | **主屏** 单层 overlay（不离页） |
-| 待兑「兑」 | **主屏** 余额旁次要控件 |
+| 兑换入账 | **记录后自动**（Q4′）；**无**「兑」按钮 / 待兑池 UI |
 | 总表 / 时间线 / 分类 / 大庆祝复盘 | **分析** Tab 新区块 |
 | 规则 CRUD / 种子启用 | **设置**「习惯规则」 |
 | `habit_reward` 核对 | **流水** |
+| 稍后提醒 | **本阶段不做**（Q13；下版闹钟模块） |
 
 原计划 IH7「习惯 Tab」→ 改写为 **主屏记录面 + 分析复盘面 + 设置规则面**（见 delivery plan 修订）。
 
@@ -50,7 +51,7 @@ PR#1 习惯表（需移植语义，非原样拷 Python）：
 | `habits` | 账户启用习惯 | 无 |
 | `exchange_rules` | 分钟/日上限/auto_redeem | 无 |
 | `habit_logs` | 打卡（日唯一） | 无 |
-| `earned_credits` | 待兑/已兑 | 无 |
+| `earned_credits` | 可选审计/幂等；家长路径无待兑 UI（记完即兑或直写流水） | 无 |
 | `parent_scripts` | 话术 | 无 |
 | `offline_celebration_hints` | 线下动作 | 无 |
 | `parent_prompt_state` | badge / snooze | 无 |
@@ -68,7 +69,7 @@ PR#1 习惯表（需移植语义，非原样拷 Python）：
 | `repay`/`deposit` 加果 | ~697 `addFruit` | redeem 路径复用 |
 | 路由分发 | ~1448+ `/api/portal/*` | 新增本地路由或平行 `habitApi`（不必 HTTP，但保持可测边界） |
 | 日界 | `todayStr()` Asia/Shanghai | 打卡 `day_key`、禁补打（Q5） |
-| `app_state` | snooze 可先放 key 或正式表 | `parent_prompt_state` 优先正式表 |
+| `app_state` / prompt | badge 计数即可 | **snooze 本阶段不做**；`parent_prompt_state` 可简化或后补 |
 
 ---
 
@@ -84,9 +85,9 @@ PR#1 习惯表（需移植语义，非原样拷 Python）：
 
 **建议插入：**
 
-- 在 `.balances` 与 `.actions` 之间（或余额行内）：**「兑」**（仅 pending>0 显示）  
 - 在 `.actions` **之上或之下**：`#habit-today-strip`（今日好习惯 chips）  
-- body 级：`#habit-celeb-overlay`（庆祝+话术+线下 hint 单层）
+- body 级：`#habit-celeb-overlay`（庆祝+话术+线下 hint 单层；文案可带「已存入 N 分」，**无「去兑换」**）  
+- **不插入**余额旁「兑」快捷
 
 **分析**（`#tab-analytics`）：现仅 week/month `<pre>` → 增「好习惯」区块（总表/时间线/分类）。  
 **设置**：现规则说明 aside → 增「习惯规则」配置入口。
@@ -123,7 +124,7 @@ PR#1 习惯表（需移植语义，非原样拷 Python）：
 3. `effects`/`displayFor` 先认 `habit_reward`（可先无 UI）  
 4. 主屏 strip 静态壳（无数据）走查视觉  
 
-**不在 IH0：** 完整种子 50+、分析总表、OS 推送。
+**不在 IH0 / 本阶段：** 完整种子 50+、分析总表、OS 推送、**稍后提醒**、**任何手动兑换 UI**。
 
 ---
 
