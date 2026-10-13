@@ -40,10 +40,11 @@ a772b25 (早期 Web Portal)
 | E1 | **单仓库** `Eskimocha/MyTimeTree`；开发支自 `feature/v1-tdd`（或合入后的默认支）开 `cursor/habit-ios-*-5c97` |
 | E2 | **实现面**：`mobile/`（Capacitor）+ 打包进 App 的 `public/`（或 `www` 同步源）+ 本地 DB schema 迁移 |
 | E3 | **视觉真源**：`docs/ui-theme.md`、树/挂件 PNG、`docs/tree-visual-design-options.md`；习惯 UI 必须贴合现有主屏气质，禁止回到 CSS 圆树草稿风 |
-| E4 | **数据**：在现有离线 SQLite 上迁移加表（habits / rules / logs / credits / prompt_state 等），整库仍走 iCloud 备份路径 |
+| E4 | **数据**：在现有离线 SQLite 上迁移加表（habits / rules / logs / credits 等 + `sort_order`），整库仍走 iCloud 备份路径 |
 | E5 | **账本**：写入与 iOS 现网一致的流水模型；类别名对齐 Q1：`habit_reward`（或该端等价枚举） |
 | E6 | **Web Portal**：只读沙盒——可用现有隧道/本地起服务给 Kai 试交互找改进点；**不**再合入功能 PR |
 | E7 | **参考实现**：关闭的 PR #1 / 分支 `cursor/habit-h0-scaffold-5c97` 可对照领域行为与测试意图，**禁止**整包合并进 iOS 线当交付 |
+| E8 | **内容表**：`docs/v2/content/*.md` 为人读可编辑真源；构建/sync 打入 mobile；用户清单自定义存 SQLite（C-D1–C-D4） |
 
 ## 5. 建议 Epic（iOS 重开编号 IH0–IH9）
 
@@ -52,23 +53,25 @@ a772b25 (早期 Web Portal)
 | Epic | 内容 | Done 信号（摘要） |
 |------|------|-------------------|
 | **IH0** | 决策已锁 + 本地 schema 草案 + 与现库迁移策略 + UI 清单（主屏 strip 贴合 ui-theme） | 文档 + 空迁移红灯 |
-| **IH1** | 微习惯种子 / Ability 门禁 / 启用·归档 | 本地可列出种子并启用 |
+| **IH1** | 种子自 `docs/v2/content/habit-templates.md`；Ability 门禁；**设置内清单：启用/停用/自定义新增/归档/排序**（C-D1） | 主屏顺序=设置顺序 |
 | **IH2** | 兑换规则 CRUD、日上限、停用策略（规则仍决定「记一次值多少分钟」） | 规则可测 |
 | **IH3** | 完成习惯 → **同路径自动入账** `habit_reward`（Q4′；无待兑家长交互） | 打卡后资产增加 |
 | **IH4** | （并入 IH3）果实钩子与流水展示；**不做**手动兑换 UI | 树/流水可见 |
-| **IH5** | 情绪路径 + 小庆祝 / 总表大庆祝事件 | 可断言 payload |
+| **IH5** | 情绪路径 + 小庆祝 / 总表大庆祝事件（文案可来自 content 表） | 可断言 payload |
 | **IH6** | 时间线 / 分类 / 日成就查询 | 本地 query |
-| **IH7** | **主屏记录面**（今日 strip + 庆祝 overlay，**无兑按钮**）+ **分析复盘面** + **设置规则面**；**不新增「习惯」Tab** | 真机/模拟器：主屏一键记并入账 |
-| **IH8** | 种子充实（≥50）；分析页好习惯区块加深 | 种子门槛 |
-| **IH9** | 家长话术 + 线下庆祝 hint（正式素材）；**不含稍后提醒**（Q13 / 下版闹钟） | 记录后同屏引导 |
+| **IH7** | **主屏记录面**（按序 strip + 庆祝 overlay，**无兑按钮**）+ **分析复盘面** + **设置：清单自定义 + 规则**；**不新增「习惯」Tab** | 真机：排序反映到主屏 |
+| **IH8** | 种子/话术/hint **表格充实**（Kai 编辑 `docs/v2/content/`）；分析页好习惯区块 | 表可解析且达门槛 |
+| **IH9** | 从 content 表加载家长话术 + 线下庆祝 hint；**不含稍后提醒** | 记录后同屏引导；改表可发版更新 |
 
-### 信息架构（2026-10-13，同日修订兑换/提醒）
+### 信息架构（2026-10-13，含内容/清单修订）
 
 - **默认模式**：Tree Hero + Today Habit Strip（调研：`internal/habit-home-ux-research.md`）  
 - **禁止**：根级第五 Tab「习惯」；主屏「兑」/待兑交互；本阶段「稍后提醒」  
 - **兑换**：记完即 `habit_reward` 入账（Q4′）  
 - **稍后提醒**：延后至闹钟模块版本（P-D6）  
-- **盘点**：`docs/v2/habit-ios-gap-analysis.md`
+- **清单**：设置内增减与排序（C-D1）  
+- **话术/庆祝建议**：`docs/v2/content/` 表格真源，随 App 推送更新（C-D2）  
+- **盘点**：`docs/v2/habit-ios-gap-analysis.md` |
 
 ### 里程碑
 

@@ -38,5 +38,17 @@
 | P-D6 | **稍后提醒 / snooze 延期**：依赖下版本闹钟模块；本阶段 UI 与 `parent_prompt_state.snoozed_until` 主路径均可不做 |
 | P-D7 | **兑换路径简化**：记完即入账（Q4′）；不设计批量「兑换待入账」、单笔「兑 N 分」或庆祝层「去兑换」 |
 
+## C. 清单与内容源（2026-10-13）
+
+状态：**Accepted**（Kai Fang）
+
+| ID | 决策 |
+|----|------|
+| C-D1 | **好习惯清单可自定义**：家长可在设置中 **增减**（启用/停用种子、新增自定义习惯、归档）与 **调整顺序**（`sort_order`）；主屏 strip 按该顺序展示 |
+| C-D2 | **家长话术、线下庆祝建议（及情绪/庆祝文案）以表格为真源**：仓内可编辑表（Markdown 表或 CSV），发版前由 Kai 打磨；App 构建时打入包内；**后续更好实践通过 App 版本推送更新**（离线 App，不做运行时远程 CMS） |
+| C-D3 | 表路径约定：`docs/v2/content/`（人读/可改）+ 构建/同步脚本拷入 `mobile` 种子资源；表有稳定 `id`/`key`，更新时按 key 合并，不破坏用户已启用清单与自定义项 |
+| C-D4 | 自定义习惯：标题家长自填；话术/线下 hint 可回落默认通用行或按分类匹配种子表 |
+
 版本 / 文件管理：见 `habit-ios-delivery-plan.md` §工程约定。  
-差距盘点：`habit-ios-gap-analysis.md`。
+差距盘点：`habit-ios-gap-analysis.md`。  
+内容表模板：`docs/v2/content/README.md`。

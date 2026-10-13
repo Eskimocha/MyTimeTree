@@ -18,7 +18,8 @@ Kai：**不要**新增「习惯」第二 Tab。
 | 小庆祝 + 家长话术 + 线下动作 hint | **主屏** 单层 overlay（不离页） |
 | 兑换入账 | **记录后自动**（Q4′）；**无**「兑」按钮 / 待兑池 UI |
 | 总表 / 时间线 / 分类 / 大庆祝复盘 | **分析** Tab 新区块 |
-| 规则 CRUD / 种子启用 | **设置**「习惯规则」 |
+| 规则 CRUD / **清单增减·排序** / 自定义习惯 | **设置**「好习惯清单 / 规则」 |
+| 话术 / 线下庆祝建议内容 | 仓内 **`docs/v2/content/` 表格** → 打入 App；非家长现场编辑长文 |
 | `habit_reward` 核对 | **流水** |
 | 稍后提醒 | **本阶段不做**（Q13；下版闹钟模块） |
 
@@ -57,7 +58,7 @@ PR#1 习惯表（需移植语义，非原样拷 Python）：
 | `parent_prompt_state` | badge / snooze | 无 |
 | `celebration_events` | small/board | 无 |
 
-**IH0 建议**：`db.js` 增加 migration **v8**（上表 + 必要索引）；种子 JSON/SQL 进包内资源。
+**IH0 建议**：`db.js` 增加 migration **v8**（上表 + `sort_order` + 必要索引）；种子/话术/hint 自 `docs/v2/content/*.md` 解析打入包内（C-D2/C-D3）。
 
 ---
 

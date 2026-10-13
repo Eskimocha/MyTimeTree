@@ -132,9 +132,8 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 
 ## Task: 习惯 2.0 iOS — 差距盘点 + 主屏 IA（2026-10-13）
 - Kai: iOS 单端；勿增「习惯」Tab；主屏记录；复盘→分析
-- [X] 记完自动兑（Q4′）；无「兑」UI（P-D7）
-- [X] 稍后提醒延期到闹钟版（Q13 / P-D6）
-- [X] 差距盘点 + UX；PR #2 文档已更新
-- [ ] 下一步：IH0（migration v8 + 自动入账 + 主屏 strip 壳；无兑/无 snooze）
+- [X] 记完自动兑；稍后提醒延期；清单可自定义；话术/hint 表格真源（C-D*）
+- [X] `docs/v2/content/` 模板表已建
+- [ ] 下一步：IH0（migration v8 + 自动入账 + 主屏 strip；无兑/无 snooze）
 
 ## Archived: iOS 1.0 offline phases / Web habit PR#1 closed

@@ -15,6 +15,8 @@
 | IA：主屏记录、勿增习惯 Tab | Accepted（IA-D1/D2） |
 | 记完自动兑；无「兑」UI | Accepted（Q4′ / P-D7） |
 | 稍后提醒延期（闹钟版） | Accepted（Q13 / P-D6） |
+| 清单可自定义（增减/排序） | Accepted（C-D1） |
+| 话术/庆祝建议表格真源 | Accepted（C-D2–C-D4）；模板在 `docs/v2/content/` |
 | 差距盘点 | Done — `docs/v2/habit-ios-gap-analysis.md` |
 | UX 调研（主屏优先） | Done — store `internal/habit-home-ux-research.md` |
 | IH0 实现（migration v8 等） | 未开始 |
