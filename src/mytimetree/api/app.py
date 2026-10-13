@@ -22,6 +22,8 @@ from mytimetree.services.membership import MembershipService
 from mytimetree.services.persistence import PersistenceGuard
 from mytimetree.services.remote_sync import RemoteSyncClient
 from mytimetree.services.settings import SettingsService
+from mytimetree.services.habit import HabitService
+from mytimetree.services.habit_query import HabitQueryService
 from mytimetree.services.tree import TreeService
 
 STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
@@ -53,6 +55,16 @@ class SettingsPatchBody(BaseModel):
     confirm_token: str | None = None
 
 
+class EnableHabitBody(BaseModel):
+    template_slug: str
+    minutes_per_completion: int = Field(default=5, gt=0)
+    auto_redeem: bool = False
+
+
+class HabitIdBody(BaseModel):
+    habit_id: int
+
+
 def _http_status(code: ErrorCode) -> int:
     return {
         ErrorCode.VALIDATION: 400,
@@ -61,6 +73,11 @@ def _http_status(code: ErrorCode) -> int:
         ErrorCode.FORBIDDEN: 403,
         ErrorCode.INVALID_BALANCE: 400,
         ErrorCode.INTERNAL: 500,
+        ErrorCode.HABIT_NOT_MICRO: 400,
+        ErrorCode.HABIT_ALREADY_LOGGED: 409,
+        ErrorCode.HABIT_ARCHIVED: 400,
+        ErrorCode.CREDIT_NOT_REDEEMABLE: 409,
+        ErrorCode.EXCHANGE_RULE_INACTIVE: 400,
     }.get(code, 500)
 
 
@@ -85,6 +102,8 @@ def create_app(
     tree: TreeService | None = None,
     membership: MembershipService | None = None,
     remote_sync: RemoteSyncClient | None = None,
+    habits: HabitService | None = None,
+    habit_query: HabitQueryService | None = None,
 ) -> FastAPI:
     """Build API app. Tests inject services; production wires DB later."""
     clock = clock or SystemClock()
@@ -105,6 +124,8 @@ def create_app(
     app.state.tree = tree
     app.state.membership = membership
     app.state.remote_sync = remote_svc
+    app.state.habits = habits
+    app.state.habit_query = habit_query
 
     if STATIC_DIR.is_dir():
         app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
@@ -399,6 +420,126 @@ def create_app(
     def analytics_monthly(account_id: int) -> dict[str, Any]:
         svc = _require(app.state.analytics, "analytics")
         return _trend_dict(svc.monthly_trend(account_id=account_id))
+
+    # --- habits (H7 portal) ---
+
+    @app.get("/api/portal/habits/today")
+    def portal_habits_today() -> dict[str, Any]:
+        acc_svc = _require(app.state.accounts, "accounts")
+        habit_svc = _require(app.state.habits, "habits")
+        acc = acc_svc.require_current_account()
+        habit_svc.ensure_starter_habits(acc.id)
+        return habit_svc.today_checklist(acc.id)
+
+    @app.post("/api/portal/habits/enable")
+    def portal_habits_enable(body: EnableHabitBody) -> dict[str, Any]:
+        acc_svc = _require(app.state.accounts, "accounts")
+        habit_svc = _require(app.state.habits, "habits")
+        acc = acc_svc.require_current_account()
+        h = habit_svc.enable_from_template(acc.id, body.template_slug)
+        rule = habit_svc.create_exchange_rule(
+            acc.id,
+            habit_id=h.id,
+            minutes_per_completion=body.minutes_per_completion,
+            auto_redeem=body.auto_redeem,
+        )
+        return {
+            "habit_id": h.id,
+            "title": h.title,
+            "rule_id": rule.id,
+            "minutes_per_completion": rule.minutes_per_completion,
+        }
+
+    @app.post("/api/portal/habits/complete")
+    def portal_habits_complete(body: HabitIdBody) -> dict[str, Any]:
+        acc_svc = _require(app.state.accounts, "accounts")
+        habit_svc = _require(app.state.habits, "habits")
+        acc = acc_svc.require_current_account()
+        result = habit_svc.complete_habit(acc.id, body.habit_id)
+        celeb = result.celebration
+        return {
+            "log_id": result.log.id,
+            "day_key": result.log.day_key,
+            "credit": (
+                None
+                if result.credit is None
+                else {
+                    "id": result.credit.id,
+                    "minutes": result.credit.minutes,
+                    "status": result.credit.status,
+                }
+            ),
+            "motivation_payload": result.motivation_payload,
+            "celebration": (
+                None
+                if celeb is None
+                else {
+                    "kind": celeb.kind,
+                    "celebration_key": celeb.celebration_key,
+                    "habit_log_id": celeb.habit_log_id,
+                }
+            ),
+            "badge_count": habit_svc.badge_count(acc.id),
+        }
+
+    @app.post("/api/portal/habits/credits/{credit_id}/redeem")
+    def portal_habits_redeem(credit_id: int) -> dict[str, Any]:
+        acc_svc = _require(app.state.accounts, "accounts")
+        habit_svc = _require(app.state.habits, "habits")
+        acc = acc_svc.require_current_account()
+        credit = habit_svc.redeem(acc.id, credit_id)
+        return {
+            "id": credit.id,
+            "minutes": credit.minutes,
+            "status": credit.status,
+            "ledger_entry_id": credit.ledger_entry_id,
+        }
+
+    @app.get("/api/portal/habits/board")
+    def portal_habits_board(range_from: str | None = None, range_to: str | None = None) -> dict[str, Any]:
+        acc_svc = _require(app.state.accounts, "accounts")
+        habit_svc = _require(app.state.habits, "habits")
+        query_svc = _require(app.state.habit_query, "habit_query")
+        acc = acc_svc.require_current_account()
+        today = habit_svc.today_key()
+        rf = range_from or today
+        rt = range_to or today
+        board = query_svc.record_board(acc.id, range_from=rf, range_to=rt)
+        celebration = habit_svc.evaluate_board_celebration(acc.id)
+        return {
+            "range_from": board.range_from,
+            "range_to": board.range_to,
+            "entries": [
+                {
+                    "habit_log_id": e.habit_log_id,
+                    "habit_title": e.habit_title,
+                    "category": e.category,
+                    "day_key": e.day_key,
+                    "minutes": e.minutes,
+                    "credit_status": e.credit_status,
+                }
+                for e in board.entries
+            ],
+            "stats": board.stats,
+            "board_celebration": (
+                None
+                if celebration is None
+                else {
+                    "kind": celebration.kind,
+                    "milestone_id": celebration.milestone_id,
+                    "review_script_id": celebration.review_script_id,
+                    "offline_hint_id": celebration.offline_hint_id,
+                    "celebration_key": celebration.celebration_key,
+                }
+            ),
+        }
+
+    @app.get("/api/portal/habits/badge")
+    def portal_habits_badge() -> dict[str, Any]:
+        acc_svc = _require(app.state.accounts, "accounts")
+        habit_svc = _require(app.state.habits, "habits")
+        acc = acc_svc.require_current_account()
+        return {"badge_count": habit_svc.badge_count(acc.id)}
 
     return app
 

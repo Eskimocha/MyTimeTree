@@ -12,6 +12,9 @@ from mytimetree.db.connection import connect
 from mytimetree.db.migrate import apply_migrations
 from mytimetree.services.accounts import AccountService
 from mytimetree.services.analytics import AnalyticsService
+from mytimetree.services.habit import HabitService
+from mytimetree.services.habit_query import HabitQueryService
+from mytimetree.services.habit_templates import seed_templates_into_db
 from mytimetree.services.ledger import LedgerService
 from mytimetree.services.ledger_query import LedgerQueryService
 from mytimetree.services.membership import MembershipService
@@ -31,6 +34,7 @@ def build_app() -> FastAPI:
 
     conn = connect(db_path)
     apply_migrations(conn)
+    seed_templates_into_db(conn)
 
     accounts = AccountService(conn)
     ledger = LedgerService(conn, accounts=accounts)
@@ -40,6 +44,8 @@ def build_app() -> FastAPI:
     persistence = PersistenceGuard(settings=settings)
     ledger_query = LedgerQueryService(conn, accounts=accounts)
     analytics = AnalyticsService(conn, accounts=accounts, ledger=ledger)
+    habits = HabitService(conn, accounts=accounts, ledger=ledger)
+    habit_query = HabitQueryService(conn, accounts=accounts, habits=habits)
     membership = MembershipService(conn)
     remote_sync = RemoteSyncClient(
         base_url=os.getenv("REMOTE_SYNC_BASE_URL"),
@@ -61,6 +67,8 @@ def build_app() -> FastAPI:
         tree=tree,
         membership=membership,
         remote_sync=remote_sync,
+        habits=habits,
+        habit_query=habit_query,
     )
 
 

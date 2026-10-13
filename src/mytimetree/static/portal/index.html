@@ -36,6 +36,9 @@
     <main id="main" class="main" hidden>
       <nav class="tabs" role="tablist">
         <button type="button" class="tab active" data-tab="home" role="tab">主屏</button>
+        <button type="button" class="tab" data-tab="habits" role="tab">
+          习惯<span id="habit-badge" class="tab-badge" hidden>0</span>
+        </button>
         <button type="button" class="tab" data-tab="ledger" role="tab">流水</button>
         <button type="button" class="tab" data-tab="settings" role="tab">设置</button>
         <button type="button" class="tab" data-tab="analytics" role="tab">分析</button>
@@ -64,6 +67,22 @@
           <button type="button" class="btn" id="btn-repay">还入</button>
         </div>
         <p id="home-msg" class="msg" hidden></p>
+      </section>
+
+      <section id="tab-habits" class="tab-panel" role="tabpanel" hidden>
+        <p class="tagline">记下好习惯，换来可存时间</p>
+        <div id="habit-celeb" class="habit-celeb" hidden></div>
+        <ul id="habit-today-list" class="habit-list"></ul>
+        <div class="habit-actions">
+          <button type="button" class="btn" id="btn-habit-board">好习惯总表</button>
+          <button type="button" class="btn" id="btn-habit-redeem-all">兑换待入账</button>
+        </div>
+        <div id="habit-board" class="habit-board" hidden>
+          <h2>今日总表</h2>
+          <p id="habit-board-stats" class="muted"></p>
+          <ul id="habit-board-list" class="habit-list"></ul>
+        </div>
+        <p id="habit-msg" class="msg" hidden></p>
       </section>
 
       <section id="tab-ledger" class="tab-panel" role="tabpanel" hidden>

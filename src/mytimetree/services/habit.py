@@ -34,6 +34,13 @@ if TYPE_CHECKING:
     from mytimetree.services.ledger import LedgerService
 
 
+STARTER_TEMPLATE_SLUGS: tuple[str, ...] = (
+    "brush-teeth",
+    "bedtime-on-time",
+    "read-one-page",
+)
+
+
 def scaffold_ok() -> bool:
     return HABIT_SCHEMA_VERSION_HINT >= 6
 
@@ -51,6 +58,72 @@ class HabitService:
         self._accounts = accounts
         self._clock = clock or SystemClock()
         self._ledger = ledger
+
+    def today_key(self) -> str:
+        return ensure_app_tz(self._clock.now()).date().isoformat()
+
+    def ensure_starter_habits(self, account_id: int) -> list[Habit]:
+        """Enable a few seed habits + default exchange rules when account has none."""
+        existing = self.list_habits(account_id)
+        if existing:
+            return existing
+        created: list[Habit] = []
+        for slug in STARTER_TEMPLATE_SLUGS:
+            try:
+                h = self.enable_from_template(account_id, slug)
+                self.create_exchange_rule(
+                    account_id,
+                    habit_id=h.id,
+                    minutes_per_completion=5,
+                    auto_redeem=False,
+                )
+                created.append(h)
+            except DomainError:
+                continue
+        return created
+
+    def badge_count(self, account_id: int) -> int:
+        """Q10: count of active habits not yet logged today."""
+        today = self.today_key()
+        habits = self.list_habits(account_id)
+        if not habits:
+            return 0
+        logged = {
+            log.habit_id
+            for log in self.list_logs(account_id)
+            if log.day_key == today
+        }
+        return sum(1 for h in habits if h.id not in logged)
+
+    def today_checklist(self, account_id: int) -> dict[str, Any]:
+        today = self.today_key()
+        habits = self.list_habits(account_id)
+        logs_today = {log.habit_id: log for log in self.list_logs(account_id) if log.day_key == today}
+        pending = {c.habit_log_id: c for c in self.list_pending_credits(account_id)}
+        items = []
+        for h in habits:
+            log = logs_today.get(h.id)
+            credit = pending.get(log.id) if log is not None else None
+            items.append(
+                {
+                    "habit_id": h.id,
+                    "title": h.title,
+                    "category": h.category,
+                    "done": log is not None,
+                    "log_id": log.id if log is not None else None,
+                    "pending_credit_id": credit.id if credit is not None else None,
+                    "pending_minutes": credit.minutes if credit is not None else None,
+                }
+            )
+        return {
+            "day_key": today,
+            "badge_count": self.badge_count(account_id),
+            "items": items,
+            "pending_credits": [
+                {"id": c.id, "minutes": c.minutes, "habit_log_id": c.habit_log_id}
+                for c in self.list_pending_credits(account_id)
+            ],
+        }
 
     def enable_from_template(self, account_id: int, template_slug: str) -> Habit:
         self._accounts.get_account(account_id)

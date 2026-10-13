@@ -75,6 +75,12 @@
   async function refreshHome() {
     const home = await api("/api/portal/home");
     state.currentAccountId = home.account.id;
+    try {
+      const badge = await api("/api/portal/habits/badge");
+      setHabitBadge(badge.badge_count || 0);
+    } catch (_) {
+      /* habits optional if service not wired in older tests */
+    }
     $("#asset-min").textContent = String(home.balance.asset);
     $("#liab-min").textContent = String(home.balance.liability);
     const stage = home.tree.stage;
@@ -149,6 +155,114 @@
     if (name === "settings") refreshSettings();
     if (name === "analytics") refreshAnalytics();
     if (name === "home") refreshHome();
+    if (name === "habits") refreshHabits();
+  }
+
+  function setHabitBadge(n) {
+    const badge = $("#habit-badge");
+    if (!badge) return;
+    if (n > 0) {
+      badge.hidden = false;
+      badge.textContent = String(n);
+    } else {
+      badge.hidden = true;
+    }
+  }
+
+  function showCelebration(payload, celebration) {
+    const el = $("#habit-celeb");
+    if (!el) return;
+    const approach = payload?.approach?.emotion_copy || "";
+    const avoid = payload?.avoid?.emotion_copy || "";
+    const kind = celebration?.kind || "small";
+    el.hidden = false;
+    el.classList.remove("pop");
+    void el.offsetWidth;
+    el.classList.add("pop");
+    el.textContent =
+      kind === "board"
+        ? `大庆祝！${approach || "这周习惯满满"}`
+        : `小庆祝 · ${approach}${avoid ? " / " + avoid : ""}`;
+    setTimeout(() => { el.hidden = true; }, 2800);
+  }
+
+  async function refreshHabits() {
+    if (!state.currentAccountId) return;
+    const data = await api("/api/portal/habits/today");
+    setHabitBadge(data.badge_count || 0);
+    const list = $("#habit-today-list");
+    list.innerHTML = "";
+    for (const it of data.items || []) {
+      const li = document.createElement("li");
+      const title = document.createElement("span");
+      title.textContent = it.done ? `✓ ${it.title}` : it.title;
+      li.appendChild(title);
+      if (!it.done) {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "btn primary compact";
+        btn.textContent = "记录";
+        btn.addEventListener("click", async () => {
+          try {
+            const res = await api("/api/portal/habits/complete", {
+              method: "POST",
+              body: JSON.stringify({ habit_id: it.habit_id }),
+            });
+            showCelebration(res.motivation_payload, res.celebration);
+            flash($("#habit-msg"), res.credit
+              ? `已记录，待兑 ${res.credit.minutes} 分`
+              : "已记录");
+            setHabitBadge(res.badge_count || 0);
+            await refreshHabits();
+            await refreshHome();
+          } catch (ex) {
+            flash($("#habit-msg"), ex.message);
+          }
+        });
+        li.appendChild(btn);
+      } else if (it.pending_credit_id) {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "btn compact";
+        btn.textContent = `兑 ${it.pending_minutes} 分`;
+        btn.addEventListener("click", async () => {
+          try {
+            await api(`/api/portal/habits/credits/${it.pending_credit_id}/redeem`, {
+              method: "POST",
+              body: "{}",
+            });
+            flash($("#habit-msg"), "已兑换入账");
+            await refreshHabits();
+            await refreshHome();
+          } catch (ex) {
+            flash($("#habit-msg"), ex.message);
+          }
+        });
+        li.appendChild(btn);
+      }
+      list.appendChild(li);
+    }
+  }
+
+  async function refreshHabitBoard() {
+    const board = await api("/api/portal/habits/board");
+    const wrap = $("#habit-board");
+    wrap.hidden = false;
+    $("#habit-board-stats").textContent =
+      `共 ${board.stats.total_logs} 记 · 已兑 ${board.stats.minutes_redeemed} 分 · 待兑 ${board.stats.minutes_pending} 分`;
+    const list = $("#habit-board-list");
+    list.innerHTML = "";
+    for (const e of board.entries || []) {
+      const li = document.createElement("li");
+      li.textContent = `${e.habit_title} · ${e.day_key} · ${e.minutes || 0} 分`;
+      list.appendChild(li);
+    }
+    if (board.board_celebration) {
+      showCelebration(
+        { approach: { emotion_copy: "总表里程碑达成" } },
+        board.board_celebration,
+      );
+    }
   }
 
   function flash(el, text) {
@@ -242,6 +356,31 @@
       await refreshHome();
     } catch (ex) {
       flash($("#home-msg"), ex.message);
+    }
+  });
+
+  $("#btn-habit-board")?.addEventListener("click", async () => {
+    try {
+      await refreshHabitBoard();
+    } catch (ex) {
+      flash($("#habit-msg"), ex.message);
+    }
+  });
+
+  $("#btn-habit-redeem-all")?.addEventListener("click", async () => {
+    try {
+      const data = await api("/api/portal/habits/today");
+      for (const c of data.pending_credits || []) {
+        await api(`/api/portal/habits/credits/${c.id}/redeem`, {
+          method: "POST",
+          body: "{}",
+        });
+      }
+      flash($("#habit-msg"), "待入账已全部兑换");
+      await refreshHabits();
+      await refreshHome();
+    } catch (ex) {
+      flash($("#habit-msg"), ex.message);
     }
   });
 
