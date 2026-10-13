@@ -31,5 +31,8 @@
 | P-D3 | Web Portal（含已关闭的 PR #1 Python 习惯实现）可作 **Kai 直观试玩 / 找改进点的沙盒**，**不是** 2.0 交付真源 |
 | P-D4 | PR [#1](https://github.com/Eskimocha/MyTimeTree/pull/1) **已关闭**；习惯 2.0 在 **iOS 基线**（`feature/v1-tdd`）上重开 |
 | P-D5 | 1.0 正式交付面 = `feature/v1-tdd` @ App Store Build 6 快照（及后续该线 tip），**不是** 早期 Space SPA 草稿壳 |
+| IA-D1 | **不新增「习惯」根 Tab**；每日记录/庆祝/话术/线下 hint 在**主屏**；总表/时间线/大庆祝复盘在**分析**；规则/种子在**设置** |
+| IA-D2 | 默认交互：**Tree Hero + Today Habit Strip** + 单层庆祝 overlay（见 gap / UX 调研） |
 
-版本 / 文件管理：见 `habit-ios-delivery-plan.md` §工程约定。
+版本 / 文件管理：见 `habit-ios-delivery-plan.md` §工程约定。  
+差距盘点：`habit-ios-gap-analysis.md`。

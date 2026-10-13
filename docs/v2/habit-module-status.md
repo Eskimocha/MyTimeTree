@@ -12,7 +12,10 @@
 |----|------|
 | 产品 Q1–Q12 | Accepted（保留） |
 | 交付面改 iOS 单端 | Accepted（2026-10-13） |
-| IH0 差距盘点 / 迁移草图 | 未开始 |
+| IA：主屏记录、勿增习惯 Tab | Accepted（IA-D1/D2） |
+| 差距盘点 | Done — `docs/v2/habit-ios-gap-analysis.md` |
+| UX 调研（主屏优先） | Done — store `internal/habit-home-ux-research.md` |
+| IH0 实现（migration v8 等） | 未开始 |
 | iOS 习惯实现 | 未开始 |
 
 ## 历史（归档）

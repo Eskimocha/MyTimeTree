@@ -130,13 +130,10 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 
 # Scratchpad
 
-## Task: 习惯 2.0 — iOS 单端重规划（2026-10-13）
-- Kai：只做 iOS 离线；Web 不演进（可沙盒试玩）；PR#1 已关，在 `feature/v1-tdd` 重开
-- [X] 关闭 PR #1
-- [X] 分支 `cursor/habit-ios-replan-5c97` + `docs/v2/habit-ios-delivery-plan.md` 等
-- [ ] 差距盘点（db.js / Tab 扩展位）→ 再开 IH0 实现支
-- 计划：`docs/v2/habit-ios-delivery-plan.md` · 决策：`docs/v2/decisions.md`
+## Task: Habit home UX research (parent-facing, no code)
+- Kai: NO dedicated「好习惯」tab; record + celebrate + script on 主屏; review → 分析
+- [X] Read ui-theme, habit plans, sandbox notes (5-tab habit anti-pattern)
+- [X] Survey primary-action-on-home patterns
+- [X] Write internal/habit-home-ux-research.md
 
-## Archived: iOS 1.0 offline App phases
-- Phase 0–4 Done；Phase 5 TestFlight/App Store 材料已备；Build 6 + UIScene
-- Decisions: 对外 1.0.0；联系邮箱 kaiak.fang@gmail.com；首发仅 iPhone
+## Archived: 习惯 2.0 iOS replan; iOS 1.0 offline phases Done
