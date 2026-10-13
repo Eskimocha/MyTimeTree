@@ -349,12 +349,12 @@ H5 扩展庆祝分层；**H9 新建**专责家长 Fogg（Prompt 小红点 / 话�
 
 | ID | 任务 | 验收 | 状态 |
 |----|------|------|------|
-| H6.1 | 按时间倒序查询 HabitLog | 分页；账户过滤 | Todo |
-| H6.2 | 按 category 聚合 | 固定数据集断言 counts/minutes | Todo |
-| H6.3 | `DailyAchievement` API | 某日完成列表 + 已兑/未兑分钟 | Todo |
-| H6.4 | 展示层中文文案键（与 `domain/display` 风格一致） | 键存在性测试 | Todo |
-| H6.5 | `HabitRecordBoard` 区间查询（总表） | from/to；统计与 entries 一致 | Todo |
-| H6.6 | 总表复盘聚合：可触发 board 庆祝的 milestone 列表 | 与 H5.5 对齐 | Todo |
+| H6.1 | 按时间倒序查询 HabitLog | 分页；账户过滤 | Done |
+| H6.2 | 按 category 聚合 | 固定数据集断言 counts/minutes | Done |
+| H6.3 | `DailyAchievement` API | 某日完成列表 + 已兑/未兑分钟 | Done |
+| H6.4 | 展示层中文文案键（与 `domain/display` 风格一致） | 键存在性测试 | Done |
+| H6.5 | `HabitRecordBoard` 区间查询（总表） | from/to；统计与 entries 一致 | Done |
+| H6.6 | 总表复盘聚合：可触发 board 庆祝的 milestone 列表 | 与 H5.5 对齐 | Done |
 
 ---
 
