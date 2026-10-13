@@ -336,12 +336,12 @@ H5 扩展庆祝分层；**H9 新建**专责家长 Fogg（Prompt 小红点 / 话�
 
 | ID | 任务 | 验收 | 状态 |
 |----|------|------|------|
-| H5.1 | 完成事件返回 `motivation_payload`（approach/avoid 各可抽一条）= 通道② | 快照测试 | Todo |
-| H5.2 | `CelebrationEvent(kind=small)` 可观测（单次记录）= 通道③小庆祝 | 订阅/记录断言 | Todo |
-| H5.3 | 家长可覆盖文案；种子默认回退 | 覆盖优先 | Todo |
-| H5.4 | 连续完成轻量 streak 展示数据（纯计算） | 间断归零 | Todo |
-| H5.5 | `CelebrationEvent(kind=board)`：总表打开或里程碑触发大庆祝 | 里程碑规则纯函数；同 milestone_id 幂等 | Todo |
-| H5.6 | 大庆祝 payload 附带 review 话术 id + 线下 hint id（可空） | 契约字段存在 | Todo |
+| H5.1 | 完成事件返回 `motivation_payload`（approach/avoid 各可抽一条）= 通道② | 快照测试 | Done |
+| H5.2 | `CelebrationEvent(kind=small)` 可观测（单次记录）= 通道③小庆祝 | 订阅/记录断言 | Done |
+| H5.3 | 家长可覆盖文案；种子默认回退 | 覆盖优先 | Done |
+| H5.4 | 连续完成轻量 streak 展示数据（纯计算） | 间断归零 | Done |
+| H5.5 | `CelebrationEvent(kind=board)`：总表打开或里程碑触发大庆祝 | 里程碑规则纯函数；同 milestone_id 幂等 | Done |
+| H5.6 | 大庆祝 payload 附带 review 话术 id + 线下 hint id（可空） | 契约字段存在 | Done |
 
 ---
 

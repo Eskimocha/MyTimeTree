@@ -8,7 +8,9 @@ from typing import Any, Literal, Sequence
 from mytimetree.domain.errors import DomainError, ErrorCode, ensure
 
 # Must stay aligned with db.migrate HABIT_MIGRATION_VERSION
-HABIT_SCHEMA_VERSION_HINT = 7
+HABIT_SCHEMA_VERSION_HINT = 8
+
+BOARD_WEEKLY_LOG_THRESHOLD = 5  # Q9 Accepted
 
 HABIT_CATEGORIES: frozenset[str] = frozenset(
     {
@@ -92,12 +94,40 @@ class EarnedCredit:
 
 
 @dataclass(frozen=True, slots=True)
+class CelebrationEvent:
+    id: int | None
+    account_id: int
+    kind: Literal["small", "board"]
+    celebration_key: str
+    habit_log_id: int | None
+    milestone_id: str | None
+    review_script_id: int | None
+    offline_hint_id: int | None
+    created_at: str
+
+
+@dataclass(frozen=True, slots=True)
 class HabitCompletion:
     log: HabitLog
     credit: EarnedCredit | None
+    motivation_payload: dict[str, Any] | None = None
+    celebration: CelebrationEvent | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class BoardMilestone:
+    kind: Literal["board"]
+    milestone_id: str
+    week_key: str
+    log_count: int
 
 
 EXCHANGE_CADENCES: frozenset[str] = frozenset({"daily", "streak_n"})
+
+DEFAULT_MOTIVATION_PATHS: tuple[MotivationPath, ...] = (
+    MotivationPath("approach", "又完成了一件好事", "generic-spark"),
+    MotivationPath("avoid", "少留一点遗憾", "generic-spark"),
+)
 
 # H2.4: deactivate keeps existing pending credits redeemable; only blocks new earn.
 INACTIVE_RULE_PENDING_POLICY = "keep_redeemable"
@@ -155,6 +185,86 @@ def is_micro(draft: HabitDraft) -> bool:
 
 def require_micro(draft: HabitDraft) -> None:
     ensure(is_micro(draft), ErrorCode.HABIT_NOT_MICRO, "仅支持微习惯（≤5 分钟且分类合法）")
+
+
+def build_motivation_payload(
+    paths: Sequence[MotivationPath],
+    *,
+    override: dict[str, Any] | None,
+) -> dict[str, Any]:
+    """Channel ②: approach + avoid emotion copies; override wins over seed."""
+    by_kind = {p.kind: p for p in paths}
+    ensure("approach" in by_kind and "avoid" in by_kind, ErrorCode.VALIDATION, "need approach+avoid")
+    approach = by_kind["approach"]
+    avoid = by_kind["avoid"]
+    celeb = approach.celebration_key or avoid.celebration_key
+    if override:
+        if "approach" in override and isinstance(override["approach"], dict):
+            o = override["approach"]
+            approach = MotivationPath(
+                "approach",
+                str(o.get("emotion_copy", approach.emotion_copy)),
+                str(o.get("celebration_key", approach.celebration_key)),
+            )
+        if "avoid" in override and isinstance(override["avoid"], dict):
+            o = override["avoid"]
+            avoid = MotivationPath(
+                "avoid",
+                str(o.get("emotion_copy", avoid.emotion_copy)),
+                str(o.get("celebration_key", avoid.celebration_key)),
+            )
+        celeb = str(
+            (override.get("approach") or {}).get("celebration_key")
+            or (override.get("avoid") or {}).get("celebration_key")
+            or celeb
+        )
+    return {
+        "approach": {
+            "emotion_copy": approach.emotion_copy,
+            "celebration_key": approach.celebration_key,
+        },
+        "avoid": {
+            "emotion_copy": avoid.emotion_copy,
+            "celebration_key": avoid.celebration_key,
+        },
+        "celebration_key": celeb,
+    }
+
+
+def compute_streak(day_keys: Sequence[str], *, today: str) -> int:
+    """Count consecutive completed days ending on ``today``; gap → reset."""
+    days = sorted({d for d in day_keys if d})
+    if today not in days:
+        return 0
+    from datetime import date, timedelta
+
+    cur = date.fromisoformat(today)
+    streak = 0
+    day_set = set(days)
+    while cur.isoformat() in day_set:
+        streak += 1
+        cur = cur - timedelta(days=1)
+    return streak
+
+
+def iso_week_key(day: str) -> str:
+    from datetime import date
+
+    d = date.fromisoformat(day)
+    iso = d.isocalendar()
+    return f"{iso.year}-W{iso.week:02d}"
+
+
+def weekly_board_milestone(*, week_key: str, log_count: int) -> BoardMilestone | None:
+    """Q9: fire board celebration when weekly logs reach threshold."""
+    if log_count < BOARD_WEEKLY_LOG_THRESHOLD:
+        return None
+    return BoardMilestone(
+        kind="board",
+        milestone_id=f"board:week:{week_key}:{BOARD_WEEKLY_LOG_THRESHOLD}",
+        week_key=week_key,
+        log_count=log_count,
+    )
 
 
 def validate_template_dict(raw: dict[str, Any]) -> HabitTemplate:

@@ -2,21 +2,29 @@
 
 from __future__ import annotations
 
+import json
 import sqlite3
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from mytimetree.db.connection import execute
 from mytimetree.domain.errors import DomainError, ErrorCode, ensure
 from mytimetree.domain.habit import (
+    DEFAULT_MOTIVATION_PATHS,
     HABIT_SCHEMA_VERSION_HINT,
+    CelebrationEvent,
     EarnedCredit,
     ExchangeRule,
     Habit,
     HabitCompletion,
     HabitDraft,
     HabitLog,
+    MotivationPath,
+    build_motivation_payload,
+    compute_streak,
+    iso_week_key,
     require_micro,
     validate_exchange_rule_fields,
+    weekly_board_milestone,
 )
 from mytimetree.domain.time import Clock, SystemClock, ensure_app_tz
 from mytimetree.services.accounts import AccountService
@@ -197,6 +205,19 @@ class HabitService:
                         ("redeemed", entry.id, redeemed_at, credit.id),
                     )
                     credit = self.get_credit(account_id, credit.id)
+
+            motivation = self._motivation_for_habit(account_id, habit)
+            celeb_key = str(motivation.get("celebration_key") or "generic-spark")
+            celebration = self._record_celebration(
+                account_id,
+                kind="small",
+                celebration_key=celeb_key,
+                habit_log_id=log_id,
+                milestone_id=None,
+                review_script_id=None,
+                offline_hint_id=None,
+                created_at=completed_at,
+            )
             self._conn.commit()
         except sqlite3.IntegrityError as exc:
             self._conn.rollback()
@@ -207,7 +228,12 @@ class HabitService:
         except Exception:
             self._conn.rollback()
             raise
-        return HabitCompletion(log=log, credit=credit)
+        return HabitCompletion(
+            log=log,
+            credit=credit,
+            motivation_payload=motivation,
+            celebration=celebration,
+        )
 
     def get_credit(self, account_id: int, credit_id: int) -> EarnedCredit:
         self._accounts.get_account(account_id)
@@ -466,6 +492,82 @@ class HabitService:
         ).fetchall()
         return [self._row_to_credit(r) for r in rows]
 
+    def set_motivation_override(
+        self,
+        account_id: int,
+        habit_id: int,
+        override: dict[str, Any],
+    ) -> Habit:
+        self.get_habit(account_id, habit_id)
+        execute(
+            self._conn,
+            "UPDATE habits SET motivation_override_json = ? WHERE id = ? AND account_id = ?",
+            (json.dumps(override, ensure_ascii=False), habit_id, account_id),
+        )
+        self._conn.commit()
+        return self.get_habit(account_id, habit_id)
+
+    def streak_for_habit(self, account_id: int, habit_id: int) -> int:
+        self.get_habit(account_id, habit_id)
+        rows = execute(
+            self._conn,
+            "SELECT day_key FROM habit_logs WHERE account_id = ? AND habit_id = ? "
+            "AND voided_at IS NULL",
+            (account_id, habit_id),
+        ).fetchall()
+        today = ensure_app_tz(self._clock.now()).date().isoformat()
+        return compute_streak([str(r["day_key"]) for r in rows], today=today)
+
+    def list_celebration_events(self, account_id: int) -> list[CelebrationEvent]:
+        self._accounts.get_account(account_id)
+        rows = execute(
+            self._conn,
+            "SELECT id, account_id, kind, celebration_key, habit_log_id, milestone_id, "
+            "review_script_id, offline_hint_id, created_at FROM celebration_events "
+            "WHERE account_id = ? ORDER BY id ASC",
+            (account_id,),
+        ).fetchall()
+        return [self._row_to_celebration(r) for r in rows]
+
+    def evaluate_board_celebration(self, account_id: int) -> CelebrationEvent | None:
+        """H5.5–H5.6: Q9 weekly ≥5 logs → board event once per milestone_id."""
+        self._accounts.get_account(account_id)
+        today = ensure_app_tz(self._clock.now()).date().isoformat()
+        week_key = iso_week_key(today)
+        # ISO week date range approx via day_key prefix match on week numbers is awkward;
+        # count logs whose iso week equals week_key.
+        rows = execute(
+            self._conn,
+            "SELECT day_key FROM habit_logs WHERE account_id = ? AND voided_at IS NULL",
+            (account_id,),
+        ).fetchall()
+        count = sum(1 for r in rows if iso_week_key(str(r["day_key"])) == week_key)
+        milestone = weekly_board_milestone(week_key=week_key, log_count=count)
+        if milestone is None:
+            return None
+        existing = execute(
+            self._conn,
+            "SELECT id FROM celebration_events WHERE account_id = ? AND milestone_id = ?",
+            (account_id, milestone.milestone_id),
+        ).fetchone()
+        if existing is not None:
+            return None
+        script_id = self._pick_review_script_id()
+        hint_id = self._pick_offline_hint_id()
+        created_at = ensure_app_tz(self._clock.now()).isoformat()
+        event = self._record_celebration(
+            account_id,
+            kind="board",
+            celebration_key="board-weekly",
+            habit_log_id=None,
+            milestone_id=milestone.milestone_id,
+            review_script_id=script_id,
+            offline_hint_id=hint_id,
+            created_at=created_at,
+        )
+        self._conn.commit()
+        return event
+
     def assert_within_daily_cap(
         self,
         account_id: int,
@@ -518,6 +620,113 @@ class HabitService:
             category=str(row["category"]),
             est_minutes=int(row["est_minutes"]),
             archived_at=str(row["archived_at"]) if row["archived_at"] is not None else None,
+            created_at=str(row["created_at"]),
+        )
+
+    def _motivation_for_habit(self, account_id: int, habit: Habit) -> dict[str, Any]:
+        paths: tuple[MotivationPath, ...] = DEFAULT_MOTIVATION_PATHS
+        if habit.template_id is not None:
+            row = execute(
+                self._conn,
+                "SELECT motivation_paths_json FROM habit_templates WHERE id = ?",
+                (habit.template_id,),
+            ).fetchone()
+            if row is not None:
+                raw_paths = json.loads(row["motivation_paths_json"] or "[]")
+                parsed = [
+                    MotivationPath(
+                        kind=str(p["kind"]),  # type: ignore[arg-type]
+                        emotion_copy=str(p["emotion_copy"]),
+                        celebration_key=str(p["celebration_key"]),
+                    )
+                    for p in raw_paths
+                    if isinstance(p, dict)
+                ]
+                if parsed:
+                    paths = tuple(parsed)
+        override_row = execute(
+            self._conn,
+            "SELECT motivation_override_json FROM habits WHERE id = ? AND account_id = ?",
+            (habit.id, account_id),
+        ).fetchone()
+        override = None
+        if override_row is not None and override_row["motivation_override_json"]:
+            override = json.loads(override_row["motivation_override_json"])
+        return build_motivation_payload(paths, override=override)
+
+    def _record_celebration(
+        self,
+        account_id: int,
+        *,
+        kind: str,
+        celebration_key: str,
+        habit_log_id: int | None,
+        milestone_id: str | None,
+        review_script_id: int | None,
+        offline_hint_id: int | None,
+        created_at: str,
+    ) -> CelebrationEvent:
+        cur = execute(
+            self._conn,
+            "INSERT INTO celebration_events ("
+            "account_id, kind, celebration_key, habit_log_id, milestone_id, "
+            "review_script_id, offline_hint_id, created_at) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            (
+                account_id,
+                kind,
+                celebration_key,
+                habit_log_id,
+                milestone_id,
+                review_script_id,
+                offline_hint_id,
+                created_at,
+            ),
+        )
+        return CelebrationEvent(
+            id=int(cur.lastrowid),
+            account_id=account_id,
+            kind=kind,  # type: ignore[arg-type]
+            celebration_key=celebration_key,
+            habit_log_id=habit_log_id,
+            milestone_id=milestone_id,
+            review_script_id=review_script_id,
+            offline_hint_id=offline_hint_id,
+            created_at=created_at,
+        )
+
+    def _pick_review_script_id(self) -> int | None:
+        row = execute(
+            self._conn,
+            "SELECT id FROM parent_scripts WHERE situation = ? ORDER BY id ASC LIMIT 1",
+            ("review",),
+        ).fetchone()
+        return int(row["id"]) if row is not None else None
+
+    def _pick_offline_hint_id(self) -> int | None:
+        row = execute(
+            self._conn,
+            "SELECT id FROM offline_celebration_hints "
+            "WHERE suitable_for IN ('board_milestone', 'weekly_review', 'after_log') "
+            "ORDER BY id ASC LIMIT 1",
+        ).fetchone()
+        return int(row["id"]) if row is not None else None
+
+    @staticmethod
+    def _row_to_celebration(row: sqlite3.Row) -> CelebrationEvent:
+        return CelebrationEvent(
+            id=int(row["id"]),
+            account_id=int(row["account_id"]),
+            kind=str(row["kind"]),  # type: ignore[arg-type]
+            celebration_key=str(row["celebration_key"]),
+            habit_log_id=int(row["habit_log_id"]) if row["habit_log_id"] is not None else None,
+            milestone_id=str(row["milestone_id"]) if row["milestone_id"] is not None else None,
+            review_script_id=(
+                int(row["review_script_id"]) if row["review_script_id"] is not None else None
+            ),
+            offline_hint_id=(
+                int(row["offline_hint_id"]) if row["offline_hint_id"] is not None else None
+            ),
             created_at=str(row["created_at"]),
         )
 

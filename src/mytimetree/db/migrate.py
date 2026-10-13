@@ -245,10 +245,35 @@ MIGRATIONS: list[tuple[int, list[str]]] = [
             """,
         ],
     ),
+    (
+        8,
+        [
+            """
+            CREATE TABLE IF NOT EXISTS celebration_events (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                account_id INTEGER NOT NULL,
+                kind TEXT NOT NULL,
+                celebration_key TEXT NOT NULL,
+                habit_log_id INTEGER,
+                milestone_id TEXT,
+                review_script_id INTEGER,
+                offline_hint_id INTEGER,
+                created_at TEXT NOT NULL,
+                FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE,
+                FOREIGN KEY (habit_log_id) REFERENCES habit_logs(id)
+            )
+            """,
+            """
+            CREATE UNIQUE INDEX IF NOT EXISTS idx_celebration_account_milestone
+            ON celebration_events(account_id, milestone_id)
+            WHERE milestone_id IS NOT NULL
+            """,
+        ],
+    ),
 ]
 
 # Habit module schema version (H0+); keep in sync with domain.habit.HABIT_SCHEMA_VERSION_HINT
-HABIT_MIGRATION_VERSION = 7
+HABIT_MIGRATION_VERSION = 8
 
 
 def get_schema_version(conn: sqlite3.Connection) -> int:
