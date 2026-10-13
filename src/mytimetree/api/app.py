@@ -65,6 +65,13 @@ class HabitIdBody(BaseModel):
     habit_id: int
 
 
+class UpdateRuleBody(BaseModel):
+    rule_id: int
+    minutes_per_completion: int | None = Field(default=None, gt=0)
+    auto_redeem: bool | None = None
+    daily_cap_minutes: int | None = Field(default=None, gt=0)
+
+
 def _http_status(code: ErrorCode) -> int:
     return {
         ErrorCode.VALIDATION: 400,
@@ -566,6 +573,73 @@ def create_app(
         habit_svc = _require(app.state.habits, "habits")
         acc = acc_svc.require_current_account()
         return {"badge_count": habit_svc.badge_count(acc.id)}
+
+    @app.get("/api/portal/habits/overview")
+    def portal_habits_overview() -> dict[str, Any]:
+        """Timeline + category stats + exchange rules for portal panels."""
+        acc_svc = _require(app.state.accounts, "accounts")
+        habit_svc = _require(app.state.habits, "habits")
+        query_svc = _require(app.state.habit_query, "habit_query")
+        acc = acc_svc.require_current_account()
+        habit_svc.ensure_starter_habits(acc.id)
+        page = query_svc.timeline(acc.id, limit=20, offset=0)
+        cats = query_svc.aggregate_by_category(acc.id)
+        rules = habit_svc.list_exchange_rules(acc.id, active_only=True)
+        habit_titles = {h.id: h.title for h in habit_svc.list_habits(acc.id)}
+        return {
+            "timeline": [
+                {
+                    "id": it.id,
+                    "habit_id": it.habit_id,
+                    "title": habit_titles.get(it.habit_id, f"#{it.habit_id}"),
+                    "day_key": it.day_key,
+                    "completed_at": it.completed_at,
+                }
+                for it in page.items
+            ],
+            "timeline_total": page.total,
+            "categories": [
+                {
+                    "category": c.category,
+                    "label": c.label,
+                    "count": c.count,
+                    "minutes": c.minutes,
+                }
+                for c in cats
+            ],
+            "rules": [
+                {
+                    "rule_id": r.id,
+                    "habit_id": r.habit_id,
+                    "title": habit_titles.get(r.habit_id, f"#{r.habit_id}"),
+                    "minutes_per_completion": r.minutes_per_completion,
+                    "auto_redeem": r.auto_redeem,
+                    "daily_cap_minutes": r.daily_cap_minutes,
+                }
+                for r in rules
+            ],
+        }
+
+    @app.patch("/api/portal/habits/rules")
+    def portal_habits_update_rule(body: UpdateRuleBody) -> dict[str, Any]:
+        acc_svc = _require(app.state.accounts, "accounts")
+        habit_svc = _require(app.state.habits, "habits")
+        acc = acc_svc.require_current_account()
+        updated = habit_svc.update_exchange_rule(
+            acc.id,
+            body.rule_id,
+            minutes_per_completion=body.minutes_per_completion,
+            auto_redeem=body.auto_redeem,
+            daily_cap_minutes=body.daily_cap_minutes
+            if body.daily_cap_minutes is not None
+            else ...,
+        )
+        return {
+            "rule_id": updated.id,
+            "minutes_per_completion": updated.minutes_per_completion,
+            "auto_redeem": updated.auto_redeem,
+            "daily_cap_minutes": updated.daily_cap_minutes,
+        }
 
     return app
 

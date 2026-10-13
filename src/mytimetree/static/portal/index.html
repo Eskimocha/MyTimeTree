@@ -86,10 +86,24 @@
           <button type="button" class="btn" id="btn-habit-board">好习惯总表</button>
           <button type="button" class="btn" id="btn-habit-redeem-all">兑换待入账</button>
         </div>
+        <div class="habit-actions">
+          <button type="button" class="btn" id="btn-habit-timeline">时间线</button>
+          <button type="button" class="btn" id="btn-habit-rules">兑换规则</button>
+        </div>
         <div id="habit-board" class="habit-board" hidden>
           <h2>今日总表</h2>
           <p id="habit-board-stats" class="muted"></p>
           <ul id="habit-board-list" class="habit-list"></ul>
+        </div>
+        <div id="habit-timeline" class="habit-board" hidden>
+          <h2>时间线</h2>
+          <ul id="habit-timeline-list" class="habit-list"></ul>
+          <h2>分类</h2>
+          <ul id="habit-category-list" class="habit-list"></ul>
+        </div>
+        <div id="habit-rules" class="habit-board" hidden>
+          <h2>兑换规则</h2>
+          <ul id="habit-rules-list" class="habit-list"></ul>
         </div>
         <p id="habit-msg" class="msg" hidden></p>
       </section>

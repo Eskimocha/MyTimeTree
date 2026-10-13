@@ -203,9 +203,13 @@
       $("#offline-hint-card").hidden = false;
       $("#offline-hint-title").textContent = hint.title || "线下庆祝";
       $("#offline-hint-body").textContent = hint.body || "";
-      $("#offline-hint-image").textContent = hint.image_key
-        ? `配图位：${hint.image_key}`
-        : "（文字指引，配图稍后可补）";
+      const url = hintImageUrl(hint.image_key);
+      if (url) {
+        $("#offline-hint-image").innerHTML =
+          `<img alt="" src="${url}" width="72" height="72" />`;
+      } else {
+        $("#offline-hint-image").textContent = "（文字指引，配图稍后可补）";
+      }
     } else {
       $("#offline-hint-card").hidden = true;
     }
@@ -270,10 +274,16 @@
     }
   }
 
+  function hideHabitPanelsExcept(id) {
+    for (const sel of ["#habit-board", "#habit-timeline", "#habit-rules"]) {
+      const el = $(sel);
+      if (el) el.hidden = sel !== id;
+    }
+  }
+
   async function refreshHabitBoard() {
     const board = await api("/api/portal/habits/board");
-    const wrap = $("#habit-board");
-    wrap.hidden = false;
+    hideHabitPanelsExcept("#habit-board");
     $("#habit-board-stats").textContent =
       `共 ${board.stats.total_logs} 记 · 已兑 ${board.stats.minutes_redeemed} 分 · 待兑 ${board.stats.minutes_pending} 分`;
     const list = $("#habit-board-list");
@@ -289,6 +299,65 @@
         board.board_celebration,
       );
     }
+  }
+
+  async function refreshHabitOverview() {
+    const data = await api("/api/portal/habits/overview");
+    hideHabitPanelsExcept("#habit-timeline");
+    const tl = $("#habit-timeline-list");
+    tl.innerHTML = "";
+    for (const it of data.timeline || []) {
+      const li = document.createElement("li");
+      li.textContent = `${it.title} · ${it.day_key}`;
+      tl.appendChild(li);
+    }
+    const cats = $("#habit-category-list");
+    cats.innerHTML = "";
+    for (const c of data.categories || []) {
+      const li = document.createElement("li");
+      li.textContent = `${c.label} · ${c.count} 次 · ${c.minutes} 分`;
+      cats.appendChild(li);
+    }
+  }
+
+  async function refreshHabitRules() {
+    const data = await api("/api/portal/habits/overview");
+    hideHabitPanelsExcept("#habit-rules");
+    const list = $("#habit-rules-list");
+    list.innerHTML = "";
+    for (const r of data.rules || []) {
+      const li = document.createElement("li");
+      const label = document.createElement("span");
+      label.textContent = `${r.title} · ${r.minutes_per_completion} 分${r.auto_redeem ? " · 自动兑" : ""}`;
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "btn compact";
+      btn.textContent = "改分钟";
+      btn.addEventListener("click", async () => {
+        const minutes = promptMinutes(`${r.title} 每次兑换几分钟？`);
+        if (minutes == null) return;
+        try {
+          await api("/api/portal/habits/rules", {
+            method: "PATCH",
+            body: JSON.stringify({
+              rule_id: r.rule_id,
+              minutes_per_completion: minutes,
+            }),
+          });
+          flash($("#habit-msg"), "规则已更新");
+          await refreshHabitRules();
+        } catch (ex) {
+          flash($("#habit-msg"), ex.message);
+        }
+      });
+      li.append(label, btn);
+      list.appendChild(li);
+    }
+  }
+
+  function hintImageUrl(imageKey) {
+    if (!imageKey) return null;
+    return `/static/portal/hints/${imageKey}.svg`;
   }
 
   function flash(el, text) {
@@ -401,6 +470,22 @@
   $("#btn-habit-board")?.addEventListener("click", async () => {
     try {
       await refreshHabitBoard();
+    } catch (ex) {
+      flash($("#habit-msg"), ex.message);
+    }
+  });
+
+  $("#btn-habit-timeline")?.addEventListener("click", async () => {
+    try {
+      await refreshHabitOverview();
+    } catch (ex) {
+      flash($("#habit-msg"), ex.message);
+    }
+  });
+
+  $("#btn-habit-rules")?.addEventListener("click", async () => {
+    try {
+      await refreshHabitRules();
     } catch (ex) {
       flash($("#habit-msg"), ex.message);
     }
