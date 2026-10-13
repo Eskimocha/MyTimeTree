@@ -479,7 +479,33 @@ def create_app(
                     "habit_log_id": celeb.habit_log_id,
                 }
             ),
+            "parent_motivation_payload": result.parent_motivation_payload,
+            "parent_script": result.parent_script,
+            "offline_hint": result.offline_hint,
             "badge_count": habit_svc.badge_count(acc.id),
+        }
+
+    @app.post("/api/portal/habits/badge/snooze")
+    def portal_habits_badge_snooze(minutes: int = 60) -> dict[str, Any]:
+        acc_svc = _require(app.state.accounts, "accounts")
+        habit_svc = _require(app.state.habits, "habits")
+        acc = acc_svc.require_current_account()
+        return habit_svc.snooze_badge(acc.id, minutes=minutes)
+
+    @app.get("/api/analytics/habits/weekly")
+    def analytics_habits_weekly(account_id: int) -> dict[str, Any]:
+        svc = _require(app.state.analytics, "analytics")
+        return svc.weekly_habit_stats(account_id=account_id)
+
+    @app.post("/api/portal/habits/child-complete")
+    def portal_habits_child_complete_stub(body: HabitIdBody) -> dict[str, Any]:
+        """H8.2 / Q2 stub: child check-in not enabled; parents should use /complete."""
+        return {
+            "ok": False,
+            "skipped": True,
+            "code": "child_entry_not_enabled",
+            "message": "孩子独立打卡入口未启用（Q2：仅家长代打）；请使用家长记录接口。",
+            "habit_id": body.habit_id,
         }
 
     @app.post("/api/portal/habits/credits/{credit_id}/redeem")

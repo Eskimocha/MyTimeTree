@@ -1,0 +1,86 @@
+[
+  {
+    "slug": "before-brush",
+    "habit_category": "hygiene",
+    "situation": "before_habit",
+    "script_text": "刷牙前我们可以说：刷完牙齿亮晶晶，开始吧？",
+    "tone": "warm"
+  },
+  {
+    "slug": "before-sleep",
+    "habit_category": "sleep",
+    "situation": "before_habit",
+    "script_text": "睡觉时间到啦，我们一起做睡前小仪式好不好？",
+    "tone": "warm"
+  },
+  {
+    "slug": "before-read",
+    "habit_category": "reading",
+    "situation": "before_habit",
+    "script_text": "只要一页就很棒，要不要现在翻开？",
+    "tone": "playful"
+  },
+  {
+    "slug": "before-chore",
+    "habit_category": "chores",
+    "situation": "before_habit",
+    "script_text": "我们先收一样东西，很快就能完成。",
+    "tone": "firm_kind"
+  },
+  {
+    "slug": "after-general",
+    "habit_category": null,
+    "situation": "after_log",
+    "script_text": "你做到了！我帮你记下来，真靠谱。",
+    "tone": "warm"
+  },
+  {
+    "slug": "after-brush",
+    "habit_category": "hygiene",
+    "situation": "after_log",
+    "script_text": "牙齿保卫战胜利！要不要击个掌？",
+    "tone": "playful"
+  },
+  {
+    "slug": "after-sleep",
+    "habit_category": "sleep",
+    "situation": "after_log",
+    "script_text": "充电成功，明天会更有精神。",
+    "tone": "warm"
+  },
+  {
+    "slug": "after-read",
+    "habit_category": "reading",
+    "situation": "after_log",
+    "script_text": "故事又前进了，你讲一句给我听？",
+    "tone": "playful"
+  },
+  {
+    "slug": "review-week",
+    "habit_category": null,
+    "situation": "review",
+    "script_text": "这周我们记下了好多好习惯，哪一件你最骄傲？",
+    "tone": "warm"
+  },
+  {
+    "slug": "review-board",
+    "habit_category": null,
+    "situation": "review",
+    "script_text": "打开总表看看：这些都是你一点一点做到的。",
+    "tone": "warm"
+  },
+  {
+    "slug": "review-streak",
+    "habit_category": null,
+    "situation": "review",
+    "script_text": "连续做到不容易，我们为坚持击个掌。",
+    "tone": "playful"
+  },
+  {
+    "slug": "review-gentle",
+    "habit_category": null,
+    "situation": "review",
+    "script_text": "有漏记也没关系，重要的是我们又看见你了。",
+    "tone": "firm_kind"
+  }
+]

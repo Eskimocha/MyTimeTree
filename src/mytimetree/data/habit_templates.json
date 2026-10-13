@@ -926,5 +926,730 @@
       "记得完成：收起一个玩具"
     ],
     "active": true
+  },
+  {
+    "slug": "floss-one-tooth",
+    "title": "刷一颗牙缝",
+    "category": "hygiene",
+    "ability_tier": "micro",
+    "est_minutes": 2,
+    "motivation_paths": [
+      {
+        "kind": "avoid",
+        "emotion_copy": "少牙缝塞东西",
+        "celebration_key": "floss"
+      },
+      {
+        "kind": "approach",
+        "emotion_copy": "牙齿更干净",
+        "celebration_key": "floss"
+      }
+    ],
+    "incentive_notes": {
+      "small": "牙线闪",
+      "board": "卫生加分",
+      "offline": "击掌牙缝清"
+    },
+    "default_minutes_hint": 5,
+    "prompt_hints": [
+      "记得完成：刷一颗牙缝"
+    ],
+    "active": true
+  },
+  {
+    "slug": "wipe-desk-spot",
+    "title": "擦一下桌角",
+    "category": "hygiene",
+    "ability_tier": "micro",
+    "est_minutes": 2,
+    "motivation_paths": [
+      {
+        "kind": "avoid",
+        "emotion_copy": "少灰尘堆积",
+        "celebration_key": "wipe"
+      },
+      {
+        "kind": "approach",
+        "emotion_copy": "角落亮了",
+        "celebration_key": "wipe"
+      }
+    ],
+    "incentive_notes": {
+      "small": "擦亮",
+      "board": "清洁条",
+      "offline": "竖拇指干净"
+    },
+    "default_minutes_hint": 5,
+    "prompt_hints": [
+      "记得完成：擦一下桌角"
+    ],
+    "active": true
+  },
+  {
+    "slug": "hang-towel",
+    "title": "毛巾挂整齐",
+    "category": "hygiene",
+    "ability_tier": "micro",
+    "est_minutes": 1,
+    "motivation_paths": [
+      {
+        "kind": "avoid",
+        "emotion_copy": "少潮湿乱",
+        "celebration_key": "towel"
+      },
+      {
+        "kind": "approach",
+        "emotion_copy": "毛巾顺顺",
+        "celebration_key": "towel"
+      }
+    ],
+    "incentive_notes": {
+      "small": "挂好",
+      "board": "卫生仪式",
+      "offline": "碰拳整齐"
+    },
+    "default_minutes_hint": 5,
+    "prompt_hints": [
+      "记得完成：毛巾挂整齐"
+    ],
+    "active": true
+  },
+  {
+    "slug": "clean-glasses",
+    "title": "擦一擦眼镜",
+    "category": "hygiene",
+    "ability_tier": "micro",
+    "est_minutes": 1,
+    "motivation_paths": [
+      {
+        "kind": "avoid",
+        "emotion_copy": "少模糊看不清",
+        "celebration_key": "glasses"
+      },
+      {
+        "kind": "approach",
+        "emotion_copy": "世界更清楚",
+        "celebration_key": "glasses"
+      }
+    ],
+    "incentive_notes": {
+      "small": "镜片亮",
+      "board": "清晰一刻",
+      "offline": "击掌看清了"
+    },
+    "default_minutes_hint": 5,
+    "prompt_hints": [
+      "记得完成：擦一擦眼镜"
+    ],
+    "active": true
+  },
+  {
+    "slug": "warm-milk-sip",
+    "title": "睡前喝一小口温水",
+    "category": "sleep",
+    "ability_tier": "micro",
+    "est_minutes": 1,
+    "motivation_paths": [
+      {
+        "kind": "avoid",
+        "emotion_copy": "少口干醒来",
+        "celebration_key": "warm-sip"
+      },
+      {
+        "kind": "approach",
+        "emotion_copy": "舒服入睡",
+        "celebration_key": "warm-sip"
+      }
+    ],
+    "incentive_notes": {
+      "small": "温水",
+      "board": "睡前仪式",
+      "offline": "轻声晚安"
+    },
+    "default_minutes_hint": 5,
+    "prompt_hints": [
+      "记得完成：睡前喝一小口温水"
+    ],
+    "active": true
+  },
+  {
+    "slug": "soft-music-one",
+    "title": "听一小段轻音乐",
+    "category": "sleep",
+    "ability_tier": "micro",
+    "est_minutes": 2,
+    "motivation_paths": [
+      {
+        "kind": "avoid",
+        "emotion_copy": "少脑子停不下来",
+        "celebration_key": "lullaby"
+      },
+      {
+        "kind": "approach",
+        "emotion_copy": "心情慢下来",
+        "celebration_key": "lullaby"
+      }
+    ],
+    "incentive_notes": {
+      "small": "音符",
+      "board": "放松条",
+      "offline": "肩碰肩放松"
+    },
+    "default_minutes_hint": 5,
+    "prompt_hints": [
+      "记得完成：听一小段轻音乐"
+    ],
+    "active": true
+  },
+  {
+    "slug": "pajamas-on",
+    "title": "换上睡衣",
+    "category": "sleep",
+    "ability_tier": "micro",
+    "est_minutes": 2,
+    "motivation_paths": [
+      {
+        "kind": "avoid",
+        "emotion_copy": "少穿着白天衣服睡",
+        "celebration_key": "pajamas"
+      },
+      {
+        "kind": "approach",
+        "emotion_copy": "准备睡觉了",
+        "celebration_key": "pajamas"
+      }
+    ],
+    "incentive_notes": {
+      "small": "换装",
+      "board": "睡眠准备",
+      "offline": "击掌睡衣好"
+    },
+    "default_minutes_hint": 5,
+    "prompt_hints": [
+      "记得完成：换上睡衣"
+    ],
+    "active": true
+  },
+  {
+    "slug": "read-title-aloud",
+    "title": "读出书名",
+    "category": "reading",
+    "ability_tier": "micro",
+    "est_minutes": 1,
+    "motivation_paths": [
+      {
+        "kind": "avoid",
+        "emotion_copy": "少漫无目的翻书",
+        "celebration_key": "title-voice"
+      },
+      {
+        "kind": "approach",
+        "emotion_copy": "正式开始读",
+        "celebration_key": "title-voice"
+      }
+    ],
+    "incentive_notes": {
+      "small": "书名",
+      "board": "开读仪式",
+      "offline": "击掌开读"
+    },
+    "default_minutes_hint": 5,
+    "prompt_hints": [
+      "记得完成：读出书名"
+    ],
+    "active": true
+  },
+  {
+    "slug": "point-one-word",
+    "title": "指读一个词",
+    "category": "reading",
+    "ability_tier": "micro",
+    "est_minutes": 1,
+    "motivation_paths": [
+      {
+        "kind": "avoid",
+        "emotion_copy": "少跳字",
+        "celebration_key": "point-word"
+      },
+      {
+        "kind": "approach",
+        "emotion_copy": "认认真真看",
+        "celebration_key": "point-word"
+      }
+    ],
+    "incentive_notes": {
+      "small": "指读",
+      "board": "专注阅读",
+      "offline": "竖拇指认真"
+    },
+    "default_minutes_hint": 5,
+    "prompt_hints": [
+      "记得完成：指读一个词"
+    ],
+    "active": true
+  },
+  {
+    "slug": "tell-one-line",
+    "title": "讲出刚读的一句",
+    "category": "reading",
+    "ability_tier": "micro",
+    "est_minutes": 2,
+    "motivation_paths": [
+      {
+        "kind": "avoid",
+        "emotion_copy": "少读完就忘",
+        "celebration_key": "retell"
+      },
+      {
+        "kind": "approach",
+        "emotion_copy": "记得住一点",
+        "celebration_key": "retell"
+      }
+    ],
+    "incentive_notes": {
+      "small": "复述",
+      "board": "阅读复盘",
+      "offline": "跳一下讲出来"
+    },
+    "default_minutes_hint": 5,
+    "prompt_hints": [
+      "记得完成：讲出刚读的一句"
+    ],
+    "active": true
+  },
+  {
+    "slug": "fold-one-shirt",
+    "title": "叠一件衣服",
+    "category": "chores",
+    "ability_tier": "micro",
+    "est_minutes": 3,
+    "motivation_paths": [
+      {
+        "kind": "avoid",
+        "emotion_copy": "少衣服堆山",
+        "celebration_key": "fold"
+      },
+      {
+        "kind": "approach",
+        "emotion_copy": "衣柜顺一点",
+        "celebration_key": "fold"
+      }
+    ],
+    "incentive_notes": {
+      "small": "叠衣",
+      "board": "家务微打卡",
+      "offline": "击掌叠好"
+    },
+    "default_minutes_hint": 5,
+    "prompt_hints": [
+      "记得完成：叠一件衣服"
+    ],
+    "active": true
+  },
+  {
+    "slug": "wipe-table",
+    "title": "擦桌子一下",
+    "category": "chores",
+    "ability_tier": "micro",
+    "est_minutes": 2,
+    "motivation_paths": [
+      {
+        "kind": "avoid",
+        "emotion_copy": "少桌面黏黏",
+        "celebration_key": "table-wipe"
+      },
+      {
+        "kind": "approach",
+        "emotion_copy": "桌子干净",
+        "celebration_key": "table-wipe"
+      }
+    ],
+    "incentive_notes": {
+      "small": "桌面",
+      "board": "清洁家务",
+      "offline": "碰拳干净桌"
+    },
+    "default_minutes_hint": 5,
+    "prompt_hints": [
+      "记得完成：擦桌子一下"
+    ],
+    "active": true
+  },
+  {
+    "slug": "water-sip-plant",
+    "title": "给植物浇一点点水",
+    "category": "chores",
+    "ability_tier": "micro",
+    "est_minutes": 2,
+    "motivation_paths": [
+      {
+        "kind": "avoid",
+        "emotion_copy": "少植物干渴",
+        "celebration_key": "plant-water"
+      },
+      {
+        "kind": "approach",
+        "emotion_copy": "绿叶开心",
+        "celebration_key": "plant-water"
+      }
+    ],
+    "incentive_notes": {
+      "small": "浇水",
+      "board": "照料",
+      "offline": "轻触叶子"
+    },
+    "default_minutes_hint": 5,
+    "prompt_hints": [
+      "记得完成：给植物浇一点点水"
+    ],
+    "active": true
+  },
+  {
+    "slug": "arm-circles",
+    "title": "手臂转三圈",
+    "category": "sport_micro",
+    "ability_tier": "micro",
+    "est_minutes": 1,
+    "motivation_paths": [
+      {
+        "kind": "avoid",
+        "emotion_copy": "少肩膀僵",
+        "celebration_key": "arm-circle"
+      },
+      {
+        "kind": "approach",
+        "emotion_copy": "胳膊活络",
+        "celebration_key": "arm-circle"
+      }
+    ],
+    "incentive_notes": {
+      "small": "转圈",
+      "board": "热身",
+      "offline": "跳一下热身"
+    },
+    "default_minutes_hint": 5,
+    "prompt_hints": [
+      "记得完成：手臂转三圈"
+    ],
+    "active": true
+  },
+  {
+    "slug": "balance-one-foot",
+    "title": "单脚站三秒",
+    "category": "sport_micro",
+    "ability_tier": "micro",
+    "est_minutes": 1,
+    "motivation_paths": [
+      {
+        "kind": "avoid",
+        "emotion_copy": "少平衡差",
+        "celebration_key": "balance"
+      },
+      {
+        "kind": "approach",
+        "emotion_copy": "站稳了",
+        "celebration_key": "balance"
+      }
+    ],
+    "incentive_notes": {
+      "small": "单脚",
+      "board": "平衡微打卡",
+      "offline": "击掌站稳"
+    },
+    "default_minutes_hint": 5,
+    "prompt_hints": [
+      "记得完成：单脚站三秒"
+    ],
+    "active": true
+  },
+  {
+    "slug": "clap-ten",
+    "title": "拍手十下",
+    "category": "sport_micro",
+    "ability_tier": "micro",
+    "est_minutes": 1,
+    "motivation_paths": [
+      {
+        "kind": "avoid",
+        "emotion_copy": "少没动静",
+        "celebration_key": "clap"
+      },
+      {
+        "kind": "approach",
+        "emotion_copy": "身体醒醒",
+        "celebration_key": "clap"
+      }
+    ],
+    "incentive_notes": {
+      "small": "拍手",
+      "board": "活力",
+      "offline": "击掌加油"
+    },
+    "default_minutes_hint": 5,
+    "prompt_hints": [
+      "记得完成：拍手十下"
+    ],
+    "active": true
+  },
+  {
+    "slug": "hug-pillow",
+    "title": "抱抱枕头说今天还好",
+    "category": "emotion",
+    "ability_tier": "micro",
+    "est_minutes": 1,
+    "motivation_paths": [
+      {
+        "kind": "avoid",
+        "emotion_copy": "少憋着",
+        "celebration_key": "hug"
+      },
+      {
+        "kind": "approach",
+        "emotion_copy": "被安慰到",
+        "celebration_key": "hug"
+      }
+    ],
+    "incentive_notes": {
+      "small": "抱抱",
+      "board": "情绪安抚",
+      "offline": "拥抱一下"
+    },
+    "default_minutes_hint": 5,
+    "prompt_hints": [
+      "记得完成：抱抱枕头说今天还好"
+    ],
+    "active": true
+  },
+  {
+    "slug": "draw-one-smile",
+    "title": "画一个笑脸",
+    "category": "emotion",
+    "ability_tier": "micro",
+    "est_minutes": 2,
+    "motivation_paths": [
+      {
+        "kind": "avoid",
+        "emotion_copy": "少阴沉",
+        "celebration_key": "draw-smile"
+      },
+      {
+        "kind": "approach",
+        "emotion_copy": "心情上扬",
+        "celebration_key": "draw-smile"
+      }
+    ],
+    "incentive_notes": {
+      "small": "笑脸",
+      "board": "情绪表达",
+      "offline": "竖拇指好看"
+    },
+    "default_minutes_hint": 5,
+    "prompt_hints": [
+      "记得完成：画一个笑脸"
+    ],
+    "active": true
+  },
+  {
+    "slug": "share-one-happy",
+    "title": "分享一件开心事",
+    "category": "emotion",
+    "ability_tier": "micro",
+    "est_minutes": 2,
+    "motivation_paths": [
+      {
+        "kind": "avoid",
+        "emotion_copy": "少只谈烦恼",
+        "celebration_key": "share-happy"
+      },
+      {
+        "kind": "approach",
+        "emotion_copy": "快乐被看见",
+        "celebration_key": "share-happy"
+      }
+    ],
+    "incentive_notes": {
+      "small": "分享",
+      "board": "连接",
+      "offline": "击掌真棒"
+    },
+    "default_minutes_hint": 5,
+    "prompt_hints": [
+      "记得完成：分享一件开心事"
+    ],
+    "active": true
+  },
+  {
+    "slug": "trace-one-char",
+    "title": "描一个字",
+    "category": "study_micro",
+    "ability_tier": "micro",
+    "est_minutes": 2,
+    "motivation_paths": [
+      {
+        "kind": "avoid",
+        "emotion_copy": "少手生",
+        "celebration_key": "trace"
+      },
+      {
+        "kind": "approach",
+        "emotion_copy": "字迹进步一点点",
+        "celebration_key": "trace"
+      }
+    ],
+    "incentive_notes": {
+      "small": "描字",
+      "board": "书写微打卡",
+      "offline": "碰拳写好了"
+    },
+    "default_minutes_hint": 5,
+    "prompt_hints": [
+      "记得完成：描一个字"
+    ],
+    "active": true
+  },
+  {
+    "slug": "count-to-ten",
+    "title": "认真数到十",
+    "category": "study_micro",
+    "ability_tier": "micro",
+    "est_minutes": 1,
+    "motivation_paths": [
+      {
+        "kind": "avoid",
+        "emotion_copy": "少心浮气躁",
+        "celebration_key": "count"
+      },
+      {
+        "kind": "approach",
+        "emotion_copy": "注意力回来",
+        "celebration_key": "count"
+      }
+    ],
+    "incentive_notes": {
+      "small": "数数",
+      "board": "专注",
+      "offline": "击掌专注"
+    },
+    "default_minutes_hint": 5,
+    "prompt_hints": [
+      "记得完成：认真数到十"
+    ],
+    "active": true
+  },
+  {
+    "slug": "label-one-thing",
+    "title": "给一件东西贴名字",
+    "category": "study_micro",
+    "ability_tier": "micro",
+    "est_minutes": 2,
+    "motivation_paths": [
+      {
+        "kind": "avoid",
+        "emotion_copy": "少认不出",
+        "celebration_key": "label"
+      },
+      {
+        "kind": "approach",
+        "emotion_copy": "认识世界+1",
+        "celebration_key": "label"
+      }
+    ],
+    "incentive_notes": {
+      "small": "贴名",
+      "board": "认知",
+      "offline": "跳一下学会了"
+    },
+    "default_minutes_hint": 5,
+    "prompt_hints": [
+      "记得完成：给一件东西贴名字"
+    ],
+    "active": true
+  },
+  {
+    "slug": "open-curtain",
+    "title": "拉开窗帘看一眼窗外",
+    "category": "other_micro",
+    "ability_tier": "micro",
+    "est_minutes": 1,
+    "motivation_paths": [
+      {
+        "kind": "avoid",
+        "emotion_copy": "少整天闷着",
+        "celebration_key": "curtain"
+      },
+      {
+        "kind": "approach",
+        "emotion_copy": "光线进来",
+        "celebration_key": "curtain"
+      }
+    ],
+    "incentive_notes": {
+      "small": "阳光",
+      "board": "日常仪式",
+      "offline": "挥手你好世界"
+    },
+    "default_minutes_hint": 5,
+    "prompt_hints": [
+      "记得完成：拉开窗帘看一眼窗外"
+    ],
+    "active": true
+  },
+  {
+    "slug": "feed-pet-or-toy",
+    "title": "给宠物/玩偶说一句关心",
+    "category": "other_micro",
+    "ability_tier": "micro",
+    "est_minutes": 1,
+    "motivation_paths": [
+      {
+        "kind": "avoid",
+        "emotion_copy": "少冷落它",
+        "celebration_key": "care"
+      },
+      {
+        "kind": "approach",
+        "emotion_copy": "有陪伴感",
+        "celebration_key": "care"
+      }
+    ],
+    "incentive_notes": {
+      "small": "关心",
+      "board": "温柔",
+      "offline": "轻拍一下"
+    },
+    "default_minutes_hint": 5,
+    "prompt_hints": [
+      "记得完成：给宠物/玩偶说一句关心"
+    ],
+    "active": true
+  },
+  {
+    "slug": "zip-jacket",
+    "title": "出门前拉上外套拉链",
+    "category": "other_micro",
+    "ability_tier": "micro",
+    "est_minutes": 1,
+    "motivation_paths": [
+      {
+        "kind": "avoid",
+        "emotion_copy": "少着凉手忙脚乱",
+        "celebration_key": "zip"
+      },
+      {
+        "kind": "approach",
+        "emotion_copy": "准备妥当",
+        "celebration_key": "zip"
+      }
+    ],
+    "incentive_notes": {
+      "small": "拉链",
+      "board": "出门准备",
+      "offline": "击掌准备好"
+    },
+    "default_minutes_hint": 5,
+    "prompt_hints": [
+      "记得完成：出门前拉上外套拉链"
+    ],
+    "active": true
   }
 ]

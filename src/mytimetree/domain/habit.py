@@ -112,6 +112,9 @@ class HabitCompletion:
     credit: EarnedCredit | None
     motivation_payload: dict[str, Any] | None = None
     celebration: CelebrationEvent | None = None
+    parent_motivation_payload: dict[str, Any] | None = None
+    parent_script: dict[str, Any] | None = None
+    offline_hint: dict[str, Any] | None = None
 
 
 @dataclass(frozen=True, slots=True)

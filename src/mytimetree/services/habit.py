@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import sqlite3
+from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, Any
 
 from mytimetree.db.connection import execute
@@ -29,6 +30,7 @@ from mytimetree.domain.habit import (
 from mytimetree.domain.time import Clock, SystemClock, ensure_app_tz
 from mytimetree.services.accounts import AccountService
 from mytimetree.services.habit_templates import get_template_by_slug
+from mytimetree.services.parent_guidance import pick_hint, pick_script
 
 if TYPE_CHECKING:
     from mytimetree.services.ledger import LedgerService
@@ -83,7 +85,9 @@ class HabitService:
         return created
 
     def badge_count(self, account_id: int) -> int:
-        """Q10: count of active habits not yet logged today."""
+        """Q10: count of active habits not yet logged today (respects snooze)."""
+        if self._is_badge_snoozed(account_id):
+            return 0
         today = self.today_key()
         habits = self.list_habits(account_id)
         if not habits:
@@ -94,6 +98,41 @@ class HabitService:
             if log.day_key == today
         }
         return sum(1 for h in habits if h.id not in logged)
+
+    def snooze_badge(self, account_id: int, *, minutes: int = 60) -> dict[str, Any]:
+        self._accounts.get_account(account_id)
+        ensure(minutes > 0, ErrorCode.VALIDATION, "snooze minutes must be > 0")
+        now = ensure_app_tz(self._clock.now())
+        until = (now + timedelta(minutes=minutes)).isoformat()
+        today = self.today_key()
+        habits = self.list_habits(account_id)
+        logged = {log.habit_id for log in self.list_logs(account_id) if log.day_key == today}
+        count = sum(1 for h in habits if h.id not in logged)
+        execute(
+            self._conn,
+            """
+            INSERT INTO parent_prompt_state (account_id, badge_count, last_nudge_at, snoozed_until)
+            VALUES (?, ?, ?, ?)
+            ON CONFLICT(account_id) DO UPDATE SET
+                badge_count = excluded.badge_count,
+                last_nudge_at = excluded.last_nudge_at,
+                snoozed_until = excluded.snoozed_until
+            """,
+            (account_id, count, now.isoformat(), until),
+        )
+        self._conn.commit()
+        return {"badge_count": 0, "snoozed_until": until}
+
+    def _is_badge_snoozed(self, account_id: int) -> bool:
+        row = execute(
+            self._conn,
+            "SELECT snoozed_until FROM parent_prompt_state WHERE account_id = ?",
+            (account_id,),
+        ).fetchone()
+        if row is None or row["snoozed_until"] is None:
+            return False
+        until = ensure_app_tz(datetime.fromisoformat(str(row["snoozed_until"])))
+        return ensure_app_tz(self._clock.now()) < until
 
     def today_checklist(self, account_id: int) -> dict[str, Any]:
         today = self.today_key()
@@ -281,16 +320,46 @@ class HabitService:
 
             motivation = self._motivation_for_habit(account_id, habit)
             celeb_key = str(motivation.get("celebration_key") or "generic-spark")
+            script = pick_script(
+                self._conn, situation="after_log", category=habit.category
+            )
+            hint = pick_hint(self._conn, suitable_for="after_log")
             celebration = self._record_celebration(
                 account_id,
                 kind="small",
                 celebration_key=celeb_key,
                 habit_log_id=log_id,
                 milestone_id=None,
-                review_script_id=None,
-                offline_hint_id=None,
+                review_script_id=script.id if script else None,
+                offline_hint_id=hint.id if hint else None,
                 created_at=completed_at,
             )
+            parent_motivation = {
+                "message": "记下来了——孩子被看见，时间也能存进树里。",
+                "habit_title": habit.title,
+            }
+            parent_script = (
+                None
+                if script is None
+                else {
+                    "id": script.id,
+                    "slug": script.slug,
+                    "script_text": script.script_text,
+                    "tone": script.tone,
+                }
+            )
+            offline_hint = (
+                None
+                if hint is None
+                else {
+                    "id": hint.id,
+                    "slug": hint.slug,
+                    "title": hint.title,
+                    "body": hint.body,
+                    "image_key": hint.image_key,
+                }
+            )
+            self._sync_prompt_state(account_id)
             self._conn.commit()
         except sqlite3.IntegrityError as exc:
             self._conn.rollback()
@@ -306,6 +375,9 @@ class HabitService:
             credit=credit,
             motivation_payload=motivation,
             celebration=celebration,
+            parent_motivation_payload=parent_motivation,
+            parent_script=parent_script,
+            offline_hint=offline_hint,
         )
 
     def get_credit(self, account_id: int, credit_id: int) -> EarnedCredit:
@@ -694,6 +766,24 @@ class HabitService:
             est_minutes=int(row["est_minutes"]),
             archived_at=str(row["archived_at"]) if row["archived_at"] is not None else None,
             created_at=str(row["created_at"]),
+        )
+
+    def _sync_prompt_state(self, account_id: int) -> None:
+        today = self.today_key()
+        habits = self.list_habits(account_id)
+        logged = {log.habit_id for log in self.list_logs(account_id) if log.day_key == today}
+        count = sum(1 for h in habits if h.id not in logged)
+        now = ensure_app_tz(self._clock.now()).isoformat()
+        execute(
+            self._conn,
+            """
+            INSERT INTO parent_prompt_state (account_id, badge_count, last_nudge_at, snoozed_until)
+            VALUES (?, ?, ?, NULL)
+            ON CONFLICT(account_id) DO UPDATE SET
+                badge_count = excluded.badge_count,
+                last_nudge_at = excluded.last_nudge_at
+            """,
+            (account_id, count, now),
         )
 
     def _motivation_for_habit(self, account_id: int, habit: Habit) -> dict[str, Any]:

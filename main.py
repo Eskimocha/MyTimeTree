@@ -15,6 +15,7 @@ from mytimetree.services.analytics import AnalyticsService
 from mytimetree.services.habit import HabitService
 from mytimetree.services.habit_query import HabitQueryService
 from mytimetree.services.habit_templates import seed_templates_into_db
+from mytimetree.services.parent_guidance import seed_parent_guidance_into_db
 from mytimetree.services.ledger import LedgerService
 from mytimetree.services.ledger_query import LedgerQueryService
 from mytimetree.services.membership import MembershipService
@@ -35,6 +36,7 @@ def build_app() -> FastAPI:
     conn = connect(db_path)
     apply_migrations(conn)
     seed_templates_into_db(conn)
+    seed_parent_guidance_into_db(conn)
 
     accounts = AccountService(conn)
     ledger = LedgerService(conn, accounts=accounts)

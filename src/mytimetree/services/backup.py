@@ -61,6 +61,13 @@ def create_daily_backup(
             "net": bal.net.value,
         }
 
+    def _table(name: str) -> list[dict[str, Any]]:
+        try:
+            rows = execute(conn, f"SELECT * FROM {name}").fetchall()
+        except sqlite3.Error:
+            return []
+        return [dict(r) for r in rows]
+
     payload: dict[str, Any] = {
         "kind": kind,
         "created_at": ensure_app_tz(now).isoformat(),
@@ -68,6 +75,16 @@ def create_daily_backup(
         "settings": [dict(r) for r in settings_rows],
         "ledger_entries": [dict(r) for r in ledger_rows],
         "balances": balances,
+        # H8.3 — habit module tables
+        "habit_templates": _table("habit_templates"),
+        "habits": _table("habits"),
+        "exchange_rules": _table("exchange_rules"),
+        "habit_logs": _table("habit_logs"),
+        "earned_credits": _table("earned_credits"),
+        "parent_scripts": _table("parent_scripts"),
+        "offline_celebration_hints": _table("offline_celebration_hints"),
+        "parent_prompt_state": _table("parent_prompt_state"),
+        "celebration_events": _table("celebration_events"),
     }
     if extra:
         payload["extra"] = extra

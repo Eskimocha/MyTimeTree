@@ -72,7 +72,16 @@
       <section id="tab-habits" class="tab-panel" role="tabpanel" hidden>
         <p class="tagline">记下好习惯，换来可存时间</p>
         <div id="habit-celeb" class="habit-celeb" hidden></div>
+        <div id="parent-guide" class="parent-guide" hidden>
+          <p id="parent-script-text" class="parent-script"></p>
+          <div id="offline-hint-card" class="offline-hint">
+            <strong id="offline-hint-title"></strong>
+            <p id="offline-hint-body"></p>
+            <p id="offline-hint-image" class="muted"></p>
+          </div>
+        </div>
         <ul id="habit-today-list" class="habit-list"></ul>
+        <button type="button" class="btn compact" id="btn-habit-snooze">稍后提醒</button>
         <div class="habit-actions">
           <button type="button" class="btn" id="btn-habit-board">好习惯总表</button>
           <button type="button" class="btn" id="btn-habit-redeem-all">兑换待入账</button>

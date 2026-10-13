@@ -130,6 +130,41 @@ class AnalyticsService:
             ending_net=end_asset - end_liab,
         )
 
+    def weekly_habit_stats(
+        self, *, account_id: int, as_of: datetime | None = None
+    ) -> dict[str, int | float | str]:
+        """H8.4 — weekly habit completion / parent logging rate."""
+        self._accounts.get_account(account_id)
+        now = ensure_app_tz(as_of or self._clock.now())
+        day = now.date()
+        start = day - timedelta(days=day.weekday())
+        end = start + timedelta(days=6)
+        start_s, end_s = start.isoformat(), end.isoformat()
+        enabled = execute(
+            self._conn,
+            "SELECT COUNT(*) AS c FROM habits WHERE account_id = ? AND archived_at IS NULL",
+            (account_id,),
+        ).fetchone()
+        enabled_n = int(enabled["c"]) if enabled else 0
+        logs = execute(
+            self._conn,
+            "SELECT COUNT(*) AS c FROM habit_logs WHERE account_id = ? "
+            "AND voided_at IS NULL AND day_key >= ? AND day_key <= ?",
+            (account_id, start_s, end_s),
+        ).fetchone()
+        log_n = int(logs["c"]) if logs else 0
+        expected = enabled_n * 7
+        rate = (log_n / expected) if expected else 0.0
+        return {
+            "account_id": account_id,
+            "period_start": start_s,
+            "period_end": end_s,
+            "enabled_habits": enabled_n,
+            "logs_in_week": log_n,
+            "expected_slots": expected,
+            "completion_rate": round(rate, 4),
+        }
+
 
 def _effects(category: LedgerCategory, amount: int, side: str | None) -> tuple[int, int]:
     if category == LedgerCategory.SPEND:

@@ -1,0 +1,66 @@
+[
+  {
+    "slug": "high-five",
+    "title": "击掌",
+    "body": "和孩子面对面击掌，大声说「做到了！」",
+    "image_key": "img-high-five",
+    "effort": "playful",
+    "suitable_for": "after_log"
+  },
+  {
+    "slug": "shoulder-bump",
+    "title": "肩碰肩",
+    "body": "轻轻跳起来肩碰肩，像球队进球庆祝。",
+    "image_key": "img-shoulder-bump",
+    "effort": "playful",
+    "suitable_for": "board_milestone"
+  },
+  {
+    "slug": "spin-clap",
+    "title": "转转圈击掌",
+    "body": "转一小圈再击掌，把笑声带出来。",
+    "image_key": "img-spin-clap",
+    "effort": "playful",
+    "suitable_for": "weekly_review"
+  },
+  {
+    "slug": "fridge-sticker",
+    "title": "冰箱贴纸",
+    "body": "在冰箱贴一颗小贴纸，写下今天的习惯。",
+    "image_key": "img-fridge-sticker",
+    "effort": "easy",
+    "suitable_for": "after_log"
+  },
+  {
+    "slug": "victory-pose",
+    "title": "胜利姿势",
+    "body": "双手举高做 V 字，喊「好习惯！」",
+    "image_key": null,
+    "effort": "playful",
+    "suitable_for": "after_log"
+  },
+  {
+    "slug": "quiet-nod",
+    "title": "认真点头",
+    "body": "蹲下来平视孩子，点头说「我看见你努力了」。",
+    "image_key": null,
+    "effort": "easy",
+    "suitable_for": "review"
+  },
+  {
+    "slug": "pillow-bump",
+    "title": "枕头碰碰",
+    "body": "用枕头轻轻碰一下，当作睡前胜利印记。",
+    "image_key": "img-pillow-bump",
+    "effort": "playful",
+    "suitable_for": "after_log"
+  },
+  {
+    "slug": "window-wave",
+    "title": "向窗外挥手",
+    "body": "拉开窗帘一起向外面挥手说「新的一天！」",
+    "image_key": null,
+    "effort": "easy",
+    "suitable_for": "before_habit"
+  }
+]

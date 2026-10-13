@@ -186,6 +186,31 @@
     setTimeout(() => { el.hidden = true; }, 2800);
   }
 
+  function showParentGuide(res) {
+    const wrap = $("#parent-guide");
+    if (!wrap) return;
+    const script = res.parent_script;
+    const hint = res.offline_hint;
+    if (!script && !hint) {
+      wrap.hidden = true;
+      return;
+    }
+    wrap.hidden = false;
+    $("#parent-script-text").textContent =
+      (res.parent_motivation_payload?.message || "") +
+      (script ? `\n话术：${script.script_text}` : "");
+    if (hint) {
+      $("#offline-hint-card").hidden = false;
+      $("#offline-hint-title").textContent = hint.title || "线下庆祝";
+      $("#offline-hint-body").textContent = hint.body || "";
+      $("#offline-hint-image").textContent = hint.image_key
+        ? `配图位：${hint.image_key}`
+        : "（文字指引，配图稍后可补）";
+    } else {
+      $("#offline-hint-card").hidden = true;
+    }
+  }
+
   async function refreshHabits() {
     if (!state.currentAccountId) return;
     const data = await api("/api/portal/habits/today");
@@ -209,6 +234,7 @@
               body: JSON.stringify({ habit_id: it.habit_id }),
             });
             showCelebration(res.motivation_payload, res.celebration);
+            showParentGuide(res);
             flash($("#habit-msg"), res.credit
               ? `已记录，待兑 ${res.credit.minutes} 分`
               : "已记录");
@@ -356,6 +382,19 @@
       await refreshHome();
     } catch (ex) {
       flash($("#home-msg"), ex.message);
+    }
+  });
+
+  $("#btn-habit-snooze")?.addEventListener("click", async () => {
+    try {
+      const res = await api("/api/portal/habits/badge/snooze?minutes=60", {
+        method: "POST",
+        body: "{}",
+      });
+      setHabitBadge(res.badge_count || 0);
+      flash($("#habit-msg"), "已稍后提醒");
+    } catch (ex) {
+      flash($("#habit-msg"), ex.message);
     }
   });
 

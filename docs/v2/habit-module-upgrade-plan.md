@@ -375,10 +375,10 @@ H5 扩展庆祝分层；**H9 新建**专责家长 Fogg（Prompt 小红点 / 话�
 
 | ID | 任务 | 验收 | 状态 |
 |----|------|------|------|
-| H8.1 | 种子扩至 ≥50（理想 80）；激励要点字段齐全 | 分类覆盖；双路径 + 激励列可解析 | Todo |
-| H8.2 | 孩子轻量打卡入口 stub（若 Q2=延后则仅接口注释） | 不阻塞家长主路径 | Todo |
-| H8.3 | 备份纳入 habits/rules/logs/credits + 家长引导种子引用 | 日备份可解析新表 | Todo |
-| H8.4 | 分析：周习惯完成率 / 家长记录率（可接 E7 analytics） | 固定数据断言 | Todo |
+| H8.1 | 种子扩至 ≥50（理想 80）；激励要点字段齐全 | 分类覆盖；双路径 + 激励列可解析 | Done |
+| H8.2 | 孩子轻量打卡入口 stub（若 Q2=延后则仅接口注释） | 不阻塞家长主路径 | Done |
+| H8.3 | 备份纳入 habits/rules/logs/credits + 家长引导种子引用 | 日备份可解析新表 | Done |
+| H8.4 | 分析：周习惯完成率 / 家长记录率（可接 E7 analytics） | 固定数据断言 | Done |
 
 ---
 
@@ -386,12 +386,12 @@ H5 扩展庆祝分层；**H9 新建**专责家长 Fogg（Prompt 小红点 / 话�
 
 | ID | 任务 | 验收 | 状态 |
 |----|------|------|------|
-| H9.1 | `ParentPromptState`：按日计算 `badge_count`（未记录启用习惯数） | Clock 固定；记完清零；跨日重置 | Todo |
-| H9.2 | 可选 snooze；过期后 badge 恢复 | 边界用例 | Todo |
-| H9.3 | 加载 `ParentScript` 种子；按 situation / category 筛选 | ≥12 条；缺省回退通用话术 | Todo |
-| H9.4 | 加载 `OfflineCelebrationHint`；支持 `image_key` 元数据（资源可后补） | ≥8 条；≥4 含 image_key；无图不崩 | Todo |
-| H9.5 | 记录成功返回 `parent_motivation_payload` + 推荐话术 + 1 条线下 hint | 契约快照 | Todo |
-| H9.6 | （集成）Portal 展示话术卡 / 线下动作卡（配图位） | 与 H7.5–H7.6 联调；无控制台错误 | Todo |
+| H9.1 | `ParentPromptState`：按日计算 `badge_count`（未记录启用习惯数） | Clock 固定；记完清零；跨日重置 | Done |
+| H9.2 | 可选 snooze；过期后 badge 恢复 | 边界用例 | Done |
+| H9.3 | 加载 `ParentScript` 种子；按 situation / category 筛选 | ≥12 条；缺省回退通用话术 | Done |
+| H9.4 | 加载 `OfflineCelebrationHint`；支持 `image_key` 元数据（资源可后补） | ≥8 条；≥4 含 image_key；无图不崩 | Done |
+| H9.5 | 记录成功返回 `parent_motivation_payload` + 推荐话术 + 1 条线下 hint | 契约快照 | Done |
+| H9.6 | （集成）Portal 展示话术卡 / 线下动作卡（配图位） | 与 H7.5–H7.6 联调；无控制台错误 | Done |
 
 ---
 
