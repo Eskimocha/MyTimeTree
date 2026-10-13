@@ -80,6 +80,23 @@ class HabitLog:
     day_key: str
 
 
+@dataclass(frozen=True, slots=True)
+class EarnedCredit:
+    id: int
+    account_id: int
+    habit_log_id: int
+    minutes: int
+    status: str
+    ledger_entry_id: int | None
+    redeemed_at: str | None
+
+
+@dataclass(frozen=True, slots=True)
+class HabitCompletion:
+    log: HabitLog
+    credit: EarnedCredit | None
+
+
 EXCHANGE_CADENCES: frozenset[str] = frozenset({"daily", "streak_n"})
 
 # H2.4: deactivate keeps existing pending credits redeemable; only blocks new earn.

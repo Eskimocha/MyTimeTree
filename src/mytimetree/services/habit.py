@@ -3,13 +3,16 @@
 from __future__ import annotations
 
 import sqlite3
+from typing import TYPE_CHECKING
 
 from mytimetree.db.connection import execute
 from mytimetree.domain.errors import DomainError, ErrorCode, ensure
 from mytimetree.domain.habit import (
     HABIT_SCHEMA_VERSION_HINT,
+    EarnedCredit,
     ExchangeRule,
     Habit,
+    HabitCompletion,
     HabitDraft,
     HabitLog,
     require_micro,
@@ -18,6 +21,9 @@ from mytimetree.domain.habit import (
 from mytimetree.domain.time import Clock, SystemClock, ensure_app_tz
 from mytimetree.services.accounts import AccountService
 from mytimetree.services.habit_templates import get_template_by_slug
+
+if TYPE_CHECKING:
+    from mytimetree.services.ledger import LedgerService
 
 
 def scaffold_ok() -> bool:
@@ -31,10 +37,12 @@ class HabitService:
         *,
         accounts: AccountService,
         clock: Clock | None = None,
+        ledger: LedgerService | None = None,
     ) -> None:
         self._conn = conn
         self._accounts = accounts
         self._clock = clock or SystemClock()
+        self._ledger = ledger
 
     def enable_from_template(self, account_id: int, template_slug: str) -> Habit:
         self._accounts.get_account(account_id)
@@ -125,38 +133,109 @@ class HabitService:
         habit_id: int,
         *,
         source: str = "parent",
-    ) -> HabitLog:
-        """Record completion (H1.4 gate + H3 precursor). No credit/redeem yet."""
+    ) -> HabitCompletion:
+        """Record completion; optional EarnedCredit + auto_redeem (H3)."""
         habit = self.get_habit(account_id, habit_id)
         ensure(
             habit.archived_at is None,
             ErrorCode.HABIT_ARCHIVED,
             "已归档习惯不可再记录",
         )
+        rule = self.active_rule_for_habit(account_id, habit_id)
+        if rule is not None and self.can_earn_from_rule(rule):
+            self.assert_within_daily_cap(
+                account_id,
+                rule.id,
+                additional_minutes=rule.minutes_per_completion,
+            )
+            if rule.auto_redeem:
+                ensure(
+                    self._ledger is not None,
+                    ErrorCode.INTERNAL,
+                    "auto_redeem 需要 LedgerService",
+                )
+
         now = ensure_app_tz(self._clock.now())
         day_key = now.date().isoformat()
         completed_at = now.isoformat()
         try:
+            self._conn.execute("BEGIN")
             cur = execute(
                 self._conn,
                 "INSERT INTO habit_logs (account_id, habit_id, completed_at, source, day_key) "
                 "VALUES (?, ?, ?, ?, ?)",
                 (account_id, habit_id, completed_at, source, day_key),
             )
+            log_id = int(cur.lastrowid)
+            log = HabitLog(
+                id=log_id,
+                account_id=account_id,
+                habit_id=habit_id,
+                completed_at=completed_at,
+                source=source,
+                day_key=day_key,
+            )
+            credit: EarnedCredit | None = None
+            if rule is not None and self.can_earn_from_rule(rule):
+                credit = self._insert_pending_credit(
+                    account_id,
+                    habit_log_id=log_id,
+                    minutes=rule.minutes_per_completion,
+                )
+                if rule.auto_redeem:
+                    assert self._ledger is not None
+                    entry = self._ledger.habit_reward(
+                        account_id,
+                        rule.minutes_per_completion,
+                        habit_log_id=log_id,
+                        commit=False,
+                    )
+                    redeemed_at = ensure_app_tz(self._clock.now()).isoformat()
+                    execute(
+                        self._conn,
+                        "UPDATE earned_credits SET status = ?, ledger_entry_id = ?, "
+                        "redeemed_at = ? WHERE id = ?",
+                        ("redeemed", entry.id, redeemed_at, credit.id),
+                    )
+                    credit = self.get_credit(account_id, credit.id)
+            self._conn.commit()
         except sqlite3.IntegrityError as exc:
+            self._conn.rollback()
             raise DomainError(
                 ErrorCode.HABIT_ALREADY_LOGGED,
                 f"今日已记录该习惯: {day_key}",
             ) from exc
-        self._conn.commit()
-        return HabitLog(
-            id=int(cur.lastrowid),
-            account_id=account_id,
-            habit_id=habit_id,
-            completed_at=completed_at,
-            source=source,
-            day_key=day_key,
+        except Exception:
+            self._conn.rollback()
+            raise
+        return HabitCompletion(log=log, credit=credit)
+
+    def get_credit(self, account_id: int, credit_id: int) -> EarnedCredit:
+        self._accounts.get_account(account_id)
+        row = execute(
+            self._conn,
+            "SELECT id, account_id, habit_log_id, minutes, status, ledger_entry_id, redeemed_at "
+            "FROM earned_credits WHERE id = ? AND account_id = ?",
+            (credit_id, account_id),
+        ).fetchone()
+        if row is None:
+            raise DomainError(ErrorCode.NOT_FOUND, f"积分不存在: {credit_id}")
+        return self._row_to_credit(row)
+
+    def _insert_pending_credit(
+        self,
+        account_id: int,
+        *,
+        habit_log_id: int,
+        minutes: int,
+    ) -> EarnedCredit:
+        cur = execute(
+            self._conn,
+            "INSERT INTO earned_credits (account_id, habit_log_id, minutes, status) "
+            "VALUES (?, ?, ?, 'pending')",
+            (account_id, habit_log_id, minutes),
         )
+        return self.get_credit(account_id, int(cur.lastrowid))
 
     def list_logs(
         self,
@@ -393,6 +472,20 @@ class HabitService:
             est_minutes=int(row["est_minutes"]),
             archived_at=str(row["archived_at"]) if row["archived_at"] is not None else None,
             created_at=str(row["created_at"]),
+        )
+
+    @staticmethod
+    def _row_to_credit(row: sqlite3.Row) -> EarnedCredit:
+        return EarnedCredit(
+            id=int(row["id"]),
+            account_id=int(row["account_id"]),
+            habit_log_id=int(row["habit_log_id"]),
+            minutes=int(row["minutes"]),
+            status=str(row["status"]),
+            ledger_entry_id=(
+                int(row["ledger_entry_id"]) if row["ledger_entry_id"] is not None else None
+            ),
+            redeemed_at=str(row["redeemed_at"]) if row["redeemed_at"] is not None else None,
         )
 
     @staticmethod

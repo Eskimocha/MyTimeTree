@@ -82,7 +82,7 @@ def test_archive_keeps_history_blocks_new_log(env):
     clock: FakeClock = env["clock"]
     a = env["a"]
     h = habits.enable_from_template(a.id, "brush-teeth")
-    log = habits.complete_habit(a.id, h.id)
+    log = habits.complete_habit(a.id, h.id).log
     assert log.habit_id == h.id
 
     habits.archive_habit(a.id, h.id)

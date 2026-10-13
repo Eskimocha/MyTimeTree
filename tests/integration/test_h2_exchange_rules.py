@@ -6,7 +6,7 @@ from datetime import datetime
 
 import pytest
 
-from mytimetree.db.connection import connect, execute
+from mytimetree.db.connection import connect
 from mytimetree.db.migrate import apply_migrations
 from mytimetree.domain.errors import DomainError, ErrorCode
 from mytimetree.domain.habit import INACTIVE_RULE_PENDING_POLICY
@@ -113,7 +113,6 @@ def test_one_active_rule_per_habit_default(env):
 @pytest.mark.integration
 def test_daily_cap_assert_exceeded(env):
     habits: HabitService = env["habits"]
-    conn = env["conn"]
     a, ha = env["a"], env["ha"]
     rule = habits.create_exchange_rule(
         a.id,
@@ -121,15 +120,7 @@ def test_daily_cap_assert_exceeded(env):
         minutes_per_completion=5,
         daily_cap_minutes=5,
     )
-    # Simulate already earned 5 minutes today via pending credit
-    log = habits.complete_habit(a.id, ha.id)
-    execute(
-        conn,
-        "INSERT INTO earned_credits (account_id, habit_log_id, minutes, status) "
-        "VALUES (?, ?, ?, 'pending')",
-        (a.id, log.id, 5),
-    )
-    conn.commit()
+    habits.complete_habit(a.id, ha.id)
     with pytest.raises(DomainError) as ei:
         habits.assert_within_daily_cap(a.id, rule.id, additional_minutes=5)
     assert ei.value.code == ErrorCode.VALIDATION
@@ -140,24 +131,11 @@ def test_deactivate_keeps_pending_redeemable_blocks_new_earn(env):
     """H2.4 policy: pending remain redeemable; inactive rule cannot earn new credits."""
     assert INACTIVE_RULE_PENDING_POLICY == "keep_redeemable"
     habits: HabitService = env["habits"]
-    conn = env["conn"]
     a, ha = env["a"], env["ha"]
     rule = habits.create_exchange_rule(a.id, habit_id=ha.id, minutes_per_completion=5)
-    log = habits.complete_habit(a.id, ha.id)
-    execute(
-        conn,
-        "INSERT INTO earned_credits (account_id, habit_log_id, minutes, status) "
-        "VALUES (?, ?, ?, 'pending')",
-        (a.id, log.id, 5),
-    )
-    conn.commit()
-    credit_id = int(
-        execute(
-            conn,
-            "SELECT id FROM earned_credits WHERE habit_log_id = ?",
-            (log.id,),
-        ).fetchone()["id"]
-    )
+    completion = habits.complete_habit(a.id, ha.id)
+    assert completion.credit is not None
+    credit_id = completion.credit.id
 
     habits.deactivate_exchange_rule(a.id, rule.id)
     inactive = habits.get_exchange_rule(a.id, rule.id)

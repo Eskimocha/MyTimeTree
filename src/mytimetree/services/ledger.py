@@ -181,6 +181,31 @@ class LedgerService:
         minutes = self._default_repay_minutes(account_id)
         return self.repay(account_id, minutes=minutes, summary=scene)
 
+    def habit_reward(
+        self,
+        account_id: int,
+        minutes: int,
+        *,
+        habit_log_id: int,
+        summary: str | None = None,
+        commit: bool = True,
+    ) -> LedgerEntry:
+        """Habit exchange credit redeemed into asset (Q1/Q3: habit_reward + fruit)."""
+        ensure(minutes > 0, ErrorCode.VALIDATION, "习惯兑换分钟必须为正")
+        entry = self._append(
+            account_id,
+            LedgerCategory.HABIT_REWARD,
+            minutes,
+            summary=summary or "习惯兑换",
+            meta={"habit_log_id": habit_log_id},
+            commit=False,
+        )
+        orn = add_fruit(self.get_ornaments(account_id))
+        self._save_ornaments(account_id, orn)
+        if commit:
+            self._conn.commit()
+        return entry
+
     def deposit(
         self,
         account_id: int,
@@ -311,7 +336,6 @@ class LedgerService:
             "INSERT OR IGNORE INTO tree_ornaments (account_id) VALUES (?)",
             (account_id,),
         )
-        self._conn.commit()
 
     def _save_ornaments(self, account_id: int, orn: Ornaments) -> None:
         self._ensure_ornaments_row(account_id)
