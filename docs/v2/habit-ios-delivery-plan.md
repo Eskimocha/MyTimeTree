@@ -98,13 +98,14 @@ a772b25 (早期 Web Portal)
 - [x] iOS 基线分支可拉取：`origin/feature/v1-tdd`
 - [x] 差距盘点：`docs/v2/habit-ios-gap-analysis.md`
 - [x] Q4′ / Q13 / P-D6 / P-D7（自动兑；稍后提醒延期）
-- [ ] Kai 确认后开实现支 `cursor/habit-ios-ih0-*-5c97` 做 IH0
+- [x] Kai 确认方案 A：IH0–IH9 一并实现（支 `cursor/habit-ios-replan-5c97`）
 
-## 8. 建议的下一步
+## 8. 实现状态（2026-10-13）
 
-1. **IH0 红灯**：migration v8 + `habit_reward` effects + 主屏 strip 静态壳（无兑、无 snooze）。  
-2. **再写实现 PR**（勿把旧 habit 分支直接 merge）。
+1. **已完成**：migration v8、`habit_reward` 自动入账、主屏 Today Habit Strip、庆祝 overlay（话术/线下 hint）、设置清单自定义、分析复盘、content 表构建管线。  
+2. **本地验收**：`cd mobile && npm run smoke:habits`；真机用 Xcode 打开 `mobile/ios/App/App.xcodeproj`（先 `npm run cap:sync`）。  
+3. **明确未做**：稍后提醒 / OS 推送 / 手动兑 UI / 独立习惯 Tab。
 
 ---
 
-*计划状态：交付面 + IA + 自动兑/提醒延期已锁定；**可开 IH0**。*
+*计划状态：IH0–IH9 方案 A 已落地；待 Kai 明早真机测。*

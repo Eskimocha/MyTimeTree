@@ -391,6 +391,7 @@
         return [-amount, 0];
       case "deposit":
       case "auto_grant":
+      case "habit_reward":
         return [amount, 0];
       case "borrow":
         return [0, amount];
@@ -412,8 +413,13 @@
       neutral: "#757575",
     };
     let tone = "neutral";
-    if (category === "deposit" || category === "auto_grant") tone = "income";
-    else if (category === "spend") tone = "expense";
+    if (
+      category === "deposit" ||
+      category === "auto_grant" ||
+      category === "habit_reward"
+    ) {
+      tone = "income";
+    } else if (category === "spend") tone = "expense";
     else if (category === "borrow") tone = "liability_up";
     else if (category === "repay") tone = "liability_down";
     else if (category === "auto_interest") {
@@ -915,8 +921,34 @@
     }
     sessionUnlocked = true;
     writeUnlockFlag(true);
+    ensureHabitsAttached();
+    try {
+      if (global.MyTimeTreeHabits && global.MyTimeTreeHabits._installed) {
+        global.MyTimeTreeHabits._installed.ensureStarterHabits(id);
+      }
+    } catch (err) {
+      console.warn("[habits] ensureStarterHabits", err);
+    }
     dbApi.persist();
     return { id, name, attributes: {} };
+  }
+
+  function ensureHabitsAttached() {
+    if (!global.MyTimeTreeHabits) return;
+    if (global.MyTimeTreeHabits._installed) return;
+    global.MyTimeTreeHabits._installed = global.MyTimeTreeHabits.attach({
+      ensure,
+      DomainError,
+      getDb: () => dbApi,
+      requireCurrent,
+      appendEntry,
+      addFruit,
+      getOrnaments,
+      saveOrnaments,
+      nowIso,
+      todayStr,
+      persist: () => dbApi.persist(),
+    });
   }
 
   async function deleteAccount(accountId, password) {
@@ -933,6 +965,11 @@
 
     const wasCurrent = currentAccountId() === id;
     // Explicit cascade — safer if PRAGMA foreign_keys was off on older DBs
+    dbApi.exec("DELETE FROM celebration_events WHERE account_id = ?", [id]);
+    dbApi.exec("DELETE FROM earned_credits WHERE account_id = ?", [id]);
+    dbApi.exec("DELETE FROM habit_logs WHERE account_id = ?", [id]);
+    dbApi.exec("DELETE FROM exchange_rules WHERE account_id = ?", [id]);
+    dbApi.exec("DELETE FROM habits WHERE account_id = ?", [id]);
     dbApi.exec("DELETE FROM ornament_events WHERE account_id = ?", [id]);
     dbApi.exec("DELETE FROM tree_ornaments WHERE account_id = ?", [id]);
     dbApi.exec("DELETE FROM balance_snapshots WHERE account_id = ?", [id]);
@@ -1606,6 +1643,17 @@
         return { status: 200, body: result };
       }
 
+      ensureHabitsAttached();
+      if (global.MyTimeTreeHabits && typeof global.MyTimeTreeHabits.tryHandle === "function") {
+        const habitRes = await global.MyTimeTreeHabits.tryHandle({
+          path,
+          method,
+          body,
+          u,
+        });
+        if (habitRes) return habitRes;
+      }
+
       return {
         status: 501,
         body: {
@@ -1640,6 +1688,14 @@
     async init() {
       await ensureDb();
       sessionUnlocked = readUnlockFlag();
+      ensureHabitsAttached();
+      try {
+        if (global.MyTimeTreeHabits && global.MyTimeTreeHabits._installed) {
+          global.MyTimeTreeHabits._installed.syncContentTables();
+        }
+      } catch (err) {
+        console.warn("[habits] syncContentTables", err);
+      }
       if (sessionUnlocked) catchUp();
       return {
         ok: true,

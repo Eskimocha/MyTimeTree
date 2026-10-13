@@ -48,7 +48,7 @@
 
     <main id="main" class="main" hidden>
       <nav class="tabs" role="tablist">
-        <button type="button" class="tab active" data-tab="home" role="tab">主屏</button>
+        <button type="button" class="tab active" data-tab="home" role="tab">主屏<span id="habit-home-badge" class="tab-badge" hidden></span></button>
         <button type="button" class="tab" data-tab="ledger" role="tab">流水</button>
         <button type="button" class="tab" data-tab="settings" role="tab">设置</button>
         <button type="button" class="tab" data-tab="analytics" role="tab">分析</button>
@@ -104,6 +104,13 @@
             <div class="bal-row"><strong id="today-interest-min">0</strong><span class="unit">分</span></div>
           </div>
         </div>
+        <div id="habit-today-strip" class="habit-strip" hidden>
+          <div class="habit-strip-head">
+            <span id="habit-strip-title">今日好习惯</span>
+            <span id="habit-strip-meta" class="muted"></span>
+          </div>
+          <div id="habit-chip-rail" class="habit-chip-rail" role="list"></div>
+        </div>
         <div class="actions">
           <button type="button" class="btn" id="btn-spend">支出</button>
           <button type="button" class="btn" id="btn-borrow">借用</button>
@@ -127,6 +134,22 @@
           <button type="submit" class="btn primary">保存设置</button>
         </form>
         <p id="settings-msg" class="msg" hidden></p>
+
+        <section id="habit-settings" class="habit-settings" aria-label="好习惯清单">
+          <h2 class="rules-title">好习惯清单</h2>
+          <p class="muted habit-settings-lede">增减、排序会反映到主屏「今日好习惯」。</p>
+          <ul id="habit-settings-list" class="habit-settings-list"></ul>
+          <div class="habit-settings-add stack">
+            <label>从种子启用
+              <select id="habit-template-select"></select>
+            </label>
+            <button type="button" class="btn" id="btn-habit-enable">启用种子</button>
+            <label>自定义名称<input id="habit-custom-title" maxlength="32" placeholder="例如：练字一行" /></label>
+            <label>每次分钟<input id="habit-custom-minutes" type="number" min="1" value="5" /></label>
+            <button type="button" class="btn primary" id="btn-habit-custom">添加自定义</button>
+          </div>
+          <p id="habit-settings-msg" class="msg" hidden></p>
+        </section>
 
         <aside id="settings-rules" class="rules-card" aria-label="当前规则说明">
           <h2 class="rules-title">当前规则</h2>
@@ -166,6 +189,13 @@
       </section>
 
       <section id="tab-analytics" class="tab-panel" role="tabpanel" hidden>
+        <div class="analytics-block">
+          <h2>好习惯</h2>
+          <p id="habit-board-stats" class="muted"></p>
+          <ul id="habit-timeline-list" class="habit-review-list"></ul>
+          <h3 class="habit-review-sub">分类</h3>
+          <ul id="habit-category-list" class="habit-review-list"></ul>
+        </div>
         <div class="analytics-block">
           <h2>本周趋势</h2>
           <div id="chart-week" class="trend-chart" role="img" aria-label="本周资产负债折线与每日利息柱状图"></div>
@@ -248,9 +278,25 @@
     </div>
   </div>
 
+  <div id="habit-celeb-overlay" class="habit-overlay" hidden>
+    <div class="habit-overlay-backdrop" data-habit-dismiss></div>
+    <div class="habit-overlay-sheet" role="dialog" aria-modal="true" aria-labelledby="habit-celeb-title">
+      <p id="habit-celeb-title" class="habit-celeb-title"></p>
+      <p id="habit-celeb-credit" class="habit-celeb-credit muted"></p>
+      <p id="habit-celeb-script" class="habit-celeb-script"></p>
+      <div id="habit-celeb-hint" class="habit-celeb-hint" hidden>
+        <strong id="habit-hint-title"></strong>
+        <p id="habit-hint-body"></p>
+      </div>
+      <button type="button" class="btn primary" data-habit-dismiss>好的</button>
+    </div>
+  </div>
+
     <script src="./local/sql-wasm.js"></script>
-  <script src="./local/db.js?v=p4r2"></script>
-  <script src="./local/store.js?v=p4r2"></script>
+  <script src="./local/db.js?v=p5h1"></script>
+  <script src="./local/habit-seed.js?v=p5h1"></script>
+  <script src="./local/store.js?v=p5h1"></script>
+  <script src="./local/habits.js?v=p5h1"></script>
   <script src="./local/bridge.js?v=p4r2"></script>
   <script src="./local/lock.js?v=p4r9"></script>
   <script src="./local/html2canvas.min.js"></script>

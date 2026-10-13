@@ -130,10 +130,16 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 
 # Scratchpad
 
-## Task: 习惯 2.0 iOS — 差距盘点 + 主屏 IA（2026-10-13）
-- Kai: iOS 单端；勿增「习惯」Tab；主屏记录；复盘→分析
-- [X] 记完自动兑；稍后提醒延期；清单可自定义；话术/hint 表格真源（C-D*）
-- [X] `docs/v2/content/` 模板表已建
-- [ ] 下一步：IH0（migration v8 + 自动入账 + 主屏 strip；无兑/无 snooze）
+## Task: 习惯 2.0 iOS — 方案 A IH0–IH9（2026-10-13）
+- Kai: 选 A，H0–H9 全部做完，明早真机测；支 `cursor/habit-ios-replan-5c97`
+- [X] migration v8 + content seed + habits.js 自动兑
+- [X] 主屏 strip / 庆祝 overlay / 设置清单 / 分析复盘
+- [X] `npm run smoke:habits` + `sync-web` + ios public
+- [ ] 推送 PR；Kai 明早 Xcode 测
 
-## Archived: iOS 1.0 offline phases / Web habit PR#1 closed
+## Lessons (this task)
+- Content tables: `docs/v2/content/*.md` → `build-habit-content.mjs` → `habit-seed.js`；`sync-web` 必须先 build
+- Ledger API returns `items` not `entries`
+- deleteAccount 必须显式清 habit_* / earned_credits / celebration_events
+
+## Archived: 差距盘点 / Web habit PR#1 closed / iOS 1.0 phases

@@ -273,6 +273,7 @@
     updateOrnamentCounters(o);
     renderTreeOrnaments(o, stage);
     await refreshDefaults();
+    await refreshHabitsStrip();
   }
 
   async function refreshDefaults() {
@@ -458,11 +459,236 @@
       }
       renderTrendChart($("#chart-week"), w.series || []);
       renderTrendChart($("#chart-month"), m.series || []);
+      await refreshHabitReview();
     } catch (err) {
       console.error("refreshAnalytics failed", err);
       const msg = `分析加载失败：${err && err.message ? err.message : err}`;
       if (weekEl) weekEl.textContent = msg;
       if (monthEl) monthEl.textContent = msg;
+    }
+  }
+
+  function setHomeHabitBadge(n) {
+    const badge = $("#habit-home-badge");
+    if (!badge) return;
+    if (n > 0) {
+      badge.hidden = false;
+      badge.textContent = String(n);
+    } else {
+      badge.hidden = true;
+      badge.textContent = "";
+    }
+  }
+
+  async function refreshHabitsStrip() {
+    const strip = $("#habit-today-strip");
+    const rail = $("#habit-chip-rail");
+    if (!strip || !rail || !state.currentAccountId) return;
+    try {
+      const data = await api("/api/portal/habits/today");
+      setHomeHabitBadge(data.badge_count || 0);
+      const pending = (data.items || []).filter((i) => !i.done);
+      const done = (data.items || []).filter((i) => i.done);
+      strip.hidden = false;
+      $("#habit-strip-meta").textContent = pending.length
+        ? `还剩 ${pending.length}`
+        : "今日已记完";
+      rail.innerHTML = "";
+      const show = [...pending, ...done].slice(0, 6);
+      for (const it of show) {
+        const chip = document.createElement("button");
+        chip.type = "button";
+        chip.className = "habit-chip" + (it.done ? " done" : "");
+        chip.setAttribute("role", "listitem");
+        chip.textContent = it.done ? `✓ ${it.title}` : `记 · ${it.title}`;
+        if (!it.done) {
+          chip.addEventListener("click", () => completeHabitFromHome(it.habit_id));
+        } else {
+          chip.disabled = true;
+        }
+        rail.appendChild(chip);
+      }
+      if (!show.length) {
+        const empty = document.createElement("p");
+        empty.className = "muted";
+        empty.textContent = "在设置里启用好习惯吧";
+        rail.appendChild(empty);
+      }
+    } catch (err) {
+      console.warn("habits strip", err);
+      strip.hidden = true;
+      setHomeHabitBadge(0);
+    }
+  }
+
+  function showHabitCelebration(res) {
+    const overlay = $("#habit-celeb-overlay");
+    if (!overlay) return;
+    const board = res.celebration && res.celebration.kind === "board";
+    const approach = res.motivation_payload?.approach?.emotion_copy || "";
+    const avoid = res.motivation_payload?.avoid?.emotion_copy || "";
+    $("#habit-celeb-title").textContent = board
+      ? "大庆祝！这周习惯满满"
+      : `小庆祝 · ${approach}${avoid ? " / " + avoid : ""}`;
+    $("#habit-celeb-credit").textContent = res.minutes_credited
+      ? `已存入 ${res.minutes_credited} 分`
+      : "";
+    $("#habit-celeb-script").textContent =
+      res.parent_script?.script_text || "";
+    const hint = res.offline_hint;
+    const hintEl = $("#habit-celeb-hint");
+    if (hint && hint.title) {
+      hintEl.hidden = false;
+      $("#habit-hint-title").textContent = hint.title;
+      $("#habit-hint-body").textContent = hint.body || "";
+    } else {
+      hintEl.hidden = true;
+    }
+    overlay.hidden = false;
+  }
+
+  async function completeHabitFromHome(habitId) {
+    try {
+      const res = await api("/api/portal/habits/complete", {
+        method: "POST",
+        body: JSON.stringify({ habit_id: habitId }),
+      });
+      showHabitCelebration(res);
+      await refreshHome();
+    } catch (ex) {
+      flash($("#home-msg"), ex.message);
+    }
+  }
+
+  async function refreshHabitSettings() {
+    const list = $("#habit-settings-list");
+    const sel = $("#habit-template-select");
+    if (!list || !state.currentAccountId) return;
+    try {
+      const data = await api("/api/portal/habits/list");
+      const habits = (data.habits || []).filter((h) => !h.archived);
+      list.innerHTML = "";
+      habits.forEach((h, idx) => {
+        const li = document.createElement("li");
+        const label = document.createElement("span");
+        label.textContent = `${h.title} · ${h.minutes_per_completion} 分`;
+        const actions = document.createElement("span");
+        actions.className = "habit-settings-actions";
+        const up = document.createElement("button");
+        up.type = "button";
+        up.className = "btn compact";
+        up.textContent = "上移";
+        up.disabled = idx === 0;
+        up.addEventListener("click", async () => {
+          const ids = habits.map((x) => x.id);
+          [ids[idx - 1], ids[idx]] = [ids[idx], ids[idx - 1]];
+          await api("/api/portal/habits/reorder", {
+            method: "POST",
+            body: JSON.stringify({ ordered_ids: ids }),
+          });
+          await refreshHabitSettings();
+          await refreshHabitsStrip();
+        });
+        const down = document.createElement("button");
+        down.type = "button";
+        down.className = "btn compact";
+        down.textContent = "下移";
+        down.disabled = idx === habits.length - 1;
+        down.addEventListener("click", async () => {
+          const ids = habits.map((x) => x.id);
+          [ids[idx + 1], ids[idx]] = [ids[idx], ids[idx + 1]];
+          await api("/api/portal/habits/reorder", {
+            method: "POST",
+            body: JSON.stringify({ ordered_ids: ids }),
+          });
+          await refreshHabitSettings();
+          await refreshHabitsStrip();
+        });
+        const arch = document.createElement("button");
+        arch.type = "button";
+        arch.className = "btn compact";
+        arch.textContent = "移除";
+        arch.addEventListener("click", async () => {
+          await api("/api/portal/habits/archive", {
+            method: "POST",
+            body: JSON.stringify({ habit_id: h.id }),
+          });
+          await refreshHabitSettings();
+          await refreshHabitsStrip();
+        });
+        const editMin = document.createElement("button");
+        editMin.type = "button";
+        editMin.className = "btn compact";
+        editMin.textContent = "改分钟";
+        editMin.addEventListener("click", async () => {
+          const raw = window.prompt(`${h.title} 每次几分钟？`, String(h.minutes_per_completion));
+          if (raw == null) return;
+          const n = Math.floor(Number(raw));
+          if (!Number.isFinite(n) || n <= 0) return;
+          await api("/api/portal/habits/rules", {
+            method: "PATCH",
+            body: JSON.stringify({ rule_id: h.rule_id, minutes_per_completion: n }),
+          });
+          await refreshHabitSettings();
+        });
+        actions.append(up, down, editMin, arch);
+        li.append(label, actions);
+        list.appendChild(li);
+      });
+      if (sel) {
+        const enabledSlugs = new Set(
+          (data.habits || [])
+            .filter((h) => !h.archived && h.template_id != null)
+            .map((h) => h.template_id)
+        );
+        sel.innerHTML = "";
+        for (const t of data.templates || []) {
+          if (enabledSlugs.has(t.id)) continue;
+          const opt = document.createElement("option");
+          opt.value = String(t.id);
+          opt.textContent = `${t.title}（${t.default_minutes}分）`;
+          sel.appendChild(opt);
+        }
+      }
+    } catch (err) {
+      console.warn("habit settings", err);
+    }
+  }
+
+  async function refreshHabitReview() {
+    try {
+      const data = await api("/api/portal/habits/overview");
+      const stats = $("#habit-board-stats");
+      if (stats) {
+        stats.textContent =
+          `本周 ${data.board?.stats?.week_logs || 0} 记 · 近记 ${data.board?.stats?.total_logs || 0} 条 · 已兑 ${data.board?.stats?.minutes_redeemed || 0} 分`;
+      }
+      const tl = $("#habit-timeline-list");
+      if (tl) {
+        tl.innerHTML = "";
+        for (const it of data.timeline || []) {
+          const li = document.createElement("li");
+          li.textContent = `${it.title} · ${it.day_key} · ${it.minutes} 分`;
+          tl.appendChild(li);
+        }
+        if (!(data.timeline || []).length) {
+          const li = document.createElement("li");
+          li.className = "muted";
+          li.textContent = "还没有好习惯记录";
+          tl.appendChild(li);
+        }
+      }
+      const cats = $("#habit-category-list");
+      if (cats) {
+        cats.innerHTML = "";
+        for (const c of data.categories || []) {
+          const li = document.createElement("li");
+          li.textContent = `${c.label} · ${c.count} 次 · ${c.minutes} 分`;
+          cats.appendChild(li);
+        }
+      }
+    } catch (err) {
+      console.warn("habit review", err);
     }
   }
 
@@ -666,7 +892,10 @@
       p.classList.toggle("active", on);
     });
     if (name === "ledger") refreshLedger();
-    if (name === "settings") refreshSettings();
+    if (name === "settings") {
+      refreshSettings();
+      refreshHabitSettings();
+    }
     if (name === "analytics") refreshAnalytics();
     if (name === "home") refreshHome();
   }
@@ -1137,6 +1366,46 @@
 
   const homeVersion = $("#app-version");
   if (homeVersion) homeVersion.textContent = `v${APP_VERSION}`;
+
+  document.querySelectorAll("[data-habit-dismiss]").forEach((el) => {
+    el.addEventListener("click", () => {
+      const overlay = $("#habit-celeb-overlay");
+      if (overlay) overlay.hidden = true;
+    });
+  });
+
+  $("#btn-habit-enable")?.addEventListener("click", async () => {
+    const sel = $("#habit-template-select");
+    if (!sel || !sel.value) return;
+    try {
+      await api("/api/portal/habits/enable", {
+        method: "POST",
+        body: JSON.stringify({ template_id: Number(sel.value) }),
+      });
+      flash($("#habit-settings-msg"), "已启用");
+      await refreshHabitSettings();
+      await refreshHabitsStrip();
+    } catch (ex) {
+      flash($("#habit-settings-msg"), ex.message);
+    }
+  });
+
+  $("#btn-habit-custom")?.addEventListener("click", async () => {
+    const title = ($("#habit-custom-title")?.value || "").trim();
+    const minutes = Number($("#habit-custom-minutes")?.value || 5);
+    try {
+      await api("/api/portal/habits/custom", {
+        method: "POST",
+        body: JSON.stringify({ title, minutes }),
+      });
+      if ($("#habit-custom-title")) $("#habit-custom-title").value = "";
+      flash($("#habit-settings-msg"), "已添加自定义习惯");
+      await refreshHabitSettings();
+      await refreshHabitsStrip();
+    } catch (ex) {
+      flash($("#habit-settings-msg"), ex.message);
+    }
+  });
 
   bootstrap().catch((err) => {
     console.error("bootstrap failed", err);
