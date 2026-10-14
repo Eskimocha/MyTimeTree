@@ -136,8 +136,8 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 - [X] 拷入 `docs/v2/content/`（micro-steps、celebration-copy；退役 emotion-copy）
 - [X] build 管线消费 celebration_copy + micro-steps.md；schema v10
 - [X] 媒体 → `src/mytimetree/static/portal/habit/`；tip/小庆祝/hint art 接线
-- [ ] smoke + sync-web + push + 更新 PR#3
-- 顺序提醒：继续 O1→O2→O3→O5→O4→O6（本轮主要是内容/多媒体对接）
+- [X] smoke + sync-web + push `ff3a061` + 更新 PR#3
+- 顺序提醒：O1–O6 代码此前已落地；本轮完成内容/多媒体对接。后续可 polish 旧账户 seed 微步骤刷新策略
 
 ## Lessons (this task)
 - Content tables: `docs/v2/content/*.md` → `build-habit-content.mjs` → `habit-seed.js`；`sync-web` 必须先 build
