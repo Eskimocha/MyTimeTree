@@ -135,8 +135,9 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 - [X] 对照 plan 审计；补 iOS 触摸拖排序 + 微步骤弹层编辑
 - [X] O3 树高 / O6「时间资产」分区文案；tip 分层标签对齐计划
 - [X] 正式 PNG 保持接线；计划 Done 状态已更新
-- [ ] smoke + sync + push + 回报对照表/明早 checklist
-- 教训：太阳白边裁切 → 多媒体出图前规划裁切盒；工程不批量新出图
+- [X] smoke + sync + push `a354864` + 回报对照表/明早 checklist
+- 教训：太阳白边裁切 → 多媒体出图前规划裁切盒；工程不批量新出图；iOS 设置排序须触摸拖（不可只靠 HTML5 DnD）
+- 详报：`/cursor/stores/self/internal/habit-polish-o1-o6-closure.md`
 
 ## Lessons (this task)
 - Content tables: `docs/v2/content/*.md` → `build-habit-content.mjs` → `habit-seed.js`；`sync-web` 必须先 build
