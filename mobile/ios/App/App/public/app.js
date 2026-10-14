@@ -53,38 +53,37 @@
     bird: `./ornaments/bird.png?v=${ASSET_V}`,
   };
 
-  const HABIT_MEDIA_V = "20261014a";
-  const HABIT_TIP_ICON = `./habit/icon-tip-seed.svg?v=${HABIT_MEDIA_V}`;
-  const HABIT_CELEB_MARK = `./habit/mark-celeb-small.svg?v=${HABIT_MEDIA_V}`;
+  const HABIT_MEDIA_V = "20261014b";
+  const HABIT_TIP_ICON = `./habit/icon-tip-seed.png?v=${HABIT_MEDIA_V}`;
+  const HABIT_TIP_ICON_2X = `./habit/icon-tip-seed@2x.png?v=${HABIT_MEDIA_V}`;
+  const HABIT_CELEB_MARK = `./habit/mark-celeb-small.png?v=${HABIT_MEDIA_V}`;
+  const HABIT_CELEB_MARK_2X = `./habit/mark-celeb-small@2x.png?v=${HABIT_MEDIA_V}`;
 
-  function habitHintArtSrc(imageKey) {
+  function habitHintArtSrc(imageKey, density) {
     if (!imageKey) return "";
     const safe = String(imageKey).replace(/[^a-zA-Z0-9_-]/g, "");
     if (!safe) return "";
-    return `./habit/${safe}.svg?v=${HABIT_MEDIA_V}`;
+    const suffix = density === 2 ? "@2x" : "";
+    return `./habit/${safe}${suffix}.png?v=${HABIT_MEDIA_V}`;
   }
 
   function bindHabitHintArt(img, imageKey) {
     if (!img) return;
-    const svg = habitHintArtSrc(imageKey);
-    if (!svg) {
+    const png = habitHintArtSrc(imageKey);
+    if (!png) {
       img.hidden = true;
       img.removeAttribute("src");
+      img.removeAttribute("srcset");
       return;
     }
     img.hidden = false;
     img.onerror = () => {
-      const png = svg.replace(/\.svg(\?|$)/, ".png$1");
-      if (img.dataset.triedPng === "1") {
-        img.hidden = true;
-        img.removeAttribute("src");
-        return;
-      }
-      img.dataset.triedPng = "1";
-      img.src = png;
+      img.hidden = true;
+      img.removeAttribute("src");
+      img.removeAttribute("srcset");
     };
-    delete img.dataset.triedPng;
-    img.src = svg;
+    img.src = png;
+    img.srcset = `${habitHintArtSrc(imageKey, 2)} 2x`;
   }
 
   // 有树冠：可挂果；young 起虫/鸟移到树身中部
@@ -570,7 +569,7 @@
         tip.className = "habit-tip-btn";
         tip.setAttribute("aria-label", `展开 ${it.title} 的怎样更容易做`);
         tip.setAttribute("aria-expanded", "false");
-        tip.innerHTML = `<img class="habit-tip-icon" src="${HABIT_TIP_ICON}" width="20" height="20" alt="">`;
+        tip.innerHTML = `<img class="habit-tip-icon" src="${HABIT_TIP_ICON}" srcset="${HABIT_TIP_ICON_2X} 2x" width="20" height="20" alt="">`;
         const panel = document.createElement("div");
         panel.className = "habit-tip-panel";
         panel.hidden = true;
@@ -632,6 +631,7 @@
     if (mark) {
       mark.hidden = false;
       mark.src = HABIT_CELEB_MARK;
+      mark.srcset = `${HABIT_CELEB_MARK_2X} 2x`;
     }
     $("#habit-celeb-title").textContent = "小庆祝";
     $("#habit-celeb-credit").textContent = res.minutes_credited
