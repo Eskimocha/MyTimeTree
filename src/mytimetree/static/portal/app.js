@@ -567,7 +567,7 @@
         const tip = document.createElement("button");
         tip.type = "button";
         tip.className = "habit-tip-btn";
-        tip.setAttribute("aria-label", `展开 ${it.title} 的怎样更容易做`);
+        tip.setAttribute("aria-label", `展开 ${it.title} 的微习惯与话术`);
         tip.setAttribute("aria-expanded", "false");
         tip.innerHTML = `<img class="habit-tip-icon" src="${HABIT_TIP_ICON}" srcset="${HABIT_TIP_ICON_2X} 2x" width="20" height="20" alt="">`;
         const panel = document.createElement("div");
@@ -577,7 +577,7 @@
         const script = it.parent_script?.script_text || "";
         const incentive = it.incentive_text || "";
         panel.innerHTML =
-          `<div class="habit-tip-layer"><strong>怎样更容易做</strong><p>${
+          `<div class="habit-tip-layer"><strong>微习惯</strong><p>${
             micro.length ? micro.join(" · ") : "可在设置里添加微步骤"
           }</p></div>` +
           `<div class="habit-tip-layer"><strong>家长话术</strong><p>${
@@ -589,6 +589,14 @@
         tip.addEventListener("click", (e) => {
           e.stopPropagation();
           const open = panel.hidden;
+          if (open) {
+            rail.querySelectorAll(".habit-tip-panel").forEach((p) => {
+              p.hidden = true;
+            });
+            rail.querySelectorAll(".habit-tip-btn").forEach((b) => {
+              b.setAttribute("aria-expanded", "false");
+            });
+          }
           panel.hidden = !open;
           tip.setAttribute("aria-expanded", open ? "true" : "false");
         });
@@ -635,7 +643,7 @@
     }
     $("#habit-celeb-title").textContent = "小庆祝";
     $("#habit-celeb-credit").textContent = res.minutes_credited
-      ? `已存入 ${res.minutes_credited} 分`
+      ? `已自动入账 ${res.minutes_credited} 分`
       : "";
     const incEl = $("#habit-celeb-incentive");
     if (incEl) incEl.textContent = line;
@@ -755,16 +763,9 @@
     if (!list || list.dataset.dragWired === "1") return;
     list.dataset.dragWired = "1";
     let dragEl = null;
-    list.addEventListener("dragstart", (e) => {
-      const li = e.target.closest("li.habit-settings-item");
-      if (!li) return;
-      dragEl = li;
-      li.classList.add("dragging");
-      e.dataTransfer.effectAllowed = "move";
-    });
-    list.addEventListener("dragend", async () => {
-      if (dragEl) dragEl.classList.remove("dragging");
-      dragEl = null;
+    let touchDrag = null;
+
+    async function persistOrder() {
       const ids = [...list.querySelectorAll("li.habit-settings-item")].map((li) =>
         Number(li.dataset.habitId)
       );
@@ -778,35 +779,140 @@
         console.warn("habit reorder", err);
         await refreshHabitSettings();
       }
+    }
+
+    function placeBefore(clientY) {
+      if (!dragEl) return;
+      const items = [...list.querySelectorAll("li.habit-settings-item")].filter(
+        (li) => li !== dragEl
+      );
+      let target = null;
+      let before = false;
+      for (const li of items) {
+        const rect = li.getBoundingClientRect();
+        if (clientY < rect.top + rect.height / 2) {
+          target = li;
+          before = true;
+          break;
+        }
+        target = li;
+        before = false;
+      }
+      if (!target) return;
+      list.insertBefore(dragEl, before ? target : target.nextSibling);
+    }
+
+    list.addEventListener("dragstart", (e) => {
+      const li = e.target.closest("li.habit-settings-item");
+      if (!li || e.target.closest("button")) {
+        e.preventDefault();
+        return;
+      }
+      dragEl = li;
+      li.classList.add("dragging");
+      e.dataTransfer.effectAllowed = "move";
+      try {
+        e.dataTransfer.setData("text/plain", li.dataset.habitId || "");
+      } catch {
+        /* ignore */
+      }
+    });
+    list.addEventListener("dragend", async () => {
+      if (dragEl) dragEl.classList.remove("dragging");
+      dragEl = null;
+      await persistOrder();
     });
     list.addEventListener("dragover", (e) => {
       e.preventDefault();
-      const li = e.target.closest("li.habit-settings-item");
-      if (!li || !dragEl || li === dragEl) return;
-      const rect = li.getBoundingClientRect();
-      const before = e.clientY < rect.top + rect.height / 2;
-      list.insertBefore(dragEl, before ? li : li.nextSibling);
+      placeBefore(e.clientY);
     });
+
+    // iOS WKWebView: HTML5 DnD is unreliable — touch reorder from ⋮⋮ handle
+    list.addEventListener(
+      "touchstart",
+      (e) => {
+        const handle = e.target.closest(".habit-drag-handle");
+        if (!handle || e.touches.length !== 1) return;
+        const li = handle.closest("li.habit-settings-item");
+        if (!li) return;
+        touchDrag = { li, startY: e.touches[0].clientY };
+        dragEl = li;
+        li.classList.add("touch-dragging");
+      },
+      { passive: true }
+    );
+    list.addEventListener(
+      "touchmove",
+      (e) => {
+        if (!touchDrag || e.touches.length !== 1) return;
+        e.preventDefault();
+        placeBefore(e.touches[0].clientY);
+      },
+      { passive: false }
+    );
+    list.addEventListener(
+      "touchend",
+      async () => {
+        if (!touchDrag) return;
+        touchDrag.li.classList.remove("touch-dragging");
+        touchDrag = null;
+        dragEl = null;
+        await persistOrder();
+      },
+      { passive: true }
+    );
+    list.addEventListener(
+      "touchcancel",
+      () => {
+        if (!touchDrag) return;
+        touchDrag.li.classList.remove("touch-dragging");
+        touchDrag = null;
+        dragEl = null;
+      },
+      { passive: true }
+    );
+  }
+
+  let microEditHabit = null;
+
+  function closeMicroModal() {
+    const modal = $("#habit-micro-modal");
+    if (modal) modal.hidden = true;
+    microEditHabit = null;
   }
 
   async function editMicroStepsForHabit(h) {
+    const modal = $("#habit-micro-modal");
+    const title = $("#habit-micro-title");
+    const ta = $("#habit-micro-text");
+    if (!modal || !ta) {
+      flash($("#habit-settings-msg"), "微步骤编辑不可用");
+      return;
+    }
     try {
       const data = await api(
         `/api/portal/habits/micro-steps?habit_id=${h.id}`
       );
-      const lines = (data.steps || []).map((s) => s.step_text);
-      const raw = window.prompt(
-        `${h.title} 的微步骤（每行一条；清空某行即删除对应项后保存全部重写）`,
-        lines.join("\n")
-      );
-      if (raw == null) return;
-      const next = raw
-        .split(/\r?\n/)
-        .map((s) => s.trim())
-        .filter(Boolean)
-        .slice(0, 12);
-      // Archive all then re-add (simple parent edit UX)
-      for (const s of data.steps || []) {
+      microEditHabit = { id: h.id, title: h.title, steps: data.steps || [] };
+      if (title) title.textContent = `${h.title} · 微步骤`;
+      ta.value = (data.steps || []).map((s) => s.step_text).join("\n");
+      modal.hidden = false;
+      ta.focus();
+    } catch (err) {
+      flash($("#habit-settings-msg"), err.message || String(err));
+    }
+  }
+
+  async function saveMicroStepsFromModal() {
+    if (!microEditHabit) return;
+    const ta = $("#habit-micro-text");
+    const next = String(ta?.value || "")
+      .split(/\r?\n/)
+      .map((s) => s.trim())
+      .filter(Boolean)
+      .slice(0, 12);
+    try {
+      for (const s of microEditHabit.steps || []) {
         await api("/api/portal/habits/micro-steps/archive", {
           method: "POST",
           body: JSON.stringify({ step_id: s.id }),
@@ -815,9 +921,10 @@
       for (const text of next) {
         await api("/api/portal/habits/micro-steps", {
           method: "POST",
-          body: JSON.stringify({ habit_id: h.id, step_text: text }),
+          body: JSON.stringify({ habit_id: microEditHabit.id, step_text: text }),
         });
       }
+      closeMicroModal();
       flash($("#habit-settings-msg"), "微步骤已更新");
       await refreshHabitsStrip();
     } catch (err) {
@@ -1439,7 +1546,7 @@
       return Boolean(
         el &&
           el.closest(
-            "input, textarea, select, button, a, label, .question-picker, .keypad-modal, .account-modal, .sync-actions"
+            "input, textarea, select, button, a, label, .question-picker, .keypad-modal, .account-modal, .sync-actions, .habit-drag-handle, .habit-settings-item, .habit-overlay, .habit-board-mask"
           )
       );
     }
@@ -1452,6 +1559,12 @@
       if (account && !account.hidden) return false;
       const lock = $("#app-lock");
       if (lock && !lock.hidden) return false;
+      const micro = $("#habit-micro-modal");
+      if (micro && !micro.hidden) return false;
+      const celeb = $("#habit-celeb-overlay");
+      if (celeb && !celeb.hidden) return false;
+      const board = $("#habit-board-mask");
+      if (board && !board.hidden) return false;
       return true;
     }
 
@@ -1594,6 +1707,12 @@
   $("#habit-board-mask-ok")?.addEventListener("click", () => {
     const mask = $("#habit-board-mask");
     if (mask) mask.hidden = true;
+  });
+  document.querySelectorAll("[data-micro-dismiss]").forEach((el) => {
+    el.addEventListener("click", () => closeMicroModal());
+  });
+  $("#habit-micro-save")?.addEventListener("click", () => {
+    saveMicroStepsFromModal();
   });
 
   $("#btn-habit-enable")?.addEventListener("click", async () => {

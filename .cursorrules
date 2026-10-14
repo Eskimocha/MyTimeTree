@@ -130,14 +130,13 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 
 # Scratchpad
 
-## Task: 内容/多媒体对接 + O1–O6（2026-10-14）
-- 支：`cursor/habit-polish-o1-o6-5c97`（base `cursor/habit-h0-scaffold-5c97` / PR#3）
-- Store 真源：`/cursor/stores/self/docs/content/*` + `media/habit/*`
-- [X] 拷入 `docs/v2/content/`（micro-steps、celebration-copy；退役 emotion-copy）
-- [X] build 管线消费 celebration_copy + micro-steps.md；schema v10
-- [X] 媒体 → `src/mytimetree/static/portal/habit/`；tip/小庆祝/hint art 接线
-- [X] smoke + sync-web + push `ff3a061` + 更新 PR#3
-- 顺序提醒：O1–O6 代码此前已落地；本轮完成内容/多媒体对接。后续可 polish 旧账户 seed 微步骤刷新策略
+## Task: 完整 polishing O1–O6 闭合（Kai 明早测）
+- 支：`cursor/habit-polish-o1-o6-5c97` / PR#3
+- [X] 对照 plan 审计；补 iOS 触摸拖排序 + 微步骤弹层编辑
+- [X] O3 树高 / O6「时间资产」分区文案；tip 分层标签对齐计划
+- [X] 正式 PNG 保持接线；计划 Done 状态已更新
+- [ ] smoke + sync + push + 回报对照表/明早 checklist
+- 教训：太阳白边裁切 → 多媒体出图前规划裁切盒；工程不批量新出图
 
 ## Lessons (this task)
 - Content tables: `docs/v2/content/*.md` → `build-habit-content.mjs` → `habit-seed.js`；`sync-web` 必须先 build

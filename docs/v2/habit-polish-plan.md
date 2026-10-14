@@ -85,10 +85,10 @@
 | 表 | 用途 |
 |----|------|
 | `habit-templates.md` | 可打卡种子 |
-| **`habit-micro-steps.md`** | 默认微步骤（`id`, `habit_slug`, `sort`, `step_text`, `active`） |
+| **`micro-steps.md`**（旧名 `habit-micro-steps.md`） | 默认微步骤（`id`, `habit_slug`, `sort`, `step_text`, `active`） |
 | `parent-scripts.md` | 家长话术（chip 旁短句） |
-| `emotion-copy.md` | 可收敛为激励/小庆祝短句，或逐步由 micro+script 替代主路径 |
-| `offline-celebration-hints.md` | 线下 hint（记后可选） |
+| **`celebration-copy.md`** | 短激励 + 小庆祝（取代 `emotion-copy` 趋利避害） |
+| `offline-celebration-hints.md` | 线下 hint（记后可选；`offline_hint_id` 引用） |
 | `habit-board-copy.md` | 分析图例/汇总文案 |
 
 **运行时**：默认微步骤自表种子；家长增删改写入本机 SQLite（按 `account_id` + `habit_id`），不覆盖表默认的合并策略：用户自定义优先展示，表行作「恢复默认」来源。
@@ -99,15 +99,15 @@
 
 实现序：**O1 → O2 → O3 → O5 → O4 → O6**（可合理并行）。O7/O8 = Agent 协作（根项目开）。
 
-| Epic | Done 信号 |
-|------|-----------|
-| **O1** | 微步骤表 + schema + CRUD API；家长可增删改；today 可带出步骤 |
-| **O2** | 种子旁 ⓘ；展开见微习惯/话术；记后小庆祝 overlay / 大庆祝霸屏 |
-| **O3** | 习惯在按钮下；可滚；树高度恢复 |
-| **O5** | 设置拖拽排序，无上移下移 |
-| **O4** | 流水摘要两行 + 数量跨行 |
-| **O6** | 资产在上；月点阵按习惯着色 + 图例 |
-| **O7/O8** | 对接 content；Agent 他处创建 |
+| Epic | Done 信号 | 状态（2026-10-14） |
+|------|-----------|-------------------|
+| **O1** | 微步骤表 + schema + CRUD API；家长可增删改；today 可带出步骤 | **Done**（设置「微步骤」弹层编辑；seed=`micro-steps.md`） |
+| **O2** | 种子旁 ⓘ；展开见微习惯/话术；记后小庆祝 overlay / 大庆祝霸屏 | **Done**（PNG tip；小庆祝 overlay + 周满霸屏） |
+| **O3** | 习惯在按钮下；可滚；树高度恢复 | **Done**（`--home-tree-min` + 5:4；strip 在三按钮下） |
+| **O5** | 设置拖拽排序，无上移下移 | **Done**（HTML5 + iOS 触摸拖 ⋮⋮） |
+| **O4** | 流水摘要两行 + 数量跨行 | **Done** |
+| **O6** | 资产在上；月点阵按习惯着色 + 图例 | **Done**（分析「时间资产」在上、「好习惯」点阵在下） |
+| **O7/O8** | 对接 content；Agent 他处创建 | **Done（工程侧）**（celebration-copy + micro-steps + portal/habit PNG） |
 
 ---
 
@@ -120,7 +120,8 @@ IA-D1/D2、Q4′、Q9–Q13、C-D* 均保持；IH5/IH7/IH9 的「记后首次曝
 ## 7. 文档状态
 
 - **Accepted for implementation**（2026-10-14）
-- 仓内同步：`docs/v2/habit-polish-plan.md`
+- **Implementation complete for O1–O6**（支 `cursor/habit-polish-o1-o6-5c97` / PR #3）— 待 Kai 真机验收
+- 仓内同步：`docs/v2/habit-polish-plan.md`；Store：`/cursor/stores/self/docs/habit-polish-plan.md`
 
 ---
 

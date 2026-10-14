@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
   <title>MyTimeTree</title>
-  <link rel="stylesheet" href="./styles.css?v=20260911g" />
+  <link rel="stylesheet" href="./styles.css?v=20261014p" />
   <script>document.documentElement.dataset.mode="local";</script>
   <link rel="stylesheet" href="./local/lock.css?v=p4r12" />
 </head>
@@ -137,7 +137,7 @@
 
         <section id="habit-settings" class="habit-settings" aria-label="好习惯清单">
           <h2 class="rules-title">好习惯清单</h2>
-          <p class="muted habit-settings-lede">增减、排序会反映到主屏「今日好习惯」。</p>
+          <p class="muted habit-settings-lede">拖 ⋮⋮ 排序；点「微步骤」可增删改建议步骤。清单会反映到主屏「今日好习惯」。</p>
           <ul id="habit-settings-list" class="habit-settings-list"></ul>
           <div class="habit-settings-add stack">
             <label>从种子启用
@@ -189,17 +189,16 @@
       </section>
 
       <section id="tab-analytics" class="tab-panel" role="tabpanel" hidden>
-        <div class="analytics-block">
-          <h2>本周趋势</h2>
+        <div class="analytics-block analytics-assets">
+          <h2>时间资产</h2>
+          <h3 class="habit-review-sub">本周趋势</h3>
           <div id="chart-week" class="trend-chart" role="img" aria-label="本周资产负债折线与每日利息柱状图"></div>
           <pre id="analytics-week" class="brief"></pre>
-        </div>
-        <div class="analytics-block">
-          <h2>本月趋势</h2>
+          <h3 class="habit-review-sub">本月趋势</h3>
           <div id="chart-month" class="trend-chart" role="img" aria-label="本月资产负债折线与每日利息柱状图"></div>
           <pre id="analytics-month" class="brief"></pre>
         </div>
-        <div class="analytics-block">
+        <div class="analytics-block analytics-habits">
           <h2>好习惯</h2>
           <p id="habit-board-copy" class="muted habit-board-copy"></p>
           <div id="habit-month-heatmap" class="habit-heatmap" aria-label="本月好习惯点阵"></div>
@@ -306,6 +305,20 @@
       <p id="habit-board-mask-title" class="habit-board-mask-title">大庆祝！这周习惯满满</p>
       <p id="habit-board-mask-body" class="habit-board-mask-body muted"></p>
       <button type="button" class="btn primary" id="habit-board-mask-ok">太棒了</button>
+    </div>
+  </div>
+
+  <div id="habit-micro-modal" class="habit-overlay" hidden>
+    <div class="habit-overlay-backdrop" data-micro-dismiss></div>
+    <div class="habit-overlay-sheet" role="dialog" aria-modal="true" aria-labelledby="habit-micro-title">
+      <p id="habit-micro-title" class="habit-celeb-title">微步骤</p>
+      <p class="muted habit-micro-lede">每行一条建议步骤（降低难度用，不可打卡、不兑分）</p>
+      <label class="sr-only" for="habit-micro-text">微步骤列表</label>
+      <textarea id="habit-micro-text" class="habit-micro-text" lang="zh-CN" inputmode="text" rows="8" maxlength="600" placeholder="例如：&#10;走到洗手台&#10;先挤一点牙膏"></textarea>
+      <div class="habit-micro-actions">
+        <button type="button" class="btn" data-micro-dismiss>取消</button>
+        <button type="button" class="btn primary" id="habit-micro-save">保存</button>
+      </div>
     </div>
   </div>
 
