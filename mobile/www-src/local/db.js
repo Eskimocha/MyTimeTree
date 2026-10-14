@@ -262,6 +262,22 @@
         )`,
       ],
     },
+    {
+      version: 10,
+      sql: [
+        `CREATE TABLE IF NOT EXISTS celebration_copy (
+          id TEXT PRIMARY KEY,
+          habit_slug TEXT NOT NULL DEFAULT '',
+          category TEXT NOT NULL DEFAULT '',
+          incentive_text TEXT NOT NULL DEFAULT '',
+          small_celebration TEXT NOT NULL DEFAULT '',
+          offline_hint_id TEXT NOT NULL DEFAULT '',
+          active INTEGER NOT NULL DEFAULT 1
+        )`,
+        `CREATE INDEX IF NOT EXISTS idx_celebration_copy_slug
+          ON celebration_copy(habit_slug, category)`,
+      ],
+    },
   ];
 
   let lastSyncMeta = {

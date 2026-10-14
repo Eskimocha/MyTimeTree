@@ -26,6 +26,7 @@
         templates: [],
         scripts: [],
         hints: [],
+        celebration_copy: [],
         emotions: [],
         micro_steps: [],
         board_copy: [],
@@ -65,7 +66,7 @@
         (s.templates || []).length,
         (s.scripts || []).length,
         (s.hints || []).length,
-        (s.emotions || []).length,
+        (s.celebration_copy || []).length,
         (s.micro_steps || []).length,
         (s.board_copy || []).length,
       ].join(":");
@@ -143,23 +144,26 @@
             ]
           );
         }
-        for (const e of s.emotions || []) {
+        for (const c of s.celebration_copy || []) {
           db().exec(
-            `INSERT INTO emotion_copy (id, path, habit_slug, category, emotion_copy, active)
-             VALUES (?, ?, ?, ?, ?, ?)
+            `INSERT INTO celebration_copy (
+               id, habit_slug, category, incentive_text, small_celebration, offline_hint_id, active
+             ) VALUES (?, ?, ?, ?, ?, ?, ?)
              ON CONFLICT(id) DO UPDATE SET
-               path=excluded.path,
                habit_slug=excluded.habit_slug,
                category=excluded.category,
-               emotion_copy=excluded.emotion_copy,
+               incentive_text=excluded.incentive_text,
+               small_celebration=excluded.small_celebration,
+               offline_hint_id=excluded.offline_hint_id,
                active=excluded.active`,
             [
-              e.id,
-              e.path,
-              e.habit_slug || "",
-              e.category || "",
-              e.emotion_copy,
-              e.active ? 1 : 0,
+              c.id,
+              c.habit_slug || "",
+              c.category || "",
+              c.incentive_text || "",
+              c.small_celebration || "",
+              c.offline_hint_id || "",
+              c.active ? 1 : 0,
             ]
           );
         }
@@ -413,7 +417,24 @@
       return generic ? String(generic.script_text) : "记下来了——孩子被看见，时间也能存进树里。";
     }
 
-    function pickHint(habit) {
+    function hintFromRow(row) {
+      if (!row) return null;
+      return {
+        id: String(row.id || ""),
+        title: String(row.title),
+        body: String(row.body),
+        image_key: String(row.image_key || ""),
+      };
+    }
+
+    function pickHint(habit, hintId) {
+      if (hintId) {
+        const byId = db().queryOne(
+          "SELECT * FROM offline_celebration_hints WHERE id = ? AND active = 1",
+          [hintId]
+        );
+        if (byId) return hintFromRow(byId);
+      }
       const cat = habit.category || "";
       const rows = db().query(
         "SELECT * FROM offline_celebration_hints WHERE active = 1"
@@ -426,37 +447,38 @@
           return false;
         }
       });
-      const row = match || rows.find((r) => {
-        try {
-          return JSON.parse(r.categories_json || "[]").length === 0;
-        } catch {
-          return false;
-        }
-      }) || rows[0];
-      if (!row) return null;
-      return {
-        title: String(row.title),
-        body: String(row.body),
-        image_key: String(row.image_key || ""),
-      };
+      const row =
+        match ||
+        rows.find((r) => {
+          try {
+            return JSON.parse(r.categories_json || "[]").length === 0;
+          } catch {
+            return false;
+          }
+        }) ||
+        rows[0];
+      return hintFromRow(row);
     }
 
-    function pickEmotions(habit) {
+    function pickCelebration(habit) {
       const slug = habit.template_slug || "";
       const cat = habit.category || "";
-      const rows = db().query("SELECT * FROM emotion_copy WHERE active = 1");
-      function one(path) {
-        return (
-          rows.find((r) => r.path === path && r.habit_slug === slug) ||
-          rows.find((r) => r.path === path && !r.habit_slug && r.category === cat) ||
-          rows.find((r) => r.path === path && !r.habit_slug && !r.category)
-        );
+      const rows = db().query("SELECT * FROM celebration_copy WHERE active = 1");
+      const row =
+        rows.find((r) => r.habit_slug && r.habit_slug === slug) ||
+        rows.find((r) => !r.habit_slug && r.category && r.category === cat) ||
+        rows.find((r) => !r.habit_slug && !r.category);
+      if (!row) {
+        return {
+          incentive_text: "被看见真好",
+          small_celebration: "做到了，一起高兴",
+          offline_hint_id: "",
+        };
       }
-      const a = one("approach");
-      const v = one("avoid");
       return {
-        approach: { emotion_copy: a ? String(a.emotion_copy) : "被看见的感觉真好" },
-        avoid: { emotion_copy: v ? String(v.emotion_copy) : "" },
+        incentive_text: String(row.incentive_text || "被看见真好"),
+        small_celebration: String(row.small_celebration || "做到了！"),
+        offline_hint_id: String(row.offline_hint_id || ""),
       };
     }
 
@@ -485,8 +507,7 @@
         h.template_slug = slug;
         const micro_steps = listMicroSteps(accountId, h.id);
         const scriptText = pickScript(h);
-        const incentive =
-          pickEmotions(h).approach?.emotion_copy || "做到了，真好";
+        const celeb = pickCelebration(h);
         return {
           habit_id: h.id,
           title: h.title,
@@ -497,7 +518,8 @@
           color: habitColor(h.id),
           micro_steps,
           parent_script: { script_text: scriptText },
-          incentive_text: incentive,
+          incentive_text: celeb.incentive_text,
+          small_celebration: celeb.small_celebration,
         };
       });
       return {
@@ -566,9 +588,9 @@
       );
 
       habit.template_slug = templateSlugForHabit(habitId);
-      const motivation = pickEmotions(habit);
+      const celeb = pickCelebration(habit);
       const scriptText = pickScript(habit);
-      const hint = pickHint(habit);
+      const hint = pickHint(habit, celeb.offline_hint_id);
       const celebration = { kind: "small", habit_id: habitId, log_id: logId };
       db().exec(
         `INSERT INTO celebration_events (account_id, kind, day_key, habit_log_id, payload_json, created_at)
@@ -577,7 +599,12 @@
           accountId,
           day,
           logId,
-          JSON.stringify({ motivation, scriptText, hint }),
+          JSON.stringify({
+            incentive_text: celeb.incentive_text,
+            small_celebration: celeb.small_celebration,
+            scriptText,
+            hint,
+          }),
           created,
         ]
       );
@@ -629,8 +656,8 @@
           ledger_entry_id: entry.id,
         },
         minutes_credited: minutes,
-        motivation_payload: motivation,
-        incentive_text: motivation.approach?.emotion_copy || "做到了！",
+        incentive_text: celeb.incentive_text,
+        small_celebration: celeb.small_celebration,
         celebration: boardCelebration || celebration,
         parent_script: { script_text: scriptText },
         offline_hint: hint,
@@ -878,6 +905,7 @@
         return null;
       }
       const acc = requireCurrent();
+      syncContentTables();
       ensureStarterHabits(acc.id);
       const sp = searchParams || { get: () => null };
 

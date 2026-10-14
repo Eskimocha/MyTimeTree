@@ -111,6 +111,15 @@ console.log(
 if (done.minutes_credited <= 0) throw new Error("minutes_credited expected");
 if (!done.parent_script?.script_text) throw new Error("parent_script missing");
 if (done.credit?.status !== "redeemed") throw new Error("credit not auto-redeemed");
+if (!done.small_celebration && !done.incentive_text) {
+  throw new Error("celebration copy missing on complete");
+}
+if (done.offline_hint && done.offline_hint.image_key === undefined) {
+  throw new Error("offline_hint missing image_key field");
+}
+console.log(
+  `[smoke-habits] celeb_copy small=${done.small_celebration || ""} hint=${done.offline_hint?.title || "-"} img=${done.offline_hint?.image_key || ""}`
+);
 
 const afterHome = await api("/api/portal/home");
 const assetAfter = Number(afterHome.balance.asset);

@@ -53,6 +53,40 @@
     bird: `./ornaments/bird.png?v=${ASSET_V}`,
   };
 
+  const HABIT_MEDIA_V = "20261014a";
+  const HABIT_TIP_ICON = `./habit/icon-tip-seed.svg?v=${HABIT_MEDIA_V}`;
+  const HABIT_CELEB_MARK = `./habit/mark-celeb-small.svg?v=${HABIT_MEDIA_V}`;
+
+  function habitHintArtSrc(imageKey) {
+    if (!imageKey) return "";
+    const safe = String(imageKey).replace(/[^a-zA-Z0-9_-]/g, "");
+    if (!safe) return "";
+    return `./habit/${safe}.svg?v=${HABIT_MEDIA_V}`;
+  }
+
+  function bindHabitHintArt(img, imageKey) {
+    if (!img) return;
+    const svg = habitHintArtSrc(imageKey);
+    if (!svg) {
+      img.hidden = true;
+      img.removeAttribute("src");
+      return;
+    }
+    img.hidden = false;
+    img.onerror = () => {
+      const png = svg.replace(/\.svg(\?|$)/, ".png$1");
+      if (img.dataset.triedPng === "1") {
+        img.hidden = true;
+        img.removeAttribute("src");
+        return;
+      }
+      img.dataset.triedPng = "1";
+      img.src = png;
+    };
+    delete img.dataset.triedPng;
+    img.src = svg;
+  }
+
   // 有树冠：可挂果；young 起虫/鸟移到树身中部
   const CANOPY_STAGES = new Set([
     "sapling",
@@ -534,9 +568,9 @@
         const tip = document.createElement("button");
         tip.type = "button";
         tip.className = "habit-tip-btn";
-        tip.setAttribute("aria-label", `展开 ${it.title} 的微习惯与话术`);
+        tip.setAttribute("aria-label", `展开 ${it.title} 的怎样更容易做`);
         tip.setAttribute("aria-expanded", "false");
-        tip.textContent = "ⓘ";
+        tip.innerHTML = `<img class="habit-tip-icon" src="${HABIT_TIP_ICON}" width="20" height="20" alt="">`;
         const panel = document.createElement("div");
         panel.className = "habit-tip-panel";
         panel.hidden = true;
@@ -544,7 +578,7 @@
         const script = it.parent_script?.script_text || "";
         const incentive = it.incentive_text || "";
         panel.innerHTML =
-          `<div class="habit-tip-layer"><strong>微习惯</strong><p>${
+          `<div class="habit-tip-layer"><strong>怎样更容易做</strong><p>${
             micro.length ? micro.join(" · ") : "可在设置里添加微步骤"
           }</p></div>` +
           `<div class="habit-tip-layer"><strong>家长话术</strong><p>${
@@ -590,24 +624,35 @@
     }
     const overlay = $("#habit-celeb-overlay");
     if (!overlay) return;
-    const incentive =
+    const line =
+      res.small_celebration ||
       res.incentive_text ||
-      res.motivation_payload?.approach?.emotion_copy ||
       "做到了！";
+    const mark = $("#habit-celeb-mark");
+    if (mark) {
+      mark.hidden = false;
+      mark.src = HABIT_CELEB_MARK;
+    }
     $("#habit-celeb-title").textContent = "小庆祝";
     $("#habit-celeb-credit").textContent = res.minutes_credited
       ? `已存入 ${res.minutes_credited} 分`
       : "";
     const incEl = $("#habit-celeb-incentive");
-    if (incEl) incEl.textContent = incentive;
+    if (incEl) incEl.textContent = line;
     const hint = res.offline_hint;
     const hintEl = $("#habit-celeb-hint");
+    const hintArt = $("#habit-hint-art");
     if (hint && hint.title) {
       hintEl.hidden = false;
       $("#habit-hint-title").textContent = hint.title;
       $("#habit-hint-body").textContent = hint.body || "";
+      bindHabitHintArt(hintArt, hint.image_key);
     } else {
       hintEl.hidden = true;
+      if (hintArt) {
+        hintArt.hidden = true;
+        hintArt.removeAttribute("src");
+      }
     }
     overlay.hidden = false;
   }

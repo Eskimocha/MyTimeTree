@@ -1148,6 +1148,16 @@ html.share-capture body {
   color: var(--leaf-deep);
   font-size: 1rem;
   line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+.habit-tip-icon {
+  width: 20px;
+  height: 20px;
+  display: block;
+  pointer-events: none;
 }
 .habit-tip-panel {
   margin-top: 0.4rem;
@@ -1201,8 +1211,21 @@ html.share-capture body {
   from { transform: translateY(12%); opacity: 0.6; }
   to { transform: translateY(0); opacity: 1; }
 }
-.habit-celeb-title {
+.habit-celeb-head {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
   margin: 0 0 0.35rem;
+}
+.habit-celeb-mark {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 auto;
+  display: block;
+}
+.habit-celeb-mark[hidden] { display: none !important; }
+.habit-celeb-title {
+  margin: 0;
   font-family: var(--font-display);
   font-size: 1.2rem;
   color: var(--leaf-deep);
@@ -1247,7 +1270,18 @@ html.share-capture body {
   padding: 0.7rem 0.8rem;
   background: #e8f5e9;
   border-radius: 12px;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
 }
+.habit-hint-art {
+  width: 48px;
+  height: 48px;
+  flex: 0 0 auto;
+  object-fit: contain;
+}
+.habit-hint-art[hidden] { display: none !important; }
+.habit-hint-copy { min-width: 0; flex: 1 1 auto; }
 .habit-celeb-hint strong {
   display: block;
   margin-bottom: 0.25rem;

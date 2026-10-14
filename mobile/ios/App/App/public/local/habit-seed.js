@@ -2,8 +2,8 @@
 (function (global) {
   "use strict";
   global.MyTimeTreeHabitSeed = {
-  "version": 2,
-  "generated_at": "2026-10-14T10:10:09.174Z",
+  "version": 3,
+  "generated_at": "2026-10-14T10:14:30.814Z",
   "templates": [
     {
       "slug": "brush_teeth",
@@ -12,7 +12,7 @@
       "default_minutes": 5,
       "active": true,
       "sort_default": 10,
-      "notes": "微习惯"
+      "notes": "微习惯；先挤牙膏即可起步"
     },
     {
       "slug": "wash_face",
@@ -30,7 +30,7 @@
       "default_minutes": 5,
       "active": true,
       "sort_default": 20,
-      "notes": ""
+      "notes": "锚点：坐下吃饭前"
     },
     {
       "slug": "floss_once",
@@ -39,7 +39,7 @@
       "default_minutes": 5,
       "active": true,
       "sort_default": 25,
-      "notes": ""
+      "notes": "一次即可，不求整套"
     },
     {
       "slug": "bedtime_on_time",
@@ -48,7 +48,7 @@
       "default_minutes": 5,
       "active": true,
       "sort_default": 30,
-      "notes": ""
+      "notes": "先上床，再谈睡着"
     },
     {
       "slug": "no_phone_bed",
@@ -57,7 +57,7 @@
       "default_minutes": 5,
       "active": true,
       "sort_default": 35,
-      "notes": ""
+      "notes": "把手机放到固定处"
     },
     {
       "slug": "lights_out",
@@ -75,7 +75,7 @@
       "default_minutes": 5,
       "active": true,
       "sort_default": 45,
-      "notes": ""
+      "notes": "先坐起来也算起步"
     },
     {
       "slug": "read_one_page",
@@ -84,7 +84,7 @@
       "default_minutes": 5,
       "active": true,
       "sort_default": 50,
-      "notes": ""
+      "notes": "一页即完成"
     },
     {
       "slug": "read_ten_min",
@@ -102,7 +102,7 @@
       "default_minutes": 5,
       "active": true,
       "sort_default": 60,
-      "notes": ""
+      "notes": "一句即可"
     },
     {
       "slug": "vocab_five",
@@ -129,7 +129,7 @@
       "default_minutes": 5,
       "active": true,
       "sort_default": 75,
-      "notes": ""
+      "notes": "先收三样也行"
     },
     {
       "slug": "put_away_toys",
@@ -174,7 +174,7 @@
       "default_minutes": 5,
       "active": true,
       "sort_default": 100,
-      "notes": ""
+      "notes": "一句即可"
     },
     {
       "slug": "help_sibling",
@@ -183,7 +183,7 @@
       "default_minutes": 5,
       "active": true,
       "sort_default": 105,
-      "notes": ""
+      "notes": "一次小事"
     },
     {
       "slug": "share_toy",
@@ -237,7 +237,7 @@
       "default_minutes": 5,
       "active": true,
       "sort_default": 135,
-      "notes": ""
+      "notes": "具体可感，非疗效"
     },
     {
       "slug": "fruit_one",
@@ -264,7 +264,7 @@
       "default_minutes": 5,
       "active": true,
       "sort_default": 150,
-      "notes": ""
+      "notes": "打开本子即起步"
     },
     {
       "slug": "homework_focus",
@@ -291,7 +291,7 @@
       "default_minutes": 5,
       "active": true,
       "sort_default": 165,
-      "notes": ""
+      "notes": "一道即可"
     },
     {
       "slug": "practice_instrument",
@@ -327,7 +327,7 @@
       "default_minutes": 5,
       "active": true,
       "sort_default": 185,
-      "notes": ""
+      "notes": "一句即可"
     },
     {
       "slug": "screen_limit",
@@ -417,7 +417,7 @@
       "default_minutes": 5,
       "active": true,
       "sort_default": 235,
-      "notes": ""
+      "notes": "五个即可"
     },
     {
       "slug": "brush_evening",
@@ -435,7 +435,7 @@
       "default_minutes": 5,
       "active": true,
       "sort_default": 245,
-      "notes": ""
+      "notes": "仅习惯提醒；文案禁疗效承诺"
     },
     {
       "slug": "plan_tomorrow",
@@ -515,161 +515,476 @@
       "id": "ps_brush_1",
       "habit_slug": "brush_teeth",
       "category": "hygiene",
-      "script_text": "牙齿保卫战胜利！要不要击个掌？",
+      "script_text": "刷完了！要不要击个掌？",
       "active": true
     },
     {
       "id": "ps_brush_e",
       "habit_slug": "brush_evening",
       "category": "hygiene",
-      "script_text": "晚上也刷干净了，嘴巴香香的。",
+      "script_text": "晚上也刷完了，嘴巴香香的。",
       "active": true
     },
     {
       "id": "ps_wash_1",
       "habit_slug": "wash_face",
       "category": "hygiene",
-      "script_text": "脸蛋亮晶晶，新的一天开始了。",
+      "script_text": "脸洗好了，亮亮的。",
       "active": true
     },
     {
       "id": "ps_hands",
       "habit_slug": "wash_hands",
       "category": "hygiene",
-      "script_text": "小手洗干净，细菌没门。",
+      "script_text": "小手干净了，可以开饭。",
+      "active": true
+    },
+    {
+      "id": "ps_floss",
+      "habit_slug": "floss_once",
+      "category": "hygiene",
+      "script_text": "牙线也做了，缝隙清爽。",
+      "active": true
+    },
+    {
+      "id": "ps_towel",
+      "habit_slug": "tidy_bathroom",
+      "category": "hygiene",
+      "script_text": "毛巾挂好了，浴室整齐。",
       "active": true
     },
     {
       "id": "ps_bed_1",
       "habit_slug": "bedtime_on_time",
       "category": "sleep",
-      "script_text": "充电成功，明天会更有精神。",
+      "script_text": "上床啦——今天的充电开始。",
       "active": true
     },
     {
       "id": "ps_phone",
       "habit_slug": "no_phone_bed",
       "category": "sleep",
-      "script_text": "放下屏幕，给大脑放个假。",
+      "script_text": "手机放好了，眼睛可以休息。",
+      "active": true
+    },
+    {
+      "id": "ps_lights",
+      "habit_slug": "lights_out",
+      "category": "sleep",
+      "script_text": "灯关好了，房间安静下来。",
+      "active": true
+    },
+    {
+      "id": "ps_wake",
+      "habit_slug": "morning_wake",
+      "category": "sleep",
+      "script_text": "起来了！新的一天见面。",
       "active": true
     },
     {
       "id": "ps_read_1",
       "habit_slug": "read_one_page",
       "category": "reading",
-      "script_text": "又读完一页，大脑存进新燃料了。",
+      "script_text": "这一页读完了，故事又往前。",
       "active": true
     },
     {
       "id": "ps_read_10",
       "habit_slug": "read_ten_min",
       "category": "reading",
-      "script_text": "十分钟阅读，很扎实。",
+      "script_text": "十分钟读完了，很专注。",
+      "active": true
+    },
+    {
+      "id": "ps_poem",
+      "habit_slug": "recite_poem",
+      "category": "reading",
+      "script_text": "这句古诗，你记住了。",
+      "active": true
+    },
+    {
+      "id": "ps_vocab",
+      "habit_slug": "vocab_five",
+      "category": "reading",
+      "script_text": "五个词进脑子里了。",
+      "active": true
+    },
+    {
+      "id": "ps_story",
+      "habit_slug": "listen_story",
+      "category": "reading",
+      "script_text": "故事听完了，耳朵也满足。",
       "active": true
     },
     {
       "id": "ps_make_bed",
       "habit_slug": "make_bed",
       "category": "chores",
-      "script_text": "被子叠好了，房间也精神了。",
+      "script_text": "被子叠好了，床面清爽。",
       "active": true
     },
     {
       "id": "ps_desk",
       "habit_slug": "tidy_desk",
       "category": "chores",
-      "script_text": "书桌清爽，作业也更顺利。",
+      "script_text": "书桌归位了，看着舒服。",
+      "active": true
+    },
+    {
+      "id": "ps_toys",
+      "habit_slug": "put_away_toys",
+      "category": "chores",
+      "script_text": "玩具回家了，地板空出来。",
+      "active": true
+    },
+    {
+      "id": "ps_trash",
+      "habit_slug": "trash_out",
+      "category": "chores",
+      "script_text": "垃圾送走了，家里清爽。",
+      "active": true
+    },
+    {
+      "id": "ps_plant",
+      "habit_slug": "water_plant",
+      "category": "chores",
+      "script_text": "植物喝到水了。",
+      "active": true
+    },
+    {
+      "id": "ps_table",
+      "habit_slug": "set_table",
+      "category": "chores",
+      "script_text": "碗筷摆好了，可以开饭。",
+      "active": true
+    },
+    {
+      "id": "ps_shoe",
+      "habit_slug": "shoe_rack",
+      "category": "chores",
+      "script_text": "鞋子摆齐了，门口整齐。",
+      "active": true
+    },
+    {
+      "id": "ps_hamper",
+      "habit_slug": "clothes_hamper",
+      "category": "chores",
+      "script_text": "脏衣服进篮了。",
       "active": true
     },
     {
       "id": "ps_thank",
       "habit_slug": "thank_you",
       "category": "kindness",
-      "script_text": "一句谢谢，温暖到别人心里。",
+      "script_text": "谢谢说出口了，真好听。",
       "active": true
     },
     {
       "id": "ps_help",
       "habit_slug": "help_sibling",
       "category": "kindness",
-      "script_text": "帮忙一次，家里更像一个队。",
+      "script_text": "你帮了这一次，我看见了。",
+      "active": true
+    },
+    {
+      "id": "ps_share",
+      "habit_slug": "share_toy",
+      "category": "kindness",
+      "script_text": "分享出去了，很慷慨。",
+      "active": true
+    },
+    {
+      "id": "ps_greet",
+      "habit_slug": "greeting",
+      "category": "kindness",
+      "script_text": "主动问好了，很有礼貌。",
+      "active": true
+    },
+    {
+      "id": "ps_pet",
+      "habit_slug": "feed_pet",
+      "category": "kindness",
+      "script_text": "宠物吃上了，靠你。",
+      "active": true
+    },
+    {
+      "id": "ps_call",
+      "habit_slug": "call_grandma",
+      "category": "kindness",
+      "script_text": "电话打完了，长辈会开心。",
+      "active": true
+    },
+    {
+      "id": "ps_game",
+      "habit_slug": "family_game",
+      "category": "kindness",
+      "script_text": "这一局一起玩完了。",
       "active": true
     },
     {
       "id": "ps_outdoor",
       "habit_slug": "outdoor_ten",
       "category": "movement",
-      "script_text": "出去动一动，身体在鼓掌。",
+      "script_text": "出门动完了，身体暖暖的。",
+      "active": true
+    },
+    {
+      "id": "ps_stretch",
+      "habit_slug": "stretch",
+      "category": "movement",
+      "script_text": "伸展做完了，肩膀松一点。",
+      "active": true
+    },
+    {
+      "id": "ps_stairs",
+      "habit_slug": "stairs_walk",
+      "category": "movement",
+      "script_text": "这一层楼梯走完了。",
+      "active": true
+    },
+    {
+      "id": "ps_squat",
+      "habit_slug": "pushup_or_squat",
+      "category": "movement",
+      "script_text": "五个做完了，肌肉醒了。",
+      "active": true
+    },
+    {
+      "id": "ps_stretchb",
+      "habit_slug": "stretch_bed",
+      "category": "movement",
+      "script_text": "懒腰伸完了，醒过来了。",
       "active": true
     },
     {
       "id": "ps_water",
       "habit_slug": "drink_water",
       "category": "health",
-      "script_text": "咕咚一杯水，元气回来了。",
+      "script_text": "这杯水喝完了，清爽。",
+      "active": true
+    },
+    {
+      "id": "ps_fruit",
+      "habit_slug": "fruit_one",
+      "category": "health",
+      "script_text": "这份水果吃完了。",
+      "active": true
+    },
+    {
+      "id": "ps_snack",
+      "habit_slug": "no_snack_rush",
+      "category": "health",
+      "script_text": "停下再吃，更从容。",
+      "active": true
+    },
+    {
+      "id": "ps_vit",
+      "habit_slug": "vitamin",
+      "category": "health",
+      "script_text": "今天的份吃过了。",
+      "active": true
+    },
+    {
+      "id": "ps_lunch",
+      "habit_slug": "lunch_finish",
+      "category": "health",
+      "script_text": "饭吃完了，碗空了。",
       "active": true
     },
     {
       "id": "ps_hw",
       "habit_slug": "homework_start",
       "category": "study",
-      "script_text": "按时开动，今天的山变小了。",
+      "script_text": "作业开动了，第一步完成。",
+      "active": true
+    },
+    {
+      "id": "ps_hwfocus",
+      "habit_slug": "homework_focus",
+      "category": "study",
+      "script_text": "这一段专注做完了。",
+      "active": true
+    },
+    {
+      "id": "ps_bag",
+      "habit_slug": "bag_pack",
+      "category": "study",
+      "script_text": "书包收好了，明天不慌。",
+      "active": true
+    },
+    {
+      "id": "ps_mistake",
+      "habit_slug": "review_mistakes",
+      "category": "study",
+      "script_text": "这道错题订正完了。",
+      "active": true
+    },
+    {
+      "id": "ps_plan",
+      "habit_slug": "plan_tomorrow",
+      "category": "study",
+      "script_text": "明天一件事写好了。",
+      "active": true
+    },
+    {
+      "id": "ps_math",
+      "habit_slug": "math_drill",
+      "category": "study",
+      "script_text": "五题口算做完了。",
+      "active": true
+    },
+    {
+      "id": "ps_piano",
+      "habit_slug": "practice_instrument",
+      "category": "arts",
+      "script_text": "五分钟练完了，琴声在。",
+      "active": true
+    },
+    {
+      "id": "ps_draw",
+      "habit_slug": "draw_one",
+      "category": "arts",
+      "script_text": "这幅小画完成了。",
+      "active": true
+    },
+    {
+      "id": "ps_sing",
+      "habit_slug": "sing_one",
+      "category": "arts",
+      "script_text": "这首歌唱完了。",
+      "active": true
+    },
+    {
+      "id": "ps_journal",
+      "habit_slug": "journal_line",
+      "category": "arts",
+      "script_text": "这一句日记写下了。",
       "active": true
     },
     {
       "id": "ps_screen",
       "habit_slug": "screen_limit",
       "category": "screen",
-      "script_text": "说到做到，下线也很酷。",
+      "script_text": "到点下线了，说到做到。",
+      "active": true
+    },
+    {
+      "id": "ps_oneep",
+      "habit_slug": "one_show_only",
+      "category": "screen",
+      "script_text": "一集看完就停，很守信。",
       "active": true
     },
     {
       "id": "ps_breath",
       "habit_slug": "deep_breath",
       "category": "calm",
-      "script_text": "三次呼吸，心里更稳了。",
+      "script_text": "三次呼吸做完了，稳一点。",
       "active": true
     },
     {
-      "id": "ps_generic_1",
-      "habit_slug": "",
-      "category": "",
-      "script_text": "记下来了——孩子被看见，时间也能存进树里。",
+      "id": "ps_quiet",
+      "habit_slug": "quiet_five",
+      "category": "calm",
+      "script_text": "安静五分钟过完了。",
       "active": true
     },
     {
-      "id": "ps_generic_2",
+      "id": "ps_nature",
+      "habit_slug": "nature_look",
+      "category": "calm",
+      "script_text": "这一眼风景，你看见了。",
+      "active": true
+    },
+    {
+      "id": "ps_hygiene",
       "habit_slug": "",
-      "category": "",
-      "script_text": "做到了！我们一起为这件事高兴。",
+      "category": "hygiene",
+      "script_text": "清洁这一下，你做到了。",
+      "active": true
+    },
+    {
+      "id": "ps_sleep",
+      "habit_slug": "",
+      "category": "sleep",
+      "script_text": "休息这一步，你做到了。",
       "active": true
     },
     {
       "id": "ps_chores",
       "habit_slug": "",
       "category": "chores",
-      "script_text": "家里有你一份力，真棒。",
+      "script_text": "家里有你这一手。",
       "active": true
     },
     {
       "id": "ps_kind",
       "habit_slug": "",
       "category": "kindness",
-      "script_text": "温柔的举动，会被记得。",
+      "script_text": "这一份善意，我看见了。",
       "active": true
     },
     {
       "id": "ps_move",
       "habit_slug": "",
       "category": "movement",
-      "script_text": "身体在长大，也在变强。",
+      "script_text": "身体动起来了。",
+      "active": true
+    },
+    {
+      "id": "ps_health",
+      "habit_slug": "",
+      "category": "health",
+      "script_text": "照顾身体这一下，做到了。",
       "active": true
     },
     {
       "id": "ps_study",
       "habit_slug": "",
       "category": "study",
-      "script_text": "学习一小步，也是进步。",
+      "script_text": "学习这一小步，落地了。",
+      "active": true
+    },
+    {
+      "id": "ps_arts",
+      "habit_slug": "",
+      "category": "arts",
+      "script_text": "创作这一下，留下来了。",
+      "active": true
+    },
+    {
+      "id": "ps_screen_c",
+      "habit_slug": "",
+      "category": "screen",
+      "script_text": "约定守住了。",
+      "active": true
+    },
+    {
+      "id": "ps_calm",
+      "habit_slug": "",
+      "category": "calm",
+      "script_text": "安静这一下，你做到了。",
+      "active": true
+    },
+    {
+      "id": "ps_reading",
+      "habit_slug": "",
+      "category": "reading",
+      "script_text": "读/听这一下，进脑子了。",
+      "active": true
+    },
+    {
+      "id": "ps_generic_1",
+      "habit_slug": "",
+      "category": "",
+      "script_text": "做到了——我看见你了。",
+      "active": true
+    },
+    {
+      "id": "ps_generic_2",
+      "habit_slug": "",
+      "category": "",
+      "script_text": "记下来了，我们一起高兴一下。",
       "active": true
     }
   ],
@@ -764,101 +1079,608 @@
       "active": true
     }
   ],
-  "emotions": [
+  "celebration_copy": [
     {
-      "id": "ec_brush_a",
-      "path": "approach",
+      "id": "cc_brush",
       "habit_slug": "brush_teeth",
       "category": "hygiene",
-      "emotion_copy": "口气清新",
+      "incentive_text": "口气清新",
+      "small_celebration": "牙齿保卫战，击掌！",
+      "offline_hint_id": "och_high_five",
       "active": true
     },
     {
-      "id": "ec_brush_v",
-      "path": "avoid",
-      "habit_slug": "brush_teeth",
+      "id": "cc_brushe",
+      "habit_slug": "brush_evening",
       "category": "hygiene",
-      "emotion_copy": "少牙痛",
+      "incentive_text": "嘴巴香香的",
+      "small_celebration": "夜间清洁完成",
+      "offline_hint_id": "och_high_five",
       "active": true
     },
     {
-      "id": "ec_bed_a",
-      "path": "approach",
+      "id": "cc_wash_f",
+      "habit_slug": "wash_face",
+      "category": "hygiene",
+      "incentive_text": "脸蛋清爽",
+      "small_celebration": "洗脸打卡亮一下",
+      "offline_hint_id": "och_high_five",
+      "active": true
+    },
+    {
+      "id": "cc_hands",
+      "habit_slug": "wash_hands",
+      "category": "hygiene",
+      "incentive_text": "小手干干净净",
+      "small_celebration": "洗手完成，开饭",
+      "offline_hint_id": "och_high_five",
+      "active": true
+    },
+    {
+      "id": "cc_floss",
+      "habit_slug": "floss_once",
+      "category": "hygiene",
+      "incentive_text": "缝隙清清爽爽",
+      "small_celebration": "牙线一次成功",
+      "offline_hint_id": "och_high_five",
+      "active": true
+    },
+    {
+      "id": "cc_towel",
+      "habit_slug": "tidy_bathroom",
+      "category": "hygiene",
+      "incentive_text": "毛巾归位了",
+      "small_celebration": "浴室整齐一分",
+      "offline_hint_id": "och_shoulder",
+      "active": true
+    },
+    {
+      "id": "cc_bed",
       "habit_slug": "bedtime_on_time",
       "category": "sleep",
-      "emotion_copy": "睡个好觉",
+      "incentive_text": "身体开始放松",
+      "small_celebration": "上床充电开始",
+      "offline_hint_id": "och_pillow",
       "active": true
     },
     {
-      "id": "ec_bed_v",
-      "path": "avoid",
-      "habit_slug": "bedtime_on_time",
+      "id": "cc_nophone",
+      "habit_slug": "no_phone_bed",
       "category": "sleep",
-      "emotion_copy": "明天不哈欠连天",
+      "incentive_text": "眼睛可以歇歇",
+      "small_celebration": "屏幕放下了",
+      "offline_hint_id": "och_pillow",
       "active": true
     },
     {
-      "id": "ec_read_a",
-      "path": "approach",
+      "id": "cc_lights",
+      "habit_slug": "lights_out",
+      "category": "sleep",
+      "incentive_text": "房间暗下来了",
+      "small_celebration": "关灯仪式完成",
+      "offline_hint_id": "och_pillow",
+      "active": true
+    },
+    {
+      "id": "cc_wake",
+      "habit_slug": "morning_wake",
+      "category": "sleep",
+      "incentive_text": "新的一天见面",
+      "small_celebration": "起床第一步成功",
+      "offline_hint_id": "och_spin",
+      "active": true
+    },
+    {
+      "id": "cc_read1",
       "habit_slug": "read_one_page",
       "category": "reading",
-      "emotion_copy": "多认识一个世界",
+      "incentive_text": "故事又前进一页",
+      "small_celebration": "又一页！",
+      "offline_hint_id": "och_high_five",
       "active": true
     },
     {
-      "id": "ec_read_v",
-      "path": "avoid",
-      "habit_slug": "read_one_page",
+      "id": "cc_read10",
+      "habit_slug": "read_ten_min",
       "category": "reading",
-      "emotion_copy": "少一点空白时间浪费",
+      "incentive_text": "沉浸在故事里",
+      "small_celebration": "十分钟阅读到位",
+      "offline_hint_id": "och_high_five",
       "active": true
     },
     {
-      "id": "ec_chore_a",
-      "path": "approach",
+      "id": "cc_poem",
+      "habit_slug": "recite_poem",
+      "category": "reading",
+      "incentive_text": "嘴里有一句诗",
+      "small_celebration": "古诗一句进袋",
+      "offline_hint_id": "och_high_five",
+      "active": true
+    },
+    {
+      "id": "cc_vocab",
+      "habit_slug": "vocab_five",
+      "category": "reading",
+      "incentive_text": "多认识几个词",
+      "small_celebration": "五个词收下",
+      "offline_hint_id": "och_fridge",
+      "active": true
+    },
+    {
+      "id": "cc_story",
+      "habit_slug": "listen_story",
+      "category": "reading",
+      "incentive_text": "耳朵吃饱故事",
+      "small_celebration": "故事听到尾",
+      "offline_hint_id": "och_high_five",
+      "active": true
+    },
+    {
+      "id": "cc_makebed",
+      "habit_slug": "make_bed",
+      "category": "chores",
+      "incentive_text": "床面平整好看",
+      "small_celebration": "叠被完成",
+      "offline_hint_id": "och_shoulder",
+      "active": true
+    },
+    {
+      "id": "cc_desk",
+      "habit_slug": "tidy_desk",
+      "category": "chores",
+      "incentive_text": "桌面清爽",
+      "small_celebration": "书桌归位",
+      "offline_hint_id": "och_shoulder",
+      "active": true
+    },
+    {
+      "id": "cc_toys",
+      "habit_slug": "put_away_toys",
+      "category": "chores",
+      "incentive_text": "玩具有了家",
+      "small_celebration": "收玩具完成",
+      "offline_hint_id": "och_shoulder",
+      "active": true
+    },
+    {
+      "id": "cc_trash",
+      "habit_slug": "trash_out",
+      "category": "chores",
+      "incentive_text": "家里更清爽",
+      "small_celebration": "垃圾送走",
+      "offline_hint_id": "och_fridge",
+      "active": true
+    },
+    {
+      "id": "cc_plant",
+      "habit_slug": "water_plant",
+      "category": "chores",
+      "incentive_text": "叶子喝到水",
+      "small_celebration": "浇水完成",
+      "offline_hint_id": "och_shoulder",
+      "active": true
+    },
+    {
+      "id": "cc_table",
+      "habit_slug": "set_table",
+      "category": "chores",
+      "incentive_text": "饭桌准备好",
+      "small_celebration": "碗筷摆齐",
+      "offline_hint_id": "och_shoulder",
+      "active": true
+    },
+    {
+      "id": "cc_shoe",
+      "habit_slug": "shoe_rack",
+      "category": "chores",
+      "incentive_text": "门口整齐",
+      "small_celebration": "鞋子摆齐",
+      "offline_hint_id": "och_shoulder",
+      "active": true
+    },
+    {
+      "id": "cc_hamper",
+      "habit_slug": "clothes_hamper",
+      "category": "chores",
+      "incentive_text": "脏衣进篮",
+      "small_celebration": "衣物归位",
+      "offline_hint_id": "och_shoulder",
+      "active": true
+    },
+    {
+      "id": "cc_thank",
+      "habit_slug": "thank_you",
+      "category": "kindness",
+      "incentive_text": "谢谢说出口",
+      "small_celebration": "温暖一句送达",
+      "offline_hint_id": "och_hug",
+      "active": true
+    },
+    {
+      "id": "cc_help",
+      "habit_slug": "help_sibling",
+      "category": "kindness",
+      "incentive_text": "被需要的感觉",
+      "small_celebration": "帮忙一次看见",
+      "offline_hint_id": "och_shoulder",
+      "active": true
+    },
+    {
+      "id": "cc_share",
+      "habit_slug": "share_toy",
+      "category": "kindness",
+      "incentive_text": "一起玩更开心",
+      "small_celebration": "分享成功",
+      "offline_hint_id": "och_hug",
+      "active": true
+    },
+    {
+      "id": "cc_greet",
+      "habit_slug": "greeting",
+      "category": "kindness",
+      "incentive_text": "对方会回以微笑",
+      "small_celebration": "主动问好",
+      "offline_hint_id": "och_high_five",
+      "active": true
+    },
+    {
+      "id": "cc_pet",
+      "habit_slug": "feed_pet",
+      "category": "kindness",
+      "incentive_text": "小动物靠你",
+      "small_celebration": "喂食完成",
+      "offline_hint_id": "och_shoulder",
+      "active": true
+    },
+    {
+      "id": "cc_call",
+      "habit_slug": "call_grandma",
+      "category": "kindness",
+      "incentive_text": "声音连到长辈",
+      "small_celebration": "问候送到",
+      "offline_hint_id": "och_hug",
+      "active": true
+    },
+    {
+      "id": "cc_game",
+      "habit_slug": "family_game",
+      "category": "kindness",
+      "incentive_text": "一起笑一场",
+      "small_celebration": "亲子一局完成",
+      "offline_hint_id": "och_spin",
+      "active": true
+    },
+    {
+      "id": "cc_out",
+      "habit_slug": "outdoor_ten",
+      "category": "movement",
+      "incentive_text": "身体暖起来",
+      "small_celebration": "户外十分钟",
+      "offline_hint_id": "och_spin",
+      "active": true
+    },
+    {
+      "id": "cc_stretch",
+      "habit_slug": "stretch",
+      "category": "movement",
+      "incentive_text": "肩膀松一点",
+      "small_celebration": "伸展完成",
+      "offline_hint_id": "och_spin",
+      "active": true
+    },
+    {
+      "id": "cc_stairs",
+      "habit_slug": "stairs_walk",
+      "category": "movement",
+      "incentive_text": "腿脚在动",
+      "small_celebration": "一层楼梯达成",
+      "offline_hint_id": "och_spin",
+      "active": true
+    },
+    {
+      "id": "cc_squat",
+      "habit_slug": "pushup_or_squat",
+      "category": "movement",
+      "incentive_text": "肌肉醒一醒",
+      "small_celebration": "五个动作完成",
+      "offline_hint_id": "och_spin",
+      "active": true
+    },
+    {
+      "id": "cc_stretchb",
+      "habit_slug": "stretch_bed",
+      "category": "movement",
+      "incentive_text": "身体舒展开",
+      "small_celebration": "起床懒腰完成",
+      "offline_hint_id": "och_spin",
+      "active": true
+    },
+    {
+      "id": "cc_water",
+      "habit_slug": "drink_water",
+      "category": "health",
+      "incentive_text": "喉咙润润的",
+      "small_celebration": "咕咚一杯完成",
+      "offline_hint_id": "och_high_five",
+      "active": true
+    },
+    {
+      "id": "cc_fruit",
+      "habit_slug": "fruit_one",
+      "category": "health",
+      "incentive_text": "嘴里甜甜的",
+      "small_celebration": "水果一份完成",
+      "offline_hint_id": "och_fridge",
+      "active": true
+    },
+    {
+      "id": "cc_snack",
+      "habit_slug": "no_snack_rush",
+      "category": "health",
+      "incentive_text": "吃得更从容",
+      "small_celebration": "停下再吃",
+      "offline_hint_id": "och_fridge",
+      "active": true
+    },
+    {
+      "id": "cc_vit",
+      "habit_slug": "vitamin",
+      "category": "health",
+      "incentive_text": "今日份完成",
+      "small_celebration": "按时吃过了",
+      "offline_hint_id": "och_fridge",
+      "active": true
+    },
+    {
+      "id": "cc_lunch",
+      "habit_slug": "lunch_finish",
+      "category": "health",
+      "incentive_text": "肚子踏实",
+      "small_celebration": "饭碗清空",
+      "offline_hint_id": "och_high_five",
+      "active": true
+    },
+    {
+      "id": "cc_hw",
+      "habit_slug": "homework_start",
+      "category": "study",
+      "incentive_text": "本子打开了",
+      "small_celebration": "作业开动",
+      "offline_hint_id": "och_fridge",
+      "active": true
+    },
+    {
+      "id": "cc_hwfocus",
+      "habit_slug": "homework_focus",
+      "category": "study",
+      "incentive_text": "注意力在题上",
+      "small_celebration": "专注段完成",
+      "offline_hint_id": "och_fridge",
+      "active": true
+    },
+    {
+      "id": "cc_bag",
+      "habit_slug": "bag_pack",
+      "category": "study",
+      "incentive_text": "明天不慌乱",
+      "small_celebration": "书包收好",
+      "offline_hint_id": "och_fridge",
+      "active": true
+    },
+    {
+      "id": "cc_mistake",
+      "habit_slug": "review_mistakes",
+      "category": "study",
+      "incentive_text": "这道题弄明白",
+      "small_celebration": "错题订正",
+      "offline_hint_id": "och_fridge",
+      "active": true
+    },
+    {
+      "id": "cc_plan",
+      "habit_slug": "plan_tomorrow",
+      "category": "study",
+      "incentive_text": "明天心里有数",
+      "small_celebration": "一件事写下",
+      "offline_hint_id": "och_fridge",
+      "active": true
+    },
+    {
+      "id": "cc_math",
+      "habit_slug": "math_drill",
+      "category": "study",
+      "incentive_text": "脑子转起来",
+      "small_celebration": "五题口算完成",
+      "offline_hint_id": "och_fridge",
+      "active": true
+    },
+    {
+      "id": "cc_piano",
+      "habit_slug": "practice_instrument",
+      "category": "arts",
+      "incentive_text": "琴声出来了",
+      "small_celebration": "练琴五分钟",
+      "offline_hint_id": "och_spin",
+      "active": true
+    },
+    {
+      "id": "cc_draw",
+      "habit_slug": "draw_one",
+      "category": "arts",
+      "incentive_text": "纸上留下痕迹",
+      "small_celebration": "小画完成",
+      "offline_hint_id": "och_spin",
+      "active": true
+    },
+    {
+      "id": "cc_sing",
+      "habit_slug": "sing_one",
+      "category": "arts",
+      "incentive_text": "歌声在房间",
+      "small_celebration": "一首歌唱完",
+      "offline_hint_id": "och_spin",
+      "active": true
+    },
+    {
+      "id": "cc_journal",
+      "habit_slug": "journal_line",
+      "category": "arts",
+      "incentive_text": "今天留下一句",
+      "small_celebration": "日记一句记下",
+      "offline_hint_id": "och_high_five",
+      "active": true
+    },
+    {
+      "id": "cc_screen",
+      "habit_slug": "screen_limit",
+      "category": "screen",
+      "incentive_text": "说到做到的感觉",
+      "small_celebration": "准时下线",
+      "offline_hint_id": "och_dance",
+      "active": true
+    },
+    {
+      "id": "cc_oneep",
+      "habit_slug": "one_show_only",
+      "category": "screen",
+      "incentive_text": "一集就够了",
+      "small_celebration": "看完即停",
+      "offline_hint_id": "och_dance",
+      "active": true
+    },
+    {
+      "id": "cc_breath",
+      "habit_slug": "deep_breath",
+      "category": "calm",
+      "incentive_text": "胸口松一点",
+      "small_celebration": "三次呼吸完成",
+      "offline_hint_id": "och_hug",
+      "active": true
+    },
+    {
+      "id": "cc_quiet",
+      "habit_slug": "quiet_five",
+      "category": "calm",
+      "incentive_text": "耳朵安静下来",
+      "small_celebration": "安静五分钟",
+      "offline_hint_id": "och_hug",
+      "active": true
+    },
+    {
+      "id": "cc_nature",
+      "habit_slug": "nature_look",
+      "category": "calm",
+      "incentive_text": "看见一片风景",
+      "small_celebration": "观察一刻",
+      "offline_hint_id": "och_generic",
+      "active": true
+    },
+    {
+      "id": "cc_hygiene",
+      "habit_slug": "",
+      "category": "hygiene",
+      "incentive_text": "清清爽爽",
+      "small_celebration": "清洁完成，击掌",
+      "offline_hint_id": "och_high_five",
+      "active": true
+    },
+    {
+      "id": "cc_sleep",
+      "habit_slug": "",
+      "category": "sleep",
+      "incentive_text": "身体准备休息",
+      "small_celebration": "休息这一步到位",
+      "offline_hint_id": "och_pillow",
+      "active": true
+    },
+    {
+      "id": "cc_chores",
       "habit_slug": "",
       "category": "chores",
-      "emotion_copy": "家里更整齐",
+      "incentive_text": "家里更整齐",
+      "small_celebration": "家务一小步",
+      "offline_hint_id": "och_shoulder",
       "active": true
     },
     {
-      "id": "ec_kind_a",
-      "path": "approach",
+      "id": "cc_kind",
       "habit_slug": "",
       "category": "kindness",
-      "emotion_copy": "被需要的感觉",
+      "incentive_text": "被看见的温暖",
+      "small_celebration": "善意被记下",
+      "offline_hint_id": "och_hug",
       "active": true
     },
     {
-      "id": "ec_move_a",
-      "path": "approach",
+      "id": "cc_move",
       "habit_slug": "",
       "category": "movement",
-      "emotion_copy": "身体更有劲",
+      "incentive_text": "身体更有劲",
+      "small_celebration": "动起来了",
+      "offline_hint_id": "och_spin",
       "active": true
     },
     {
-      "id": "ec_study_a",
-      "path": "approach",
+      "id": "cc_health",
+      "habit_slug": "",
+      "category": "health",
+      "incentive_text": "照顾好自己一下",
+      "small_celebration": "健康一小步",
+      "offline_hint_id": "och_fridge",
+      "active": true
+    },
+    {
+      "id": "cc_study",
       "habit_slug": "",
       "category": "study",
-      "emotion_copy": "心里更踏实",
+      "incentive_text": "心里更踏实",
+      "small_celebration": "学习一小步",
+      "offline_hint_id": "och_fridge",
       "active": true
     },
     {
-      "id": "ec_generic_a",
-      "path": "approach",
+      "id": "cc_arts",
       "habit_slug": "",
-      "category": "",
-      "emotion_copy": "被看见的感觉真好",
+      "category": "arts",
+      "incentive_text": "创作留下来了",
+      "small_celebration": "艺术一小步",
+      "offline_hint_id": "och_spin",
       "active": true
     },
     {
-      "id": "ec_generic_v",
-      "path": "avoid",
+      "id": "cc_screen_c",
+      "habit_slug": "",
+      "category": "screen",
+      "incentive_text": "约定守住了",
+      "small_celebration": "屏幕约定达成",
+      "offline_hint_id": "och_dance",
+      "active": true
+    },
+    {
+      "id": "cc_calm",
+      "habit_slug": "",
+      "category": "calm",
+      "incentive_text": "心里稳一点",
+      "small_celebration": "平静一刻",
+      "offline_hint_id": "och_hug",
+      "active": true
+    },
+    {
+      "id": "cc_reading",
+      "habit_slug": "",
+      "category": "reading",
+      "incentive_text": "故事在脑子里",
+      "small_celebration": "阅读一小步",
+      "offline_hint_id": "och_high_five",
+      "active": true
+    },
+    {
+      "id": "cc_generic",
       "habit_slug": "",
       "category": "",
-      "emotion_copy": "少一点事后后悔",
+      "incentive_text": "被看见真好",
+      "small_celebration": "做到了，一起高兴",
+      "offline_hint_id": "och_generic",
       "active": true
     }
   ],
@@ -867,147 +1689,791 @@
       "id": "ms_brush_1",
       "habit_slug": "brush_teeth",
       "sort": 10,
-      "step_text": "先走到洗手台",
+      "step_text": "走到洗手台",
       "active": true
     },
     {
       "id": "ms_brush_2",
       "habit_slug": "brush_teeth",
       "sort": 20,
-      "step_text": "挤好牙膏",
+      "step_text": "先挤一点牙膏",
       "active": true
     },
     {
       "id": "ms_brush_3",
       "habit_slug": "brush_teeth",
       "sort": 30,
-      "step_text": "刷满一分钟",
+      "step_text": "刷上排或下排十下",
       "active": true
     },
     {
-      "id": "ms_wash_1",
+      "id": "ms_wash_f_1",
       "habit_slug": "wash_face",
       "sort": 10,
-      "step_text": "打湿毛巾或洗脸",
+      "step_text": "打开水龙头",
       "active": true
     },
     {
-      "id": "ms_hands_1",
+      "id": "ms_wash_f_2",
+      "habit_slug": "wash_face",
+      "sort": 20,
+      "step_text": "打湿脸或毛巾",
+      "active": true
+    },
+    {
+      "id": "ms_wash_h_1",
       "habit_slug": "wash_hands",
       "sort": 10,
-      "step_text": "打湿双手",
+      "step_text": "袖子往上挽一点",
       "active": true
     },
     {
-      "id": "ms_hands_2",
+      "id": "ms_wash_h_2",
       "habit_slug": "wash_hands",
       "sort": 20,
-      "step_text": "搓出泡沫再冲干净",
+      "step_text": "打湿手心手背",
+      "active": true
+    },
+    {
+      "id": "ms_wash_h_3",
+      "habit_slug": "wash_hands",
+      "sort": 30,
+      "step_text": "擦干再坐下吃饭",
+      "active": true
+    },
+    {
+      "id": "ms_floss_1",
+      "habit_slug": "floss_once",
+      "sort": 10,
+      "step_text": "拿出牙线",
+      "active": true
+    },
+    {
+      "id": "ms_floss_2",
+      "habit_slug": "floss_once",
+      "sort": 20,
+      "step_text": "只做一处缝隙即可",
       "active": true
     },
     {
       "id": "ms_bed_1",
       "habit_slug": "bedtime_on_time",
       "sort": 10,
-      "step_text": "先放下手里的事",
+      "step_text": "先去刷牙或上厕所",
       "active": true
     },
     {
       "id": "ms_bed_2",
       "habit_slug": "bedtime_on_time",
       "sort": 20,
-      "step_text": "去刷牙洗脸",
+      "step_text": "坐到床边",
       "active": true
     },
     {
       "id": "ms_bed_3",
       "habit_slug": "bedtime_on_time",
       "sort": 30,
-      "step_text": "上床盖好被子",
+      "step_text": "躺下盖好被子",
       "active": true
     },
     {
-      "id": "ms_phone_1",
+      "id": "ms_nophone_1",
       "habit_slug": "no_phone_bed",
       "sort": 10,
-      "step_text": "把手机放到远处充电",
+      "step_text": "把手机放到充电处",
       "active": true
     },
     {
-      "id": "ms_read_1",
+      "id": "ms_nophone_2",
+      "habit_slug": "no_phone_bed",
+      "sort": 20,
+      "step_text": "双手离开屏幕",
+      "active": true
+    },
+    {
+      "id": "ms_lights_1",
+      "habit_slug": "lights_out",
+      "sort": 10,
+      "step_text": "走到开关旁",
+      "active": true
+    },
+    {
+      "id": "ms_lights_2",
+      "habit_slug": "lights_out",
+      "sort": 20,
+      "step_text": "关掉主灯",
+      "active": true
+    },
+    {
+      "id": "ms_wake_1",
+      "habit_slug": "morning_wake",
+      "sort": 10,
+      "step_text": "闹钟响后先坐起来",
+      "active": true
+    },
+    {
+      "id": "ms_wake_2",
+      "habit_slug": "morning_wake",
+      "sort": 20,
+      "step_text": "把双脚放到地上",
+      "active": true
+    },
+    {
+      "id": "ms_read1_1",
       "habit_slug": "read_one_page",
       "sort": 10,
-      "step_text": "先把书翻到要读的那页",
+      "step_text": "打开书到书签处",
       "active": true
     },
     {
-      "id": "ms_read_2",
+      "id": "ms_read1_2",
       "habit_slug": "read_one_page",
       "sort": 20,
-      "step_text": "读完一页再合上",
+      "step_text": "只读完这一页",
       "active": true
     },
     {
-      "id": "ms_make_1",
+      "id": "ms_read10_1",
+      "habit_slug": "read_ten_min",
+      "sort": 10,
+      "step_text": "设定十分钟计时",
+      "active": true
+    },
+    {
+      "id": "ms_read10_2",
+      "habit_slug": "read_ten_min",
+      "sort": 20,
+      "step_text": "坐下打开书",
+      "active": true
+    },
+    {
+      "id": "ms_poem_1",
+      "habit_slug": "recite_poem",
+      "sort": 10,
+      "step_text": "打开诗词本或卡片",
+      "active": true
+    },
+    {
+      "id": "ms_poem_2",
+      "habit_slug": "recite_poem",
+      "sort": 20,
+      "step_text": "大声念出一句",
+      "active": true
+    },
+    {
+      "id": "ms_vocab_1",
+      "habit_slug": "vocab_five",
+      "sort": 10,
+      "step_text": "拿出单词本或卡片",
+      "active": true
+    },
+    {
+      "id": "ms_vocab_2",
+      "habit_slug": "vocab_five",
+      "sort": 20,
+      "step_text": "先读出第一个词",
+      "active": true
+    },
+    {
+      "id": "ms_bedmake_1",
       "habit_slug": "make_bed",
       "sort": 10,
-      "step_text": "先把枕头摆正",
+      "step_text": "把枕头摆正",
       "active": true
     },
     {
-      "id": "ms_make_2",
+      "id": "ms_bedmake_2",
       "habit_slug": "make_bed",
       "sort": 20,
-      "step_text": "拉平被子",
+      "step_text": "把被子往上拉齐",
       "active": true
     },
     {
-      "id": "ms_thank_1",
+      "id": "ms_desk_1",
+      "habit_slug": "tidy_desk",
+      "sort": 10,
+      "step_text": "先收走三样东西",
+      "active": true
+    },
+    {
+      "id": "ms_desk_2",
+      "habit_slug": "tidy_desk",
+      "sort": 20,
+      "step_text": "椅子推回桌下",
+      "active": true
+    },
+    {
+      "id": "ms_toys_1",
+      "habit_slug": "put_away_toys",
+      "sort": 10,
+      "step_text": "选一个筐或盒子",
+      "active": true
+    },
+    {
+      "id": "ms_toys_2",
+      "habit_slug": "put_away_toys",
+      "sort": 20,
+      "step_text": "先放回五件玩具",
+      "active": true
+    },
+    {
+      "id": "ms_trash_1",
+      "habit_slug": "trash_out",
+      "sort": 10,
+      "step_text": "扎紧垃圾袋",
+      "active": true
+    },
+    {
+      "id": "ms_trash_2",
+      "habit_slug": "trash_out",
+      "sort": 20,
+      "step_text": "送到门外垃圾桶",
+      "active": true
+    },
+    {
+      "id": "ms_plant_1",
+      "habit_slug": "water_plant",
+      "sort": 10,
+      "step_text": "拿起小壶或杯子",
+      "active": true
+    },
+    {
+      "id": "ms_plant_2",
+      "habit_slug": "water_plant",
+      "sort": 20,
+      "step_text": "只浇到土壤微湿",
+      "active": true
+    },
+    {
+      "id": "ms_table_1",
+      "habit_slug": "set_table",
+      "sort": 10,
+      "step_text": "数出人数对应碗筷",
+      "active": true
+    },
+    {
+      "id": "ms_table_2",
+      "habit_slug": "set_table",
+      "sort": 20,
+      "step_text": "每人面前摆好一套",
+      "active": true
+    },
+    {
+      "id": "ms_thanks_1",
       "habit_slug": "thank_you",
       "sort": 10,
       "step_text": "看着对方眼睛",
       "active": true
     },
     {
-      "id": "ms_thank_2",
+      "id": "ms_thanks_2",
       "habit_slug": "thank_you",
       "sort": 20,
-      "step_text": "清楚地说「谢谢」",
+      "step_text": "说出「谢谢」",
+      "active": true
+    },
+    {
+      "id": "ms_help_1",
+      "habit_slug": "help_sibling",
+      "sort": 10,
+      "step_text": "问一句「要我帮忙吗」",
+      "active": true
+    },
+    {
+      "id": "ms_help_2",
+      "habit_slug": "help_sibling",
+      "sort": 20,
+      "step_text": "做完这一件小事",
+      "active": true
+    },
+    {
+      "id": "ms_share_1",
+      "habit_slug": "share_toy",
+      "sort": 10,
+      "step_text": "选出愿意分享的一件",
+      "active": true
+    },
+    {
+      "id": "ms_share_2",
+      "habit_slug": "share_toy",
+      "sort": 20,
+      "step_text": "递出去并说「给你玩」",
+      "active": true
+    },
+    {
+      "id": "ms_greet_1",
+      "habit_slug": "greeting",
+      "sort": 10,
+      "step_text": "停下脚步或抬头",
+      "active": true
+    },
+    {
+      "id": "ms_greet_2",
+      "habit_slug": "greeting",
+      "sort": 20,
+      "step_text": "说「你好」或称呼",
+      "active": true
+    },
+    {
+      "id": "ms_out_1",
+      "habit_slug": "outdoor_ten",
+      "sort": 10,
+      "step_text": "穿上鞋走到门口",
+      "active": true
+    },
+    {
+      "id": "ms_out_2",
+      "habit_slug": "outdoor_ten",
+      "sort": 20,
+      "step_text": "出门动十分钟",
+      "active": true
+    },
+    {
+      "id": "ms_stretch_1",
+      "habit_slug": "stretch",
+      "sort": 10,
+      "step_text": "站起来或坐直",
+      "active": true
+    },
+    {
+      "id": "ms_stretch_2",
+      "habit_slug": "stretch",
+      "sort": 20,
+      "step_text": "把手臂向上伸一次",
+      "active": true
+    },
+    {
+      "id": "ms_stairs_1",
+      "habit_slug": "stairs_walk",
+      "sort": 10,
+      "step_text": "走到楼梯口",
+      "active": true
+    },
+    {
+      "id": "ms_stairs_2",
+      "habit_slug": "stairs_walk",
+      "sort": 20,
+      "step_text": "走完一层再停",
       "active": true
     },
     {
       "id": "ms_water_1",
       "habit_slug": "drink_water",
       "sort": 10,
-      "step_text": "先倒半杯水",
+      "step_text": "倒半杯或一杯水",
       "active": true
     },
     {
-      "id": "ms_outdoor_1",
-      "habit_slug": "outdoor_ten",
+      "id": "ms_water_2",
+      "habit_slug": "drink_water",
+      "sort": 20,
+      "step_text": "喝完这一杯",
+      "active": true
+    },
+    {
+      "id": "ms_fruit_1",
+      "habit_slug": "fruit_one",
       "sort": 10,
-      "step_text": "先穿好鞋走到门口",
+      "step_text": "洗好或剥好一份",
       "active": true
     },
     {
-      "id": "ms_hw_1",
+      "id": "ms_fruit_2",
+      "habit_slug": "fruit_one",
+      "sort": 20,
+      "step_text": "吃完这一份",
+      "active": true
+    },
+    {
+      "id": "ms_snack_1",
+      "habit_slug": "no_snack_rush",
+      "sort": 10,
+      "step_text": "先停下脚步",
+      "active": true
+    },
+    {
+      "id": "ms_snack_2",
+      "habit_slug": "no_snack_rush",
+      "sort": 20,
+      "step_text": "坐下再吃或先收起来",
+      "active": true
+    },
+    {
+      "id": "ms_hwstart_1",
       "habit_slug": "homework_start",
       "sort": 10,
-      "step_text": "先拿出今天的作业本",
+      "step_text": "拿出今天的作业本",
+      "active": true
+    },
+    {
+      "id": "ms_hwstart_2",
+      "habit_slug": "homework_start",
+      "sort": 20,
+      "step_text": "打开到第一题",
+      "active": true
+    },
+    {
+      "id": "ms_hwfocus_1",
+      "habit_slug": "homework_focus",
+      "sort": 10,
+      "step_text": "设定二十五分钟计时",
+      "active": true
+    },
+    {
+      "id": "ms_hwfocus_2",
+      "habit_slug": "homework_focus",
+      "sort": 20,
+      "step_text": "手机先放到视线外",
+      "active": true
+    },
+    {
+      "id": "ms_bag_1",
+      "habit_slug": "bag_pack",
+      "sort": 10,
+      "step_text": "打开书包拉链",
+      "active": true
+    },
+    {
+      "id": "ms_bag_2",
+      "habit_slug": "bag_pack",
+      "sort": 20,
+      "step_text": "对照课表放好明天的书",
+      "active": true
+    },
+    {
+      "id": "ms_mistake_1",
+      "habit_slug": "review_mistakes",
+      "sort": 10,
+      "step_text": "翻到错题本",
+      "active": true
+    },
+    {
+      "id": "ms_mistake_2",
+      "habit_slug": "review_mistakes",
+      "sort": 20,
+      "step_text": "只订正其中一道",
+      "active": true
+    },
+    {
+      "id": "ms_piano_1",
+      "habit_slug": "practice_instrument",
+      "sort": 10,
+      "step_text": "打开琴盖或取出乐器",
+      "active": true
+    },
+    {
+      "id": "ms_piano_2",
+      "habit_slug": "practice_instrument",
+      "sort": 20,
+      "step_text": "先弹/吹一分钟热身",
+      "active": true
+    },
+    {
+      "id": "ms_draw_1",
+      "habit_slug": "draw_one",
+      "sort": 10,
+      "step_text": "拿出纸和笔",
+      "active": true
+    },
+    {
+      "id": "ms_draw_2",
+      "habit_slug": "draw_one",
+      "sort": 20,
+      "step_text": "先画一个简单形状",
+      "active": true
+    },
+    {
+      "id": "ms_sing_1",
+      "habit_slug": "sing_one",
+      "sort": 10,
+      "step_text": "选好要唱的歌",
+      "active": true
+    },
+    {
+      "id": "ms_sing_2",
+      "habit_slug": "sing_one",
+      "sort": 20,
+      "step_text": "从头唱完或哼完整段",
+      "active": true
+    },
+    {
+      "id": "ms_journal_1",
+      "habit_slug": "journal_line",
+      "sort": 10,
+      "step_text": "打开日记本",
+      "active": true
+    },
+    {
+      "id": "ms_journal_2",
+      "habit_slug": "journal_line",
+      "sort": 20,
+      "step_text": "写下今天一件事",
+      "active": true
+    },
+    {
+      "id": "ms_screen_1",
+      "habit_slug": "screen_limit",
+      "sort": 10,
+      "step_text": "看一眼约定下线时间",
+      "active": true
+    },
+    {
+      "id": "ms_screen_2",
+      "habit_slug": "screen_limit",
+      "sort": 20,
+      "step_text": "到点按下关闭或锁屏",
+      "active": true
+    },
+    {
+      "id": "ms_oneep_1",
+      "habit_slug": "one_show_only",
+      "sort": 10,
+      "step_text": "开始前说好「只看一集」",
+      "active": true
+    },
+    {
+      "id": "ms_oneep_2",
+      "habit_slug": "one_show_only",
+      "sort": 20,
+      "step_text": "片尾立刻退出",
       "active": true
     },
     {
       "id": "ms_breath_1",
       "habit_slug": "deep_breath",
       "sort": 10,
-      "step_text": "坐下或站定",
+      "step_text": "肩膀先放松",
       "active": true
     },
     {
       "id": "ms_breath_2",
       "habit_slug": "deep_breath",
       "sort": 20,
-      "step_text": "慢慢吸气再慢慢呼气三次",
+      "step_text": "慢慢吸气再慢慢呼气，共三次",
+      "active": true
+    },
+    {
+      "id": "ms_quiet_1",
+      "habit_slug": "quiet_five",
+      "sort": 10,
+      "step_text": "找一个安静角落坐下",
+      "active": true
+    },
+    {
+      "id": "ms_quiet_2",
+      "habit_slug": "quiet_five",
+      "sort": 20,
+      "step_text": "设定五分钟计时",
+      "active": true
+    },
+    {
+      "id": "ms_shoe_1",
+      "habit_slug": "shoe_rack",
+      "sort": 10,
+      "step_text": "把鞋拿到鞋架旁",
+      "active": true
+    },
+    {
+      "id": "ms_shoe_2",
+      "habit_slug": "shoe_rack",
+      "sort": 20,
+      "step_text": "左右脚并排放齐",
+      "active": true
+    },
+    {
+      "id": "ms_hamper_1",
+      "habit_slug": "clothes_hamper",
+      "sort": 10,
+      "step_text": "捡起脏衣服",
+      "active": true
+    },
+    {
+      "id": "ms_hamper_2",
+      "habit_slug": "clothes_hamper",
+      "sort": 20,
+      "step_text": "放进脏衣篮",
+      "active": true
+    },
+    {
+      "id": "ms_pet_1",
+      "habit_slug": "feed_pet",
+      "sort": 10,
+      "step_text": "量好今天的粮/水",
+      "active": true
+    },
+    {
+      "id": "ms_pet_2",
+      "habit_slug": "feed_pet",
+      "sort": 20,
+      "step_text": "放到碗里并确认",
+      "active": true
+    },
+    {
+      "id": "ms_call_1",
+      "habit_slug": "call_grandma",
+      "sort": 10,
+      "step_text": "拨通长辈电话",
+      "active": true
+    },
+    {
+      "id": "ms_call_2",
+      "habit_slug": "call_grandma",
+      "sort": 20,
+      "step_text": "先说「你好」再聊一句近况",
+      "active": true
+    },
+    {
+      "id": "ms_nature_1",
+      "habit_slug": "nature_look",
+      "sort": 10,
+      "step_text": "走到窗边或室外",
+      "active": true
+    },
+    {
+      "id": "ms_nature_2",
+      "habit_slug": "nature_look",
+      "sort": 20,
+      "step_text": "盯着一片叶子或天空看十秒",
+      "active": true
+    },
+    {
+      "id": "ms_squat_1",
+      "habit_slug": "pushup_or_squat",
+      "sort": 10,
+      "step_text": "找一块空地站好",
+      "active": true
+    },
+    {
+      "id": "ms_squat_2",
+      "habit_slug": "pushup_or_squat",
+      "sort": 20,
+      "step_text": "完成五个动作即可",
+      "active": true
+    },
+    {
+      "id": "ms_brushe_1",
+      "habit_slug": "brush_evening",
+      "sort": 10,
+      "step_text": "睡前走到洗手台",
+      "active": true
+    },
+    {
+      "id": "ms_brushe_2",
+      "habit_slug": "brush_evening",
+      "sort": 20,
+      "step_text": "挤牙膏开始刷",
+      "active": true
+    },
+    {
+      "id": "ms_vit_1",
+      "habit_slug": "vitamin",
+      "sort": 10,
+      "step_text": "倒好水",
+      "active": true
+    },
+    {
+      "id": "ms_vit_2",
+      "habit_slug": "vitamin",
+      "sort": 20,
+      "step_text": "按家长吩咐取出今日份",
+      "active": true
+    },
+    {
+      "id": "ms_plan_1",
+      "habit_slug": "plan_tomorrow",
+      "sort": 10,
+      "step_text": "打开便签或日记",
+      "active": true
+    },
+    {
+      "id": "ms_plan_2",
+      "habit_slug": "plan_tomorrow",
+      "sort": 20,
+      "step_text": "只写明天要做的一件事",
+      "active": true
+    },
+    {
+      "id": "ms_game_1",
+      "habit_slug": "family_game",
+      "sort": 10,
+      "step_text": "选好一局小游戏",
+      "active": true
+    },
+    {
+      "id": "ms_game_2",
+      "habit_slug": "family_game",
+      "sort": 20,
+      "step_text": "坐到一起开始这一局",
+      "active": true
+    },
+    {
+      "id": "ms_towel_1",
+      "habit_slug": "tidy_bathroom",
+      "sort": 10,
+      "step_text": "拿起用过的毛巾",
+      "active": true
+    },
+    {
+      "id": "ms_towel_2",
+      "habit_slug": "tidy_bathroom",
+      "sort": 20,
+      "step_text": "挂回折叠整齐",
+      "active": true
+    },
+    {
+      "id": "ms_lunch_1",
+      "habit_slug": "lunch_finish",
+      "sort": 10,
+      "step_text": "坐下看着自己的碗",
+      "active": true
+    },
+    {
+      "id": "ms_lunch_2",
+      "habit_slug": "lunch_finish",
+      "sort": 20,
+      "step_text": "再吃完最后几口",
+      "active": true
+    },
+    {
+      "id": "ms_story_1",
+      "habit_slug": "listen_story",
+      "sort": 10,
+      "step_text": "选好一个故事",
+      "active": true
+    },
+    {
+      "id": "ms_story_2",
+      "habit_slug": "listen_story",
+      "sort": 20,
+      "step_text": "听到结尾再起身",
+      "active": true
+    },
+    {
+      "id": "ms_math_1",
+      "habit_slug": "math_drill",
+      "sort": 10,
+      "step_text": "打开口算卡或本子",
+      "active": true
+    },
+    {
+      "id": "ms_math_2",
+      "habit_slug": "math_drill",
+      "sort": 20,
+      "step_text": "做完五题即可停",
+      "active": true
+    },
+    {
+      "id": "ms_stretchb_1",
+      "habit_slug": "stretch_bed",
+      "sort": 10,
+      "step_text": "坐在床边",
+      "active": true
+    },
+    {
+      "id": "ms_stretchb_2",
+      "habit_slug": "stretch_bed",
+      "sort": 20,
+      "step_text": "双臂向上伸一个懒腰",
       "active": true
     }
   ],
@@ -1030,6 +2496,7 @@
       "copy_text": "这个月还没有好习惯记录，记几次就会出现色块。",
       "active": true
     }
-  ]
+  ],
+  "emotions": []
 };
 })(typeof window !== "undefined" ? window : globalThis);

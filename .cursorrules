@@ -130,16 +130,20 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 
 # Scratchpad
 
-## Task: 习惯 2.0 iOS — 方案 A IH0–IH9（2026-10-13）
-- Kai: 选 A，H0–H9 全部做完，明早真机测；支 `cursor/habit-ios-replan-5c97`
-- [X] migration v8 + content seed + habits.js 自动兑
-- [X] 主屏 strip / 庆祝 overlay / 设置清单 / 分析复盘
-- [X] `npm run smoke:habits` + `sync-web` + ios public
-- [X] 推送 `ac306e7`；PR#2 已更新；待 Kai 明早 Xcode 测
+## Task: 内容/多媒体对接 + O1–O6（2026-10-14）
+- 支：`cursor/habit-polish-o1-o6-5c97`（base `cursor/habit-h0-scaffold-5c97` / PR#3）
+- Store 真源：`/cursor/stores/self/docs/content/*` + `media/habit/*`
+- [X] 拷入 `docs/v2/content/`（micro-steps、celebration-copy；退役 emotion-copy）
+- [X] build 管线消费 celebration_copy + micro-steps.md；schema v10
+- [X] 媒体 → `src/mytimetree/static/portal/habit/`；tip/小庆祝/hint art 接线
+- [ ] smoke + sync-web + push + 更新 PR#3
+- 顺序提醒：继续 O1→O2→O3→O5→O4→O6（本轮主要是内容/多媒体对接）
 
 ## Lessons (this task)
 - Content tables: `docs/v2/content/*.md` → `build-habit-content.mjs` → `habit-seed.js`；`sync-web` 必须先 build
 - Ledger API returns `items` not `entries`
 - deleteAccount 必须显式清 habit_* / earned_credits / celebration_events
+- 多媒体进 `portal/habit/`（勿只写 ios/public）；路径用 `/static/portal/habit/…`，sync 改写为 `./habit/…`
+- tip/小庆祝文案源：`celebration-copy`（incentive + small_celebration + offline_hint_id），不再用 emotion-copy
 
-## Archived: 差距盘点 / Web habit PR#1 closed / iOS 1.0 phases
+## Archived: IH0–IH9 / 差距盘点 / Web habit PR#1 / iOS 1.0 phases
