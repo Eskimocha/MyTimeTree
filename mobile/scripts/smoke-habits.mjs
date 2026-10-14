@@ -159,9 +159,29 @@ if (swapped.length >= 2) {
 
 const overview = await api("/api/portal/habits/overview");
 if (!overview.timeline?.length) throw new Error("overview timeline empty");
+if (!overview.month_heatmap?.weeks?.length) {
+  throw new Error("month_heatmap missing");
+}
 console.log(
-  `[smoke-habits] overview week=${overview.board?.stats?.week_logs} cats=${overview.categories?.length}`
+  `[smoke-habits] overview week=${overview.board?.stats?.week_logs} cats=${overview.categories?.length} heatWeeks=${overview.month_heatmap.weeks.length}`
 );
+
+const todayFull = await api("/api/portal/habits/today");
+const tipItem = todayFull.items?.[0];
+if (!tipItem) throw new Error("today empty after complete");
+if (!Array.isArray(tipItem.micro_steps)) throw new Error("micro_steps missing on today item");
+if (!tipItem.parent_script?.script_text) throw new Error("parent_script missing on today item");
+console.log(
+  `[smoke-habits] today tip micro=${tipItem.micro_steps.length} color=${tipItem.color}`
+);
+
+const msAdd = await api("/api/portal/habits/micro-steps", {
+  method: "POST",
+  body: JSON.stringify({ habit_id: tipItem.habit_id, step_text: "先准备好水杯" }),
+});
+if (!msAdd.steps?.some((s) => s.step_text === "先准备好水杯")) {
+  throw new Error("custom micro-step not saved");
+}
 
 const ledger = await api(`/api/ledger?account_id=${acc.id}&limit=50`);
 const habitEntry = (ledger.items || []).find((e) => e.category === "habit_reward");

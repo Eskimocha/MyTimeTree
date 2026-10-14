@@ -2,8 +2,8 @@
 (function (global) {
   "use strict";
   global.MyTimeTreeHabitSeed = {
-  "version": 1,
-  "generated_at": "2026-10-13T11:26:59.627Z",
+  "version": 2,
+  "generated_at": "2026-10-14T10:10:09.174Z",
   "templates": [
     {
       "slug": "brush_teeth",
@@ -859,6 +859,175 @@
       "habit_slug": "",
       "category": "",
       "emotion_copy": "少一点事后后悔",
+      "active": true
+    }
+  ],
+  "micro_steps": [
+    {
+      "id": "ms_brush_1",
+      "habit_slug": "brush_teeth",
+      "sort": 10,
+      "step_text": "先走到洗手台",
+      "active": true
+    },
+    {
+      "id": "ms_brush_2",
+      "habit_slug": "brush_teeth",
+      "sort": 20,
+      "step_text": "挤好牙膏",
+      "active": true
+    },
+    {
+      "id": "ms_brush_3",
+      "habit_slug": "brush_teeth",
+      "sort": 30,
+      "step_text": "刷满一分钟",
+      "active": true
+    },
+    {
+      "id": "ms_wash_1",
+      "habit_slug": "wash_face",
+      "sort": 10,
+      "step_text": "打湿毛巾或洗脸",
+      "active": true
+    },
+    {
+      "id": "ms_hands_1",
+      "habit_slug": "wash_hands",
+      "sort": 10,
+      "step_text": "打湿双手",
+      "active": true
+    },
+    {
+      "id": "ms_hands_2",
+      "habit_slug": "wash_hands",
+      "sort": 20,
+      "step_text": "搓出泡沫再冲干净",
+      "active": true
+    },
+    {
+      "id": "ms_bed_1",
+      "habit_slug": "bedtime_on_time",
+      "sort": 10,
+      "step_text": "先放下手里的事",
+      "active": true
+    },
+    {
+      "id": "ms_bed_2",
+      "habit_slug": "bedtime_on_time",
+      "sort": 20,
+      "step_text": "去刷牙洗脸",
+      "active": true
+    },
+    {
+      "id": "ms_bed_3",
+      "habit_slug": "bedtime_on_time",
+      "sort": 30,
+      "step_text": "上床盖好被子",
+      "active": true
+    },
+    {
+      "id": "ms_phone_1",
+      "habit_slug": "no_phone_bed",
+      "sort": 10,
+      "step_text": "把手机放到远处充电",
+      "active": true
+    },
+    {
+      "id": "ms_read_1",
+      "habit_slug": "read_one_page",
+      "sort": 10,
+      "step_text": "先把书翻到要读的那页",
+      "active": true
+    },
+    {
+      "id": "ms_read_2",
+      "habit_slug": "read_one_page",
+      "sort": 20,
+      "step_text": "读完一页再合上",
+      "active": true
+    },
+    {
+      "id": "ms_make_1",
+      "habit_slug": "make_bed",
+      "sort": 10,
+      "step_text": "先把枕头摆正",
+      "active": true
+    },
+    {
+      "id": "ms_make_2",
+      "habit_slug": "make_bed",
+      "sort": 20,
+      "step_text": "拉平被子",
+      "active": true
+    },
+    {
+      "id": "ms_thank_1",
+      "habit_slug": "thank_you",
+      "sort": 10,
+      "step_text": "看着对方眼睛",
+      "active": true
+    },
+    {
+      "id": "ms_thank_2",
+      "habit_slug": "thank_you",
+      "sort": 20,
+      "step_text": "清楚地说「谢谢」",
+      "active": true
+    },
+    {
+      "id": "ms_water_1",
+      "habit_slug": "drink_water",
+      "sort": 10,
+      "step_text": "先倒半杯水",
+      "active": true
+    },
+    {
+      "id": "ms_outdoor_1",
+      "habit_slug": "outdoor_ten",
+      "sort": 10,
+      "step_text": "先穿好鞋走到门口",
+      "active": true
+    },
+    {
+      "id": "ms_hw_1",
+      "habit_slug": "homework_start",
+      "sort": 10,
+      "step_text": "先拿出今天的作业本",
+      "active": true
+    },
+    {
+      "id": "ms_breath_1",
+      "habit_slug": "deep_breath",
+      "sort": 10,
+      "step_text": "坐下或站定",
+      "active": true
+    },
+    {
+      "id": "ms_breath_2",
+      "habit_slug": "deep_breath",
+      "sort": 20,
+      "step_text": "慢慢吸气再慢慢呼气三次",
+      "active": true
+    }
+  ],
+  "board_copy": [
+    {
+      "id": "hbc_legend",
+      "slot": "legend_intro",
+      "copy_text": "每天大方块里的小色块 = 当天记过的好习惯（颜色固定到习惯）。",
+      "active": true
+    },
+    {
+      "id": "hbc_month",
+      "slot": "month_summary",
+      "copy_text": "本月点阵：一眼看到哪些天有记录、都记了哪些习惯。",
+      "active": true
+    },
+    {
+      "id": "hbc_empty",
+      "slot": "empty_month",
+      "copy_text": "这个月还没有好习惯记录，记几次就会出现色块。",
       "active": true
     }
   ]

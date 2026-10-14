@@ -968,6 +968,7 @@
     dbApi.exec("DELETE FROM celebration_events WHERE account_id = ?", [id]);
     dbApi.exec("DELETE FROM earned_credits WHERE account_id = ?", [id]);
     dbApi.exec("DELETE FROM habit_logs WHERE account_id = ?", [id]);
+    dbApi.exec("DELETE FROM habit_micro_steps WHERE account_id = ?", [id]);
     dbApi.exec("DELETE FROM exchange_rules WHERE account_id = ?", [id]);
     dbApi.exec("DELETE FROM habits WHERE account_id = ?", [id]);
     dbApi.exec("DELETE FROM ornament_events WHERE account_id = ?", [id]);
@@ -1650,6 +1651,7 @@
           method,
           body,
           u,
+          searchParams: u.searchParams,
         });
         if (habitRes) return habitRes;
       }
