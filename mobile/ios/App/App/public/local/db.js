@@ -127,6 +127,106 @@
          ADD COLUMN interest_fruit_count INTEGER NOT NULL DEFAULT 0`,
       ],
     },
+    {
+      version: 8,
+      sql: [
+        `CREATE TABLE IF NOT EXISTS habit_templates (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          slug TEXT NOT NULL UNIQUE,
+          title TEXT NOT NULL,
+          category TEXT NOT NULL DEFAULT '',
+          default_minutes INTEGER NOT NULL DEFAULT 5,
+          active INTEGER NOT NULL DEFAULT 1,
+          sort_default INTEGER NOT NULL DEFAULT 100,
+          notes TEXT NOT NULL DEFAULT ''
+        )`,
+        `CREATE TABLE IF NOT EXISTS habits (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          account_id INTEGER NOT NULL,
+          template_id INTEGER,
+          title TEXT NOT NULL,
+          category TEXT NOT NULL DEFAULT '',
+          sort_order INTEGER NOT NULL DEFAULT 100,
+          archived INTEGER NOT NULL DEFAULT 0,
+          created_at TEXT NOT NULL,
+          FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE
+        )`,
+        `CREATE INDEX IF NOT EXISTS idx_habits_account_sort
+          ON habits(account_id, archived, sort_order)`,
+        `CREATE TABLE IF NOT EXISTS exchange_rules (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          account_id INTEGER NOT NULL,
+          habit_id INTEGER NOT NULL,
+          minutes_per_completion INTEGER NOT NULL DEFAULT 5,
+          daily_cap INTEGER NOT NULL DEFAULT 1,
+          auto_redeem INTEGER NOT NULL DEFAULT 1,
+          active INTEGER NOT NULL DEFAULT 1,
+          FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE,
+          FOREIGN KEY (habit_id) REFERENCES habits(id) ON DELETE CASCADE
+        )`,
+        `CREATE UNIQUE INDEX IF NOT EXISTS idx_exchange_rules_habit
+          ON exchange_rules(habit_id)`,
+        `CREATE TABLE IF NOT EXISTS habit_logs (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          account_id INTEGER NOT NULL,
+          habit_id INTEGER NOT NULL,
+          day_key TEXT NOT NULL,
+          created_at TEXT NOT NULL,
+          source TEXT NOT NULL DEFAULT 'parent',
+          meta_json TEXT NOT NULL DEFAULT '{}',
+          FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE,
+          FOREIGN KEY (habit_id) REFERENCES habits(id) ON DELETE CASCADE
+        )`,
+        `CREATE UNIQUE INDEX IF NOT EXISTS idx_habit_logs_account_habit_day
+          ON habit_logs(account_id, habit_id, day_key)`,
+        `CREATE TABLE IF NOT EXISTS earned_credits (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          account_id INTEGER NOT NULL,
+          habit_log_id INTEGER NOT NULL UNIQUE,
+          minutes INTEGER NOT NULL,
+          status TEXT NOT NULL DEFAULT 'redeemed',
+          ledger_entry_id INTEGER,
+          created_at TEXT NOT NULL,
+          FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE,
+          FOREIGN KEY (habit_log_id) REFERENCES habit_logs(id) ON DELETE CASCADE
+        )`,
+        `CREATE TABLE IF NOT EXISTS parent_scripts (
+          id TEXT PRIMARY KEY,
+          habit_slug TEXT NOT NULL DEFAULT '',
+          category TEXT NOT NULL DEFAULT '',
+          script_text TEXT NOT NULL,
+          active INTEGER NOT NULL DEFAULT 1
+        )`,
+        `CREATE TABLE IF NOT EXISTS offline_celebration_hints (
+          id TEXT PRIMARY KEY,
+          title TEXT NOT NULL,
+          body TEXT NOT NULL,
+          image_key TEXT NOT NULL DEFAULT '',
+          categories_json TEXT NOT NULL DEFAULT '[]',
+          active INTEGER NOT NULL DEFAULT 1
+        )`,
+        `CREATE TABLE IF NOT EXISTS emotion_copy (
+          id TEXT PRIMARY KEY,
+          path TEXT NOT NULL,
+          habit_slug TEXT NOT NULL DEFAULT '',
+          category TEXT NOT NULL DEFAULT '',
+          emotion_copy TEXT NOT NULL,
+          active INTEGER NOT NULL DEFAULT 1
+        )`,
+        `CREATE TABLE IF NOT EXISTS celebration_events (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          account_id INTEGER NOT NULL,
+          kind TEXT NOT NULL,
+          day_key TEXT NOT NULL,
+          habit_log_id INTEGER,
+          payload_json TEXT NOT NULL DEFAULT '{}',
+          created_at TEXT NOT NULL,
+          FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE
+        )`,
+        `CREATE INDEX IF NOT EXISTS idx_celebration_account_day
+          ON celebration_events(account_id, day_key)`,
+      ],
+    },
   ];
 
   let lastSyncMeta = {

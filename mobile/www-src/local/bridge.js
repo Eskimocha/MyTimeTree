@@ -135,6 +135,27 @@
 
   console.info("[MyTimeTree] local bridge active", window.MyTimeTreeLocal.version);
 
+  // Hide splash as soon as the bridge is up (don't wait for sql.js / ICloudDb).
+  function hideNativeSplash() {
+    try {
+      const Cap = window.Capacitor;
+      const Splash =
+        Cap && typeof Cap.registerPlugin === "function"
+          ? Cap.registerPlugin("SplashScreen")
+          : Cap && Cap.Plugins && Cap.Plugins.SplashScreen;
+      if (Splash && typeof Splash.hide === "function") {
+        Splash.hide({ fadeOutDuration: 200 }).catch(() => {});
+      }
+    } catch {
+      /* ignore */
+    }
+  }
+  hideNativeSplash();
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", hideNativeSplash);
+  }
+  setTimeout(hideNativeSplash, 400);
+
   // Capacitor App pause → flush DB (also handled in lock.js); keep a bridge-level backup.
   try {
     const Cap = window.Capacitor;

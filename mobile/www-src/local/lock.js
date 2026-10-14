@@ -78,7 +78,7 @@
         <p class="app-lock-lede" id="recovery-question-text">安全问题</p>
         <form id="app-lock-recovery-form" class="stack app-lock-form">
           <label>答案
-            <textarea name="answer" rows="1" lang="zh-CN" enterkeyhint="done" autocomplete="off" spellcheck="false" required placeholder="例如：三体（可不加书名号）"></textarea>
+            <input name="answer" type="text" lang="zh-CN" inputmode="text" enterkeyhint="done" required maxlength="64" placeholder="例如：三体（可不加书名号）" autocomplete="on" />
           </label>
           <label>新家长密码
             <input name="new_password" type="password" autocomplete="new-password" required minlength="4" />
@@ -274,6 +274,17 @@
 
   async function finishUnlockReload() {
     clearLockOverlay();
+    // Soft refresh — full location.reload() re-inits sql.js wasm + ICloudDb and feels stuck.
+    try {
+      if (typeof window.__mytimetreeBootstrap === "function") {
+        await window.__mytimetreeBootstrap();
+        await refreshFaceIdToggle();
+        await refreshSyncStatus(false);
+        return;
+      }
+    } catch (err) {
+      console.warn("[lock] soft bootstrap after unlock failed, reloading", err);
+    }
     location.reload();
   }
 
@@ -1109,18 +1120,22 @@
           </select>
         </label>
         <label>安全问题答案
-          <textarea name="recovery_answer" rows="1" lang="zh-CN" enterkeyhint="done" required minlength="2" placeholder="请牢记答案（建议不用《》书名号）" autocomplete="off" spellcheck="false"></textarea>
+          <input name="recovery_answer" type="text" lang="zh-CN" inputmode="text" enterkeyhint="done" required minlength="2" maxlength="64" placeholder="请牢记答案（建议不用《》书名号）" autocomplete="on" />
         </label>
       `;
       pwd.closest("label").after(wrap);
     }
-    // Prefer textarea + lang=zh-CN; avoid autocapitalize/autocorrect=off (iOS may lock Latin keyboard after 《).
+    // lang=zh-CN + plain text input; never set autocomplete/autocapitalize/autocorrect=off
+    // and never preventDefault Enter during IME composition.
     const answer = form.querySelector('[name="recovery_answer"]');
     if (answer) {
       answer.setAttribute("lang", "zh-CN");
-      answer.setAttribute("autocomplete", "off");
-      answer.setAttribute("spellcheck", "false");
+      answer.setAttribute("inputmode", "text");
       answer.setAttribute("enterkeyhint", "done");
+      answer.setAttribute("autocomplete", "on");
+      answer.removeAttribute("autocapitalize");
+      answer.removeAttribute("autocorrect");
+      answer.removeAttribute("spellcheck");
     }
     enhanceQuestionPickers(form);
   }
@@ -1229,8 +1244,11 @@
 
   async function bootLock() {
     if (!window.MyTimeTreeLocal) return;
-    document.documentElement.classList.add("is-locked");
+    // Don't mark is-locked until evaluateLock decides — otherwise onboarding/IME
+    // sits under visibility:hidden during the slow ICloudDb/sql.js init.
     ensureLockDom();
+    const lockEarly = $("#app-lock");
+    if (lockEarly) lockEarly.hidden = true;
     ensureOnboardingRecoveryFields();
     ensureSettingsSecurity();
     wireAccountsPayloadEnrichment();

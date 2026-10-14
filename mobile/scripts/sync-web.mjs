@@ -59,11 +59,13 @@ function rewritePortalHtml(html) {
     '<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />'
   );
 
-  // Order: sql.js → db → store → bridge → lock → html2canvas → share → app
+  // Order: sql.js → db → habit-seed → store → habits → bridge → lock → share → app
   const injectScripts = [
     '  <script src="./local/sql-wasm.js"></script>',
-    '  <script src="./local/db.js?v=p4r2"></script>',
-    '  <script src="./local/store.js?v=p4r2"></script>',
+    '  <script src="./local/db.js?v=p5h1"></script>',
+    '  <script src="./local/habit-seed.js?v=p5h1"></script>',
+    '  <script src="./local/store.js?v=p5h1"></script>',
+    '  <script src="./local/habits.js?v=p5h1"></script>',
     '  <script src="./local/bridge.js?v=p4r2"></script>',
     '  <script src="./local/lock.js?v=p4r9"></script>',
     '  <script src="./local/html2canvas.min.js"></script>',

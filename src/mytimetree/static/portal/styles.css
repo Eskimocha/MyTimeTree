@@ -448,8 +448,21 @@ html, body {
 /* backdrop-filter breaks CJK IME in WKWebView — use solid surface on forms */
 .panel.onboarding {
   background: #ffffff;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+.account-modal-sheet {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Single-line Chinese fields: textarea + lang=zh-CN (avoid white-space:nowrap — breaks IME). */
+.stack textarea.input-like {
+  resize: none;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  min-height: 2.6rem;
+  word-break: break-word;
 }
 
 .btn {
@@ -1034,6 +1047,172 @@ html.share-capture body {
   margin: 0.35rem 0 0;
   font-size: 0.8rem;
   color: var(--muted);
+}
+
+/* —— 好习惯：主屏 strip + overlay + 设置/分析 —— */
+.tab-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.15rem;
+  height: 1.15rem;
+  margin-left: 0.25rem;
+  padding: 0 0.3rem;
+  border-radius: 999px;
+  background: var(--danger);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  vertical-align: middle;
+}
+.tab-badge[hidden] { display: none !important; }
+
+.habit-strip {
+  margin: 0.35rem 0 0.55rem;
+  padding: 0.55rem 0.65rem;
+  background: #f3faf6;
+  border-radius: 14px;
+  border: 1px solid #c9ddd3;
+}
+.habit-strip-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-bottom: 0.45rem;
+  font-size: 0.92rem;
+  color: var(--leaf-deep);
+  font-weight: 600;
+}
+.habit-chip-rail {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+.habit-chip {
+  border: 0;
+  border-radius: 999px;
+  padding: 0.45rem 0.75rem;
+  font-size: 0.88rem;
+  background: linear-gradient(135deg, var(--leaf), var(--leaf-deep));
+  color: #fff;
+  min-height: 44px;
+}
+.habit-chip.done {
+  background: #dff3e8;
+  color: var(--leaf-deep);
+}
+.habit-chip:disabled { opacity: 0.85; }
+
+.habit-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.habit-overlay[hidden] { display: none !important; }
+.habit-overlay-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(26, 61, 50, 0.35);
+}
+.habit-overlay-sheet {
+  position: relative;
+  width: min(100%, 430px);
+  max-height: 60dvh;
+  overflow: auto;
+  margin: 0;
+  padding: 1.1rem 1rem calc(1rem + env(safe-area-inset-bottom, 0px));
+  background: #fff;
+  border-radius: 18px 18px 0 0;
+  animation: habit-rise 0.28s ease;
+}
+@keyframes habit-rise {
+  from { transform: translateY(12%); opacity: 0.6; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.habit-celeb-title {
+  margin: 0 0 0.35rem;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  color: var(--leaf-deep);
+}
+.habit-celeb-credit { margin: 0 0 0.55rem; font-size: 0.9rem; }
+.habit-celeb-script {
+  margin: 0 0 0.75rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--ink);
+}
+.habit-celeb-hint {
+  margin: 0 0 0.9rem;
+  padding: 0.7rem 0.8rem;
+  background: #e8f5e9;
+  border-radius: 12px;
+}
+.habit-celeb-hint strong {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: var(--leaf-deep);
+}
+.habit-celeb-hint p { margin: 0; color: var(--muted); font-size: 0.92rem; }
+
+.habit-settings {
+  margin: 1rem 0;
+  padding: 0.85rem 0.9rem;
+  background: var(--surface);
+  border-radius: var(--radius);
+}
+.habit-settings-lede { margin: 0 0 0.65rem; font-size: 0.85rem; }
+.habit-settings-list {
+  list-style: none;
+  margin: 0 0 0.85rem;
+  padding: 0;
+  display: grid;
+  gap: 0.45rem;
+}
+.habit-settings-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.65rem;
+  background: #f7fcf8;
+  border-radius: 12px;
+  font-size: 0.9rem;
+}
+.habit-settings-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  justify-content: flex-end;
+}
+.habit-settings-add label { font-size: 0.9rem; }
+.btn.compact {
+  padding: 0.35rem 0.55rem;
+  font-size: 0.78rem;
+  min-height: 36px;
+  border-radius: 10px;
+}
+.habit-review-list {
+  list-style: none;
+  margin: 0.4rem 0 0.75rem;
+  padding: 0;
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+}
+.habit-review-list li {
+  padding: 0.45rem 0.55rem;
+  background: #f7fcf8;
+  border-radius: 10px;
+}
+.habit-review-sub {
+  margin: 0.75rem 0 0.25rem;
+  font-size: 0.95rem;
+  color: var(--leaf-deep);
 }
 
 @media (min-width: 720px) {
