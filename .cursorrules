@@ -114,7 +114,7 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 - Mobile Node path: `export PATH="$HOME/.local/node/bin:$PATH"` (system may have no node/npm)
 - Building iOS needs full Xcode.app, not only Command Line Tools
 - Capacitor sync-web must rewrite `/static/portal/` in **app.js** (STAGE_ART/ORN_ICON), not only index.html; otherwise tree/ornament PNGs 404 in the simulator
-- iOS WKWebView + CJK IME: avoid `autocapitalize/autocorrect="off"` on Chinese answer fields; after typing book-title mark `《`, keyboard can stick in Latin/punct mode. Prefer `<textarea rows="1" lang="zh-CN">` over `<input>`; also avoid `backdrop-filter` on focused panels
+- iOS WKWebView + CJK IME: avoid `autocapitalize/autocorrect/autocomplete="off"` on Chinese fields; never `preventDefault` Enter while `e.isComposing` / keyCode 229 (breaks 中文选词). Prefer `input type=text lang=zh-CN inputmode=text`; avoid `backdrop-filter` on focused panels; unlock must NOT `location.reload()` (re-inits sql.js/wasm — feels stuck)
 - iOS WKWebView: keyboard focus scrolls the document; after dismiss/unlock, top of UI can clip — reset scrollY (bridge `resetMyTimeTreeViewport`), `history.scrollRestoration=manual`, and `position:fixed` while `html.is-locked`
 - iOS WKWebView focus zoom: inputs/selects with font-size < 16px auto-zoom on focus and often stay zoomed after unlock — set form controls to `font-size: 16px`; Capacitor viewport uses `maximum-scale=1`; remove temporary `zoom: 0.9` workaround
 - iOS WKWebView “偏右”: avoid horizontal `env(safe-area-inset-left/right)` if it mis-reports; use fixed side gutters; flex children need `min-width:0`

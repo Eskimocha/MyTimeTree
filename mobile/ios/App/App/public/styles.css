@@ -456,13 +456,13 @@ html, body {
   -webkit-backdrop-filter: none !important;
 }
 
-/* Single-line Chinese fields: textarea behaves better than <input> in WKWebView IME */
+/* Single-line Chinese fields: textarea + lang=zh-CN (avoid white-space:nowrap — breaks IME). */
 .stack textarea.input-like {
   resize: none;
-  overflow: hidden;
-  white-space: nowrap;
-  field-sizing: content;
+  overflow-x: hidden;
+  overflow-y: hidden;
   min-height: 2.6rem;
+  word-break: break-word;
 }
 
 .btn {

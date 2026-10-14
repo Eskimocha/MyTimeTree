@@ -221,12 +221,23 @@
       $("#account-shell").hidden = true;
       return;
     }
+    // Locked session: lock.js owns the overlay; don't fetch home yet (was throwing and
+    // Cap console showed "bootstrap failed {}").
+    if (boot.auth && boot.auth.locked) {
+      $("#onboarding").hidden = true;
+      $("#main").hidden = true;
+      $("#account-shell").hidden = true;
+      return;
+    }
     $("#onboarding").hidden = true;
     $("#main").hidden = false;
     $("#account-shell").hidden = false;
     fillAccountSelect();
     await refreshHome();
   }
+
+  // Soft re-entry after unlock (avoid location.reload → re-download wasm / re-open DB).
+  window.__mytimetreeBootstrap = bootstrap;
 
   function fillAccountSelect() {
     const sel = $("#account-select");
@@ -1407,22 +1418,26 @@
     }
   });
 
-  // WKWebView CJK: single-line textareas act as inputs; block newline.
+  // WKWebView CJK: never preventDefault Enter while IME is composing (breaks 中文选词).
   document.querySelectorAll("textarea.input-like").forEach((el) => {
     el.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") e.preventDefault();
+      if (e.key !== "Enter") return;
+      if (e.isComposing || e.keyCode === 229) return;
+      e.preventDefault();
     });
   });
 
   bootstrap().catch((err) => {
-    console.error("bootstrap failed", err);
+    const msg = err && err.message ? err.message : String(err || "unknown");
+    console.error("bootstrap failed", msg, err);
+    // Don't force-show onboarding over the lock screen when session is locked.
+    if (/解锁|forbidden|未选择当前账户/i.test(msg)) return;
     const onboarding = $("#onboarding");
     const errEl = $("#onboarding-error");
     if (onboarding) onboarding.hidden = false;
     if (errEl) {
       errEl.hidden = false;
-      errEl.textContent =
-        "启动失败：" + (err && err.message ? err.message : String(err));
+      errEl.textContent = "启动失败：" + msg;
     }
   });
 })();
