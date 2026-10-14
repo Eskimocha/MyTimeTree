@@ -1407,6 +1407,13 @@
     }
   });
 
+  // WKWebView CJK: single-line textareas act as inputs; block newline.
+  document.querySelectorAll("textarea.input-like").forEach((el) => {
+    el.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") e.preventDefault();
+    });
+  });
+
   bootstrap().catch((err) => {
     console.error("bootstrap failed", err);
     const onboarding = $("#onboarding");

@@ -1407,7 +1407,22 @@
     }
   });
 
+  // WKWebView CJK: single-line textareas act as inputs; block newline.
+  document.querySelectorAll("textarea.input-like").forEach((el) => {
+    el.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") e.preventDefault();
+    });
+  });
+
   bootstrap().catch((err) => {
     console.error("bootstrap failed", err);
+    const onboarding = $("#onboarding");
+    const errEl = $("#onboarding-error");
+    if (onboarding) onboarding.hidden = false;
+    if (errEl) {
+      errEl.hidden = false;
+      errEl.textContent =
+        "启动失败：" + (err && err.message ? err.message : String(err));
+    }
   });
 })();

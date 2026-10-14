@@ -78,7 +78,7 @@
         <p class="app-lock-lede" id="recovery-question-text">安全问题</p>
         <form id="app-lock-recovery-form" class="stack app-lock-form">
           <label>答案
-            <textarea name="answer" rows="1" lang="zh-CN" enterkeyhint="done" autocomplete="off" spellcheck="false" required placeholder="例如：三体（可不加书名号）"></textarea>
+            <textarea name="answer" rows="1" lang="zh-CN" enterkeyhint="done" required placeholder="例如：三体（可不加书名号）"></textarea>
           </label>
           <label>新家长密码
             <input name="new_password" type="password" autocomplete="new-password" required minlength="4" />
@@ -1109,18 +1109,20 @@
           </select>
         </label>
         <label>安全问题答案
-          <textarea name="recovery_answer" rows="1" lang="zh-CN" enterkeyhint="done" required minlength="2" placeholder="请牢记答案（建议不用《》书名号）" autocomplete="off" spellcheck="false"></textarea>
+          <textarea name="recovery_answer" rows="1" lang="zh-CN" enterkeyhint="done" required minlength="2" placeholder="请牢记答案（建议不用《》书名号）"></textarea>
         </label>
       `;
       pwd.closest("label").after(wrap);
     }
-    // Prefer textarea + lang=zh-CN; avoid autocapitalize/autocorrect=off (iOS may lock Latin keyboard after 《).
+    // Prefer textarea + lang=zh-CN; do NOT set autocomplete/autocapitalize/autocorrect=off
+    // (iOS WKWebView may lock Latin keyboard after 《 or refuse CJK composition).
     const answer = form.querySelector('[name="recovery_answer"]');
     if (answer) {
       answer.setAttribute("lang", "zh-CN");
-      answer.setAttribute("autocomplete", "off");
-      answer.setAttribute("spellcheck", "false");
       answer.setAttribute("enterkeyhint", "done");
+      answer.removeAttribute("autocomplete");
+      answer.removeAttribute("autocapitalize");
+      answer.removeAttribute("autocorrect");
     }
     enhanceQuestionPickers(form);
   }

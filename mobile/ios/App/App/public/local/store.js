@@ -1689,12 +1689,20 @@
       await ensureDb();
       sessionUnlocked = readUnlockFlag();
       ensureHabitsAttached();
-      try {
-        if (global.MyTimeTreeHabits && global.MyTimeTreeHabits._installed) {
-          global.MyTimeTreeHabits._installed.syncContentTables();
+      // Defer habit content seed so onboarding / unlock paints first (was making cold start feel stuck).
+      const deferSeed = () => {
+        try {
+          if (global.MyTimeTreeHabits && global.MyTimeTreeHabits._installed) {
+            global.MyTimeTreeHabits._installed.syncContentTables();
+          }
+        } catch (err) {
+          console.warn("[habits] syncContentTables", err);
         }
-      } catch (err) {
-        console.warn("[habits] syncContentTables", err);
+      };
+      if (typeof requestIdleCallback === "function") {
+        requestIdleCallback(deferSeed, { timeout: 1500 });
+      } else {
+        setTimeout(deferSeed, 0);
       }
       if (sessionUnlocked) catchUp();
       return {

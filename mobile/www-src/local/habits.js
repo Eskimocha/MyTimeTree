@@ -28,91 +28,134 @@
       return getDb();
     }
 
-    function syncContentTables() {
+    function contentFingerprint() {
       const s = seed();
-      for (const t of s.templates || []) {
-        db().exec(
-          `INSERT INTO habit_templates (slug, title, category, default_minutes, active, sort_default, notes)
-           VALUES (?, ?, ?, ?, ?, ?, ?)
-           ON CONFLICT(slug) DO UPDATE SET
-             title=excluded.title,
-             category=excluded.category,
-             default_minutes=excluded.default_minutes,
-             active=excluded.active,
-             sort_default=excluded.sort_default,
-             notes=excluded.notes`,
-          [
-            t.slug,
-            t.title,
-            t.category || "",
-            Number(t.default_minutes) || 5,
-            t.active ? 1 : 0,
-            Number(t.sort_default) || 100,
-            t.notes || "",
-          ]
+      return [
+        s.generated_at || "",
+        s.version || "",
+        (s.templates || []).length,
+        (s.scripts || []).length,
+        (s.hints || []).length,
+        (s.emotions || []).length,
+      ].join(":");
+    }
+
+    function syncContentTables({ force = false } = {}) {
+      const s = seed();
+      const fp = contentFingerprint();
+      if (!force) {
+        const prev = db().queryOne(
+          "SELECT value FROM app_state WHERE key = ?",
+          ["habit_content_fp"]
         );
-      }
-      for (const sc of s.scripts || []) {
-        db().exec(
-          `INSERT INTO parent_scripts (id, habit_slug, category, script_text, active)
-           VALUES (?, ?, ?, ?, ?)
-           ON CONFLICT(id) DO UPDATE SET
-             habit_slug=excluded.habit_slug,
-             category=excluded.category,
-             script_text=excluded.script_text,
-             active=excluded.active`,
-          [sc.id, sc.habit_slug || "", sc.category || "", sc.script_text, sc.active ? 1 : 0]
+        const count = db().queryOne(
+          "SELECT COUNT(*) AS c FROM habit_templates"
         );
+        if (prev && String(prev.value) === fp && Number(count?.c || 0) > 0) {
+          return false;
+        }
       }
-      for (const h of s.hints || []) {
+
+      db().exec("BEGIN");
+      try {
+        for (const t of s.templates || []) {
+          db().exec(
+            `INSERT INTO habit_templates (slug, title, category, default_minutes, active, sort_default, notes)
+             VALUES (?, ?, ?, ?, ?, ?, ?)
+             ON CONFLICT(slug) DO UPDATE SET
+               title=excluded.title,
+               category=excluded.category,
+               default_minutes=excluded.default_minutes,
+               active=excluded.active,
+               sort_default=excluded.sort_default,
+               notes=excluded.notes`,
+            [
+              t.slug,
+              t.title,
+              t.category || "",
+              Number(t.default_minutes) || 5,
+              t.active ? 1 : 0,
+              Number(t.sort_default) || 100,
+              t.notes || "",
+            ]
+          );
+        }
+        for (const sc of s.scripts || []) {
+          db().exec(
+            `INSERT INTO parent_scripts (id, habit_slug, category, script_text, active)
+             VALUES (?, ?, ?, ?, ?)
+             ON CONFLICT(id) DO UPDATE SET
+               habit_slug=excluded.habit_slug,
+               category=excluded.category,
+               script_text=excluded.script_text,
+               active=excluded.active`,
+            [sc.id, sc.habit_slug || "", sc.category || "", sc.script_text, sc.active ? 1 : 0]
+          );
+        }
+        for (const h of s.hints || []) {
+          db().exec(
+            `INSERT INTO offline_celebration_hints (id, title, body, image_key, categories_json, active)
+             VALUES (?, ?, ?, ?, ?, ?)
+             ON CONFLICT(id) DO UPDATE SET
+               title=excluded.title,
+               body=excluded.body,
+               image_key=excluded.image_key,
+               categories_json=excluded.categories_json,
+               active=excluded.active`,
+            [
+              h.id,
+              h.title,
+              h.body,
+              h.image_key || "",
+              JSON.stringify(h.categories || []),
+              h.active ? 1 : 0,
+            ]
+          );
+        }
+        for (const e of s.emotions || []) {
+          db().exec(
+            `INSERT INTO emotion_copy (id, path, habit_slug, category, emotion_copy, active)
+             VALUES (?, ?, ?, ?, ?, ?)
+             ON CONFLICT(id) DO UPDATE SET
+               path=excluded.path,
+               habit_slug=excluded.habit_slug,
+               category=excluded.category,
+               emotion_copy=excluded.emotion_copy,
+               active=excluded.active`,
+            [
+              e.id,
+              e.path,
+              e.habit_slug || "",
+              e.category || "",
+              e.emotion_copy,
+              e.active ? 1 : 0,
+            ]
+          );
+        }
         db().exec(
-          `INSERT INTO offline_celebration_hints (id, title, body, image_key, categories_json, active)
-           VALUES (?, ?, ?, ?, ?, ?)
-           ON CONFLICT(id) DO UPDATE SET
-             title=excluded.title,
-             body=excluded.body,
-             image_key=excluded.image_key,
-             categories_json=excluded.categories_json,
-             active=excluded.active`,
-          [
-            h.id,
-            h.title,
-            h.body,
-            h.image_key || "",
-            JSON.stringify(h.categories || []),
-            h.active ? 1 : 0,
-          ]
+          `INSERT INTO app_state (key, value) VALUES (?, ?)
+           ON CONFLICT(key) DO UPDATE SET value = excluded.value`,
+          ["habit_content_fp", fp]
         );
+        db().exec("COMMIT");
+      } catch (err) {
+        try {
+          db().exec("ROLLBACK");
+        } catch {
+          /* ignore */
+        }
+        throw err;
       }
-      for (const e of s.emotions || []) {
-        db().exec(
-          `INSERT INTO emotion_copy (id, path, habit_slug, category, emotion_copy, active)
-           VALUES (?, ?, ?, ?, ?, ?)
-           ON CONFLICT(id) DO UPDATE SET
-             path=excluded.path,
-             habit_slug=excluded.habit_slug,
-             category=excluded.category,
-             emotion_copy=excluded.emotion_copy,
-             active=excluded.active`,
-          [
-            e.id,
-            e.path,
-            e.habit_slug || "",
-            e.category || "",
-            e.emotion_copy,
-            e.active ? 1 : 0,
-          ]
-        );
-      }
+      return true;
     }
 
     function ensureStarterHabits(accountId) {
-      syncContentTables();
       const existing = db().query(
         "SELECT id FROM habits WHERE account_id = ? AND archived = 0",
         [accountId]
       );
       if (existing.length) return;
+      syncContentTables();
       const templates = db().query(
         "SELECT * FROM habit_templates WHERE active = 1 ORDER BY sort_default ASC, id ASC LIMIT 8"
       );

@@ -29,8 +29,8 @@
     <section id="onboarding" class="panel onboarding" hidden>
       <p class="lede">为孩子开立第一棵时间树</p>
       <form id="onboarding-form" class="stack">
-        <label>孩子昵称<input name="name" required maxlength="32" placeholder="例如：小明" /></label>
-        <label>家长密码<input name="password" type="password" required minlength="4" /></label>
+        <label>孩子昵称<textarea name="name" class="input-like" rows="1" lang="zh-CN" enterkeyhint="done" required maxlength="32" placeholder="例如：小明"></textarea></label>
+        <label>家长密码<input name="password" type="password" required minlength="4" autocomplete="new-password" /></label>
         <label>安全问题（忘记密码时用）
           <select name="recovery_question" required>
             <option value="你母亲的姓名是？">你母亲的姓名是？</option>
@@ -39,7 +39,7 @@
             <option value="你喜欢的一部电影是？">你喜欢的一部电影是？</option>
           </select>
         </label>
-        <label>安全问题答案<textarea name="recovery_answer" rows="1" lang="zh-CN" enterkeyhint="done" required minlength="2" placeholder="请牢记答案（建议不用《》书名号）" autocomplete="off" spellcheck="false"></textarea></label>
+        <label>安全问题答案<textarea name="recovery_answer" rows="1" lang="zh-CN" enterkeyhint="done" required minlength="2" placeholder="请牢记答案（建议不用《》书名号）"></textarea></label>
         <label>资产日利率<input name="asset_interest_rate" type="number" step="0.001" min="0" value="0.01" /></label>
         <button type="submit" class="btn primary">开始种植</button>
       </form>
@@ -144,7 +144,7 @@
               <select id="habit-template-select"></select>
             </label>
             <button type="button" class="btn" id="btn-habit-enable">启用种子</button>
-            <label>自定义名称<input id="habit-custom-title" maxlength="32" placeholder="例如：练字一行" /></label>
+            <label>自定义名称<textarea id="habit-custom-title" class="input-like" rows="1" lang="zh-CN" enterkeyhint="done" maxlength="32" placeholder="例如：练字一行"></textarea></label>
             <label>每次分钟<input id="habit-custom-minutes" type="number" min="1" value="5" /></label>
             <button type="button" class="btn primary" id="btn-habit-custom">添加自定义</button>
           </div>
@@ -254,7 +254,7 @@
 
       <div id="account-panel-add" class="account-modal-body" hidden>
         <form id="account-add-form" class="stack">
-          <label>孩子昵称<input name="name" required maxlength="32" placeholder="例如：小红" /></label>
+          <label>孩子昵称<textarea name="name" class="input-like" rows="1" lang="zh-CN" enterkeyhint="done" required maxlength="32" placeholder="例如：小红"></textarea></label>
           <label>资产日利率<input name="asset_interest_rate" type="number" step="0.001" min="0" value="0.01" /></label>
           <div class="account-delete-actions">
             <button type="button" class="btn" id="account-add-cancel">返回</button>
