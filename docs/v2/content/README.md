@@ -1,25 +1,55 @@
-# 习惯模块 — 可编辑内容表（发版真源）
+# MyTimeTree 习惯内容表（可编辑 · 离线发版真源）
 
-> Kai 在发版前直接改这些表；App 构建/同步时打入包内。  
-> 更好实践 → 改表 → 升版推送（C-D2）。**不做**在线 CMS。
+> 产品/Kai 在发版前直接改这些 Markdown 表；构建脚本打入 App 包。  
+> **不做**在线 CMS。更好实践 → 改表 → 升版推送（C-D2）。  
+> 本目录为仓内发版真源（与 Project store `docs/content/` 对齐）。
 
-## 表清单
+## 表清单与 App 字段映射
 
-| 文件 | 用途 | 主键 |
-|------|------|------|
-| `habit-templates.md` | 种子好习惯（标题、分类、默认分钟、Ability 备注） | `slug` |
-| `parent-scripts.md` | 家长话术（按分类或 slug） | `id` |
-| `offline-celebration-hints.md` | 线下庆祝动作建议（标题、正文、`image_key`） | `id` |
-| `emotion-copy.md`（可选） | 接近/回避情绪短句 | `id` |
+| 文件 | 用途 | 主键 | 打入包后主要字段 | UI 曝光 |
+|------|------|------|------------------|---------|
+| `habit-templates.md` | 可打卡**种子**习惯 | `slug` | `title`, `category`, `default_minutes`, `active`, `sort_default`, `notes` | 设置清单默认项；主屏 chip |
+| `micro-steps.md` | **建议**微步骤（不可打卡） | `id` | `habit_slug`, `sort`, `step_text`, `active` | 记前，chip 旁「怎样更容易做」（默认可折叠）；家长之后可在 App 自定义，不回写本表 |
+| `parent-scripts.md` | 家长预录话术 | `id` | `habit_slug`, `category`, `script_text`, `active` | 记前，chip 旁一行；匹配优先级：`habit_slug` → `category` → 空（通用） |
+| `celebration-copy.md` | 短激励 + 小庆祝句 | `id` | `habit_slug`, `category`, `incentive_text`, `small_celebration`, `offline_hint_id`, `active` | `incentive_text` 记前 chip 旁；`small_celebration` 记后小庆祝；`offline_hint_id` 可选关联线下动作 |
+| `offline-celebration-hints.md` | 线下庆祝动作库 | `id` | `title`, `body`, `image_key`, `categories`, `active` | 小庆祝 hint；由 `celebration-copy.offline_hint_id` 引用 |
+| `habit-board-copy.md` | 分析页图例/汇总文案 | `id` | `slot`, `copy_text`, `active` | 分析看板 |
+
+### 与旧表关系（Polish）
+
+| 旧文件（初版） | 状态 |
+|----------------|------|
+| `emotion-copy.md` 的 approach/avoid（趋利/避害）成对说教 | **已退役**：由 `celebration-copy.md` 取代；构建脚本不再打入 |
+| `habit-micro-steps.md` | **已改名**为 `micro-steps.md`（旧文件仅保留跳转说明） |
+
+### 匹配规则（消费端）
+
+1. 对某 `slug`：取 `active=1` 且 `habit_slug=slug` 的行；若无，再取同 `category`；再无则取 `habit_slug` 与 `category` 皆空的通用行。  
+2. 微步骤：仅按 `habit_slug` 精确匹配，按 `sort` 升序；**永不**写入今日打卡清单，无分钟、无 `habit_logs`。  
+3. 家长自定义微步骤 / 自定义习惯标题：存在用户库，**不进**本目录。
 
 ## 编辑约定
 
-1. 只改表格行，勿改列名（脚本按表头解析）。  
-2. 新增行用新 `slug`/`id`；停用种子用 `active=0`，勿复用已删 id。  
-3. 用户自定义习惯不进本表；仅影响包内种子与默认话术/hint。  
-4. 发版检查：表可被解析、无空主键、`image_key` 在素材目录有对应资源或允许文字 fallback。
+1. **只改表格行，勿改列名**（`build-habit-content` 按表头解析）。  
+2. 新增用新 `slug`/`id`；停用写 `active=0`，勿复用已删 id。  
+3. 用户面文案一律**简体中文**。  
+4. 家长话术建议 **≤28 字**（chip 旁一行）；激励/小庆祝建议 **≤16 字**。  
+5. 微步骤动词向下拆：具体、能立刻做、不讲大道理。  
+6. **禁止医疗/疗效承诺**（如「防蛀牙」「治疗失眠」「长高保证」）；卫生/睡眠类只写可感当下体验。  
+7. **禁止说教词/趋利避害讲义**：如「少后悔」「为未来负责」「少浪费人生」「你应该明白」等。抽检时可维护禁词表。  
+8. 发版检查：可解析、无空主键、活跃种子尽量各有 ≥1 微步骤 + ≥1 话术 + ≥1 庆祝行；`offline_hint_id` 空则允许文字 fallback。
 
 ## 与设置 UI 的关系
 
-- **清单自定义**（增减、排序）= 用户数据，在 App「设置 → 习惯」里改，进本地 SQLite + iCloud 整库。  
-- **话术/庆祝建议打磨** = 产品内容，在本目录表格改，随 App 版本更新。
+| 谁改 | 改什么 | 载体 |
+|------|--------|------|
+| 家长 | 启用哪些种子、自定义标题、排序、后续自定义微步骤 | App 设置 → SQLite / iCloud |
+| Kai / 内容 | 默认话术、短激励、小庆祝、种子默认微步骤 | 本目录表 → App 发版 |
+
+## 内容原则（摘要）
+
+- **B=MAP**：Motivation 用具体感受；Ability 用微步骤降难度；Prompt 给家长「当下能说的一句」。  
+- **庆祝塑造习惯**：小庆祝一句 + 可选线下动作，代替趋利/避害讲座。  
+- **向下拆，不向上讲**：宁可「先挤牙膏」也不要「养成终身好习惯」。
+
+详见 Project store：`internal/fogg-content-notes.md`；仓内仍保留 `offline-celebration-hints.md`、`habit-board-copy.md`。

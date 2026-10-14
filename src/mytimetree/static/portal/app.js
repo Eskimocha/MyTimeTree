@@ -53,6 +53,40 @@
     bird: `/static/portal/ornaments/bird.png?v=${ASSET_V}`,
   };
 
+  const HABIT_MEDIA_V = "20261014a";
+  const HABIT_TIP_ICON = `/static/portal/habit/icon-tip-seed.svg?v=${HABIT_MEDIA_V}`;
+  const HABIT_CELEB_MARK = `/static/portal/habit/mark-celeb-small.svg?v=${HABIT_MEDIA_V}`;
+
+  function habitHintArtSrc(imageKey) {
+    if (!imageKey) return "";
+    const safe = String(imageKey).replace(/[^a-zA-Z0-9_-]/g, "");
+    if (!safe) return "";
+    return `/static/portal/habit/${safe}.svg?v=${HABIT_MEDIA_V}`;
+  }
+
+  function bindHabitHintArt(img, imageKey) {
+    if (!img) return;
+    const svg = habitHintArtSrc(imageKey);
+    if (!svg) {
+      img.hidden = true;
+      img.removeAttribute("src");
+      return;
+    }
+    img.hidden = false;
+    img.onerror = () => {
+      const png = svg.replace(/\.svg(\?|$)/, ".png$1");
+      if (img.dataset.triedPng === "1") {
+        img.hidden = true;
+        img.removeAttribute("src");
+        return;
+      }
+      img.dataset.triedPng = "1";
+      img.src = png;
+    };
+    delete img.dataset.triedPng;
+    img.src = svg;
+  }
+
   // 有树冠：可挂果；young 起虫/鸟移到树身中部
   const CANOPY_STAGES = new Set([
     "sapling",
@@ -367,16 +401,24 @@
     const list = $("#ledger-list");
     for (const it of items) {
       const li = document.createElement("li");
-      const left = document.createElement("span");
-      left.textContent = `${it.summary || it.category} · ${it.created_at.slice(0, 16)}`;
-      const amt = document.createElement("span");
-      amt.className = "amt";
+      li.className = "ledger-row";
+      const textCol = document.createElement("div");
+      textCol.className = "ledger-text";
+      const summary = document.createElement("div");
+      summary.className = "ledger-summary";
+      summary.textContent = it.summary || it.category || "";
+      const time = document.createElement("div");
+      time.className = "ledger-time muted";
+      time.textContent = (it.created_at || "").slice(0, 16).replace("T", " ");
+      textCol.append(summary, time);
+      const amt = document.createElement("div");
+      amt.className = "ledger-amt amt";
       amt.style.color = it.display?.color || "inherit";
       const sign = it.signed_asset_effect !== 0
         ? (it.signed_asset_effect > 0 ? "+" : "") + it.signed_asset_effect
         : (it.signed_liability_effect > 0 ? "负+" : "负") + Math.abs(it.signed_liability_effect);
       amt.textContent = `${sign} 分`;
-      li.append(left, amt);
+      li.append(textCol, amt);
       list.appendChild(li);
     }
   }
@@ -505,19 +547,55 @@
         ? `还剩 ${pending.length}`
         : "今日已记完";
       rail.innerHTML = "";
-      const show = [...pending, ...done].slice(0, 6);
+      const show = [...pending, ...done];
       for (const it of show) {
+        const row = document.createElement("div");
+        row.className = "habit-row" + (it.done ? " done" : "");
+        row.setAttribute("role", "listitem");
+        row.style.setProperty("--habit-color", it.color || "#2f9e6b");
+
+        const head = document.createElement("div");
+        head.className = "habit-row-head";
         const chip = document.createElement("button");
         chip.type = "button";
         chip.className = "habit-chip" + (it.done ? " done" : "");
-        chip.setAttribute("role", "listitem");
         chip.textContent = it.done ? `✓ ${it.title}` : `记 · ${it.title}`;
         if (!it.done) {
           chip.addEventListener("click", () => completeHabitFromHome(it.habit_id));
         } else {
           chip.disabled = true;
         }
-        rail.appendChild(chip);
+        const tip = document.createElement("button");
+        tip.type = "button";
+        tip.className = "habit-tip-btn";
+        tip.setAttribute("aria-label", `展开 ${it.title} 的怎样更容易做`);
+        tip.setAttribute("aria-expanded", "false");
+        tip.innerHTML = `<img class="habit-tip-icon" src="${HABIT_TIP_ICON}" width="20" height="20" alt="">`;
+        const panel = document.createElement("div");
+        panel.className = "habit-tip-panel";
+        panel.hidden = true;
+        const micro = (it.micro_steps || []).map((s) => s.step_text).filter(Boolean);
+        const script = it.parent_script?.script_text || "";
+        const incentive = it.incentive_text || "";
+        panel.innerHTML =
+          `<div class="habit-tip-layer"><strong>怎样更容易做</strong><p>${
+            micro.length ? micro.join(" · ") : "可在设置里添加微步骤"
+          }</p></div>` +
+          `<div class="habit-tip-layer"><strong>家长话术</strong><p>${
+            script || "记下来了——孩子被看见。"
+          }</p></div>` +
+          (incentive
+            ? `<div class="habit-tip-layer"><strong>激励</strong><p>${incentive}</p></div>`
+            : "");
+        tip.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const open = panel.hidden;
+          panel.hidden = !open;
+          tip.setAttribute("aria-expanded", open ? "true" : "false");
+        });
+        head.append(chip, tip);
+        row.append(head, panel);
+        rail.appendChild(row);
       }
       if (!show.length) {
         const empty = document.createElement("p");
@@ -533,27 +611,48 @@
   }
 
   function showHabitCelebration(res) {
+    const board = res.celebration && res.celebration.kind === "board";
+    if (board) {
+      const mask = $("#habit-board-mask");
+      if (!mask) return;
+      $("#habit-board-mask-title").textContent = "大庆祝！这周习惯满满";
+      $("#habit-board-mask-body").textContent = res.minutes_credited
+        ? `本记已存入 ${res.minutes_credited} 分 · 本周坚持很棒`
+        : "本周坚持很棒";
+      mask.hidden = false;
+      return;
+    }
     const overlay = $("#habit-celeb-overlay");
     if (!overlay) return;
-    const board = res.celebration && res.celebration.kind === "board";
-    const approach = res.motivation_payload?.approach?.emotion_copy || "";
-    const avoid = res.motivation_payload?.avoid?.emotion_copy || "";
-    $("#habit-celeb-title").textContent = board
-      ? "大庆祝！这周习惯满满"
-      : `小庆祝 · ${approach}${avoid ? " / " + avoid : ""}`;
+    const line =
+      res.small_celebration ||
+      res.incentive_text ||
+      "做到了！";
+    const mark = $("#habit-celeb-mark");
+    if (mark) {
+      mark.hidden = false;
+      mark.src = HABIT_CELEB_MARK;
+    }
+    $("#habit-celeb-title").textContent = "小庆祝";
     $("#habit-celeb-credit").textContent = res.minutes_credited
       ? `已存入 ${res.minutes_credited} 分`
       : "";
-    $("#habit-celeb-script").textContent =
-      res.parent_script?.script_text || "";
+    const incEl = $("#habit-celeb-incentive");
+    if (incEl) incEl.textContent = line;
     const hint = res.offline_hint;
     const hintEl = $("#habit-celeb-hint");
+    const hintArt = $("#habit-hint-art");
     if (hint && hint.title) {
       hintEl.hidden = false;
       $("#habit-hint-title").textContent = hint.title;
       $("#habit-hint-body").textContent = hint.body || "";
+      bindHabitHintArt(hintArt, hint.image_key);
     } else {
       hintEl.hidden = true;
+      if (hintArt) {
+        hintArt.hidden = true;
+        hintArt.removeAttribute("src");
+      }
     }
     overlay.hidden = false;
   }
@@ -579,41 +678,26 @@
       const data = await api("/api/portal/habits/list");
       const habits = (data.habits || []).filter((h) => !h.archived);
       list.innerHTML = "";
-      habits.forEach((h, idx) => {
+      habits.forEach((h) => {
         const li = document.createElement("li");
+        li.className = "habit-settings-item";
+        li.draggable = true;
+        li.dataset.habitId = String(h.id);
+        const handle = document.createElement("span");
+        handle.className = "habit-drag-handle";
+        handle.textContent = "⋮⋮";
+        handle.title = "拖拽排序";
         const label = document.createElement("span");
+        label.className = "habit-settings-label";
         label.textContent = `${h.title} · ${h.minutes_per_completion} 分`;
         const actions = document.createElement("span");
         actions.className = "habit-settings-actions";
-        const up = document.createElement("button");
-        up.type = "button";
-        up.className = "btn compact";
-        up.textContent = "上移";
-        up.disabled = idx === 0;
-        up.addEventListener("click", async () => {
-          const ids = habits.map((x) => x.id);
-          [ids[idx - 1], ids[idx]] = [ids[idx], ids[idx - 1]];
-          await api("/api/portal/habits/reorder", {
-            method: "POST",
-            body: JSON.stringify({ ordered_ids: ids }),
-          });
-          await refreshHabitSettings();
-          await refreshHabitsStrip();
-        });
-        const down = document.createElement("button");
-        down.type = "button";
-        down.className = "btn compact";
-        down.textContent = "下移";
-        down.disabled = idx === habits.length - 1;
-        down.addEventListener("click", async () => {
-          const ids = habits.map((x) => x.id);
-          [ids[idx + 1], ids[idx]] = [ids[idx], ids[idx + 1]];
-          await api("/api/portal/habits/reorder", {
-            method: "POST",
-            body: JSON.stringify({ ordered_ids: ids }),
-          });
-          await refreshHabitSettings();
-          await refreshHabitsStrip();
+        const microBtn = document.createElement("button");
+        microBtn.type = "button";
+        microBtn.className = "btn compact";
+        microBtn.textContent = "微步骤";
+        microBtn.addEventListener("click", async () => {
+          await editMicroStepsForHabit(h);
         });
         const arch = document.createElement("button");
         arch.type = "button";
@@ -642,10 +726,11 @@
           });
           await refreshHabitSettings();
         });
-        actions.append(up, down, editMin, arch);
-        li.append(label, actions);
+        actions.append(microBtn, editMin, arch);
+        li.append(handle, label, actions);
         list.appendChild(li);
       });
+      wireHabitDragReorder(list);
       if (sel) {
         const enabledSlugs = new Set(
           (data.habits || [])
@@ -666,9 +751,91 @@
     }
   }
 
+  function wireHabitDragReorder(list) {
+    if (!list || list.dataset.dragWired === "1") return;
+    list.dataset.dragWired = "1";
+    let dragEl = null;
+    list.addEventListener("dragstart", (e) => {
+      const li = e.target.closest("li.habit-settings-item");
+      if (!li) return;
+      dragEl = li;
+      li.classList.add("dragging");
+      e.dataTransfer.effectAllowed = "move";
+    });
+    list.addEventListener("dragend", async () => {
+      if (dragEl) dragEl.classList.remove("dragging");
+      dragEl = null;
+      const ids = [...list.querySelectorAll("li.habit-settings-item")].map((li) =>
+        Number(li.dataset.habitId)
+      );
+      try {
+        await api("/api/portal/habits/reorder", {
+          method: "POST",
+          body: JSON.stringify({ ordered_ids: ids }),
+        });
+        await refreshHabitsStrip();
+      } catch (err) {
+        console.warn("habit reorder", err);
+        await refreshHabitSettings();
+      }
+    });
+    list.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      const li = e.target.closest("li.habit-settings-item");
+      if (!li || !dragEl || li === dragEl) return;
+      const rect = li.getBoundingClientRect();
+      const before = e.clientY < rect.top + rect.height / 2;
+      list.insertBefore(dragEl, before ? li : li.nextSibling);
+    });
+  }
+
+  async function editMicroStepsForHabit(h) {
+    try {
+      const data = await api(
+        `/api/portal/habits/micro-steps?habit_id=${h.id}`
+      );
+      const lines = (data.steps || []).map((s) => s.step_text);
+      const raw = window.prompt(
+        `${h.title} 的微步骤（每行一条；清空某行即删除对应项后保存全部重写）`,
+        lines.join("\n")
+      );
+      if (raw == null) return;
+      const next = raw
+        .split(/\r?\n/)
+        .map((s) => s.trim())
+        .filter(Boolean)
+        .slice(0, 12);
+      // Archive all then re-add (simple parent edit UX)
+      for (const s of data.steps || []) {
+        await api("/api/portal/habits/micro-steps/archive", {
+          method: "POST",
+          body: JSON.stringify({ step_id: s.id }),
+        });
+      }
+      for (const text of next) {
+        await api("/api/portal/habits/micro-steps", {
+          method: "POST",
+          body: JSON.stringify({ habit_id: h.id, step_text: text }),
+        });
+      }
+      flash($("#habit-settings-msg"), "微步骤已更新");
+      await refreshHabitsStrip();
+    } catch (err) {
+      flash($("#habit-settings-msg"), err.message || String(err));
+    }
+  }
+
   async function refreshHabitReview() {
     try {
       const data = await api("/api/portal/habits/overview");
+      const copyEl = $("#habit-board-copy");
+      if (copyEl) {
+        const intro =
+          (data.board_copy || []).find((c) => c.slot === "legend_intro") ||
+          (data.board_copy || []).find((c) => c.slot === "month_summary");
+        copyEl.textContent = intro ? intro.copy_text : "";
+      }
+      renderHabitHeatmap(data.month_heatmap || data);
       const stats = $("#habit-board-stats");
       if (stats) {
         stats.textContent =
@@ -700,6 +867,46 @@
       }
     } catch (err) {
       console.warn("habit review", err);
+    }
+  }
+
+  function renderHabitHeatmap(heat) {
+    const root = $("#habit-month-heatmap");
+    const legend = $("#habit-heatmap-legend");
+    if (!root || !legend) return;
+    root.innerHTML = "";
+    legend.innerHTML = "";
+    const weeks = heat.weeks || [];
+    if (!weeks.length) {
+      root.innerHTML = `<p class="muted">暂无点阵</p>`;
+      return;
+    }
+    for (const week of weeks) {
+      const row = document.createElement("div");
+      row.className = "habit-heatmap-week";
+      for (const cell of week) {
+        const day = document.createElement("div");
+        day.className = "habit-heatmap-day" + (cell.day_key ? "" : " empty");
+        if (cell.day_key) {
+          day.title = cell.day_key;
+          const dots = document.createElement("div");
+          dots.className = "habit-heatmap-dots";
+          for (const h of cell.habits || []) {
+            const d = document.createElement("span");
+            d.className = "habit-heatmap-dot";
+            d.style.background = h.color || "#2f9e6b";
+            dots.appendChild(d);
+          }
+          day.appendChild(dots);
+        }
+        row.appendChild(day);
+      }
+      root.appendChild(row);
+    }
+    for (const g of heat.legend || []) {
+      const li = document.createElement("li");
+      li.innerHTML = `<span class="habit-legend-swatch" style="background:${g.color}"></span>${g.title}`;
+      legend.appendChild(li);
     }
   }
 
@@ -1383,6 +1590,10 @@
       const overlay = $("#habit-celeb-overlay");
       if (overlay) overlay.hidden = true;
     });
+  });
+  $("#habit-board-mask-ok")?.addEventListener("click", () => {
+    const mask = $("#habit-board-mask");
+    if (mask) mask.hidden = true;
   });
 
   $("#btn-habit-enable")?.addEventListener("click", async () => {

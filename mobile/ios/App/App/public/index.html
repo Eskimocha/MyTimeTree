@@ -104,17 +104,17 @@
             <div class="bal-row"><strong id="today-interest-min">0</strong><span class="unit">分</span></div>
           </div>
         </div>
+        <div class="actions">
+          <button type="button" class="btn" id="btn-spend">支出</button>
+          <button type="button" class="btn" id="btn-borrow">借用</button>
+          <button type="button" class="btn" id="btn-deposit">存入</button>
+        </div>
         <div id="habit-today-strip" class="habit-strip" hidden>
           <div class="habit-strip-head">
             <span id="habit-strip-title">今日好习惯</span>
             <span id="habit-strip-meta" class="muted"></span>
           </div>
           <div id="habit-chip-rail" class="habit-chip-rail" role="list"></div>
-        </div>
-        <div class="actions">
-          <button type="button" class="btn" id="btn-spend">支出</button>
-          <button type="button" class="btn" id="btn-borrow">借用</button>
-          <button type="button" class="btn" id="btn-deposit">存入</button>
         </div>
         <p id="home-msg" class="msg" hidden></p>
       </section>
@@ -190,13 +190,6 @@
 
       <section id="tab-analytics" class="tab-panel" role="tabpanel" hidden>
         <div class="analytics-block">
-          <h2>好习惯</h2>
-          <p id="habit-board-stats" class="muted"></p>
-          <ul id="habit-timeline-list" class="habit-review-list"></ul>
-          <h3 class="habit-review-sub">分类</h3>
-          <ul id="habit-category-list" class="habit-review-list"></ul>
-        </div>
-        <div class="analytics-block">
           <h2>本周趋势</h2>
           <div id="chart-week" class="trend-chart" role="img" aria-label="本周资产负债折线与每日利息柱状图"></div>
           <pre id="analytics-week" class="brief"></pre>
@@ -205,6 +198,16 @@
           <h2>本月趋势</h2>
           <div id="chart-month" class="trend-chart" role="img" aria-label="本月资产负债折线与每日利息柱状图"></div>
           <pre id="analytics-month" class="brief"></pre>
+        </div>
+        <div class="analytics-block">
+          <h2>好习惯</h2>
+          <p id="habit-board-copy" class="muted habit-board-copy"></p>
+          <div id="habit-month-heatmap" class="habit-heatmap" aria-label="本月好习惯点阵"></div>
+          <ul id="habit-heatmap-legend" class="habit-heatmap-legend"></ul>
+          <p id="habit-board-stats" class="muted"></p>
+          <ul id="habit-timeline-list" class="habit-review-list"></ul>
+          <h3 class="habit-review-sub">分类</h3>
+          <ul id="habit-category-list" class="habit-review-list"></ul>
         </div>
       </section>
     </main>
@@ -281,14 +284,28 @@
   <div id="habit-celeb-overlay" class="habit-overlay" hidden>
     <div class="habit-overlay-backdrop" data-habit-dismiss></div>
     <div class="habit-overlay-sheet" role="dialog" aria-modal="true" aria-labelledby="habit-celeb-title">
-      <p id="habit-celeb-title" class="habit-celeb-title"></p>
+      <div class="habit-celeb-head">
+        <img id="habit-celeb-mark" class="habit-celeb-mark" src="./habit/mark-celeb-small.svg" width="36" height="36" alt="" hidden />
+        <p id="habit-celeb-title" class="habit-celeb-title"></p>
+      </div>
       <p id="habit-celeb-credit" class="habit-celeb-credit muted"></p>
-      <p id="habit-celeb-script" class="habit-celeb-script"></p>
+      <p id="habit-celeb-incentive" class="habit-celeb-incentive"></p>
       <div id="habit-celeb-hint" class="habit-celeb-hint" hidden>
-        <strong id="habit-hint-title"></strong>
-        <p id="habit-hint-body"></p>
+        <img id="habit-hint-art" class="habit-hint-art" alt="" hidden />
+        <div class="habit-hint-copy">
+          <strong id="habit-hint-title"></strong>
+          <p id="habit-hint-body"></p>
+        </div>
       </div>
       <button type="button" class="btn primary" data-habit-dismiss>好的</button>
+    </div>
+  </div>
+
+  <div id="habit-board-mask" class="habit-board-mask" hidden>
+    <div class="habit-board-mask-card" role="dialog" aria-modal="true" aria-labelledby="habit-board-mask-title">
+      <p id="habit-board-mask-title" class="habit-board-mask-title">大庆祝！这周习惯满满</p>
+      <p id="habit-board-mask-body" class="habit-board-mask-body muted"></p>
+      <button type="button" class="btn primary" id="habit-board-mask-ok">太棒了</button>
     </div>
   </div>
 

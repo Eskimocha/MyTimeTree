@@ -227,6 +227,57 @@
           ON celebration_events(account_id, day_key)`,
       ],
     },
+    {
+      version: 9,
+      sql: [
+        `CREATE TABLE IF NOT EXISTS habit_micro_step_defaults (
+          id TEXT PRIMARY KEY,
+          habit_slug TEXT NOT NULL,
+          sort_order INTEGER NOT NULL DEFAULT 100,
+          step_text TEXT NOT NULL,
+          active INTEGER NOT NULL DEFAULT 1
+        )`,
+        `CREATE INDEX IF NOT EXISTS idx_micro_defaults_slug
+          ON habit_micro_step_defaults(habit_slug, sort_order)`,
+        `CREATE TABLE IF NOT EXISTS habit_micro_steps (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          account_id INTEGER NOT NULL,
+          habit_id INTEGER NOT NULL,
+          step_text TEXT NOT NULL,
+          sort_order INTEGER NOT NULL DEFAULT 100,
+          source TEXT NOT NULL DEFAULT 'custom',
+          seed_id TEXT,
+          archived INTEGER NOT NULL DEFAULT 0,
+          created_at TEXT NOT NULL,
+          FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE,
+          FOREIGN KEY (habit_id) REFERENCES habits(id) ON DELETE CASCADE
+        )`,
+        `CREATE INDEX IF NOT EXISTS idx_micro_steps_habit
+          ON habit_micro_steps(account_id, habit_id, archived, sort_order)`,
+        `CREATE TABLE IF NOT EXISTS habit_board_copy (
+          id TEXT PRIMARY KEY,
+          slot TEXT NOT NULL,
+          copy_text TEXT NOT NULL,
+          active INTEGER NOT NULL DEFAULT 1
+        )`,
+      ],
+    },
+    {
+      version: 10,
+      sql: [
+        `CREATE TABLE IF NOT EXISTS celebration_copy (
+          id TEXT PRIMARY KEY,
+          habit_slug TEXT NOT NULL DEFAULT '',
+          category TEXT NOT NULL DEFAULT '',
+          incentive_text TEXT NOT NULL DEFAULT '',
+          small_celebration TEXT NOT NULL DEFAULT '',
+          offline_hint_id TEXT NOT NULL DEFAULT '',
+          active INTEGER NOT NULL DEFAULT 1
+        )`,
+        `CREATE INDEX IF NOT EXISTS idx_celebration_copy_slug
+          ON celebration_copy(habit_slug, category)`,
+      ],
+    },
   ];
 
   let lastSyncMeta = {

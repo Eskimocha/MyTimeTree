@@ -1,12 +1,42 @@
 /**
- * Habit domain for MyTimeTree local store (IH0–IH9).
+ * Habit domain for MyTimeTree local store (IH0–IH9 + polish O1–O6).
  * Loaded after store.js; patches MyTimeTreeLocal.handle.
  */
 (function (global) {
   "use strict";
 
+  const HABIT_COLORS = [
+    "#2f9e6b",
+    "#e67e22",
+    "#5c6bc0",
+    "#c0392b",
+    "#16a085",
+    "#8e44ad",
+    "#d35400",
+    "#2980b9",
+    "#27ae60",
+    "#f39c12",
+    "#7f8c8d",
+    "#e91e63",
+  ];
+
   function seed() {
-    return global.MyTimeTreeHabitSeed || { templates: [], scripts: [], hints: [], emotions: [] };
+    return (
+      global.MyTimeTreeHabitSeed || {
+        templates: [],
+        scripts: [],
+        hints: [],
+        celebration_copy: [],
+        emotions: [],
+        micro_steps: [],
+        board_copy: [],
+      }
+    );
+  }
+
+  function habitColor(habitId) {
+    const n = Math.abs(Number(habitId) || 0);
+    return HABIT_COLORS[n % HABIT_COLORS.length];
   }
 
   function install(api) {
@@ -36,7 +66,9 @@
         (s.templates || []).length,
         (s.scripts || []).length,
         (s.hints || []).length,
-        (s.emotions || []).length,
+        (s.celebration_copy || []).length,
+        (s.micro_steps || []).length,
+        (s.board_copy || []).length,
       ].join(":");
     }
 
@@ -112,24 +144,56 @@
             ]
           );
         }
-        for (const e of s.emotions || []) {
+        for (const c of s.celebration_copy || []) {
           db().exec(
-            `INSERT INTO emotion_copy (id, path, habit_slug, category, emotion_copy, active)
-             VALUES (?, ?, ?, ?, ?, ?)
+            `INSERT INTO celebration_copy (
+               id, habit_slug, category, incentive_text, small_celebration, offline_hint_id, active
+             ) VALUES (?, ?, ?, ?, ?, ?, ?)
              ON CONFLICT(id) DO UPDATE SET
-               path=excluded.path,
                habit_slug=excluded.habit_slug,
                category=excluded.category,
-               emotion_copy=excluded.emotion_copy,
+               incentive_text=excluded.incentive_text,
+               small_celebration=excluded.small_celebration,
+               offline_hint_id=excluded.offline_hint_id,
                active=excluded.active`,
             [
-              e.id,
-              e.path,
-              e.habit_slug || "",
-              e.category || "",
-              e.emotion_copy,
-              e.active ? 1 : 0,
+              c.id,
+              c.habit_slug || "",
+              c.category || "",
+              c.incentive_text || "",
+              c.small_celebration || "",
+              c.offline_hint_id || "",
+              c.active ? 1 : 0,
             ]
+          );
+        }
+        for (const m of s.micro_steps || []) {
+          db().exec(
+            `INSERT INTO habit_micro_step_defaults (id, habit_slug, sort_order, step_text, active)
+             VALUES (?, ?, ?, ?, ?)
+             ON CONFLICT(id) DO UPDATE SET
+               habit_slug=excluded.habit_slug,
+               sort_order=excluded.sort_order,
+               step_text=excluded.step_text,
+               active=excluded.active`,
+            [
+              m.id,
+              m.habit_slug || "",
+              Number(m.sort) || 100,
+              m.step_text,
+              m.active ? 1 : 0,
+            ]
+          );
+        }
+        for (const b of s.board_copy || []) {
+          db().exec(
+            `INSERT INTO habit_board_copy (id, slot, copy_text, active)
+             VALUES (?, ?, ?, ?)
+             ON CONFLICT(id) DO UPDATE SET
+               slot=excluded.slot,
+               copy_text=excluded.copy_text,
+               active=excluded.active`,
+            [b.id, b.slot, b.copy_text, b.active ? 1 : 0]
           );
         }
         db().exec(
@@ -185,7 +249,116 @@
         ) VALUES (?, ?, ?, 1, 1, 1)`,
         [accountId, habitId, Number(t.default_minutes) || 5]
       );
+      materializeMicroSteps(accountId, habitId, String(t.slug || ""));
       return habitId;
+    }
+
+    function materializeMicroSteps(accountId, habitId, slug) {
+      const existing = db().query(
+        "SELECT id FROM habit_micro_steps WHERE account_id = ? AND habit_id = ?",
+        [accountId, habitId]
+      );
+      if (existing.length) return;
+      if (!slug) return;
+      syncContentTables();
+      const defaults = db().query(
+        `SELECT * FROM habit_micro_step_defaults
+         WHERE habit_slug = ? AND active = 1
+         ORDER BY sort_order ASC, id ASC`,
+        [slug]
+      );
+      const created = nowIso();
+      for (const d of defaults) {
+        db().exec(
+          `INSERT INTO habit_micro_steps (
+            account_id, habit_id, step_text, sort_order, source, seed_id, archived, created_at
+          ) VALUES (?, ?, ?, ?, 'seed', ?, 0, ?)`,
+          [
+            accountId,
+            habitId,
+            String(d.step_text),
+            Number(d.sort_order) || 100,
+            String(d.id),
+            created,
+          ]
+        );
+      }
+    }
+
+    function listMicroSteps(accountId, habitId) {
+      materializeMicroSteps(
+        accountId,
+        habitId,
+        templateSlugForHabit(habitId)
+      );
+      return db()
+        .query(
+          `SELECT * FROM habit_micro_steps
+           WHERE account_id = ? AND habit_id = ? AND archived = 0
+           ORDER BY sort_order ASC, id ASC`,
+          [accountId, habitId]
+        )
+        .map((r) => ({
+          id: Number(r.id),
+          habit_id: Number(r.habit_id),
+          step_text: String(r.step_text),
+          sort_order: Number(r.sort_order),
+          source: String(r.source || "custom"),
+          seed_id: r.seed_id ? String(r.seed_id) : null,
+        }));
+    }
+
+    function addMicroStep(accountId, habitId, stepText) {
+      const text = String(stepText || "").trim();
+      ensure(text.length > 0 && text.length <= 64, "validation", "微步骤 1–64 字");
+      const habit = db().queryOne(
+        "SELECT id FROM habits WHERE id = ? AND account_id = ? AND archived = 0",
+        [habitId, accountId]
+      );
+      ensure(habit, "not_found", "习惯不存在");
+      materializeMicroSteps(accountId, habitId, templateSlugForHabit(habitId));
+      const maxOrder = db().queryOne(
+        `SELECT COALESCE(MAX(sort_order), 0) AS m FROM habit_micro_steps
+         WHERE account_id = ? AND habit_id = ? AND archived = 0`,
+        [accountId, habitId]
+      );
+      const created = nowIso();
+      db().exec(
+        `INSERT INTO habit_micro_steps (
+          account_id, habit_id, step_text, sort_order, source, seed_id, archived, created_at
+        ) VALUES (?, ?, ?, ?, 'custom', NULL, 0, ?)`,
+        [accountId, habitId, text, Number(maxOrder.m) + 10, created]
+      );
+      const id = Number(db().queryOne("SELECT last_insert_rowid() AS id").id);
+      persist();
+      return { id, steps: listMicroSteps(accountId, habitId) };
+    }
+
+    function patchMicroStep(accountId, stepId, stepText) {
+      const text = String(stepText || "").trim();
+      ensure(text.length > 0 && text.length <= 64, "validation", "微步骤 1–64 字");
+      const row = db().queryOne(
+        "SELECT id, habit_id FROM habit_micro_steps WHERE id = ? AND account_id = ?",
+        [stepId, accountId]
+      );
+      ensure(row, "not_found", "微步骤不存在");
+      db().exec(
+        "UPDATE habit_micro_steps SET step_text = ?, source = 'custom' WHERE id = ?",
+        [text, stepId]
+      );
+      persist();
+      return { id: stepId, steps: listMicroSteps(accountId, Number(row.habit_id)) };
+    }
+
+    function archiveMicroStep(accountId, stepId) {
+      const row = db().queryOne(
+        "SELECT id, habit_id FROM habit_micro_steps WHERE id = ? AND account_id = ?",
+        [stepId, accountId]
+      );
+      ensure(row, "not_found", "微步骤不存在");
+      db().exec("UPDATE habit_micro_steps SET archived = 1 WHERE id = ?", [stepId]);
+      persist();
+      return { archived: true, steps: listMicroSteps(accountId, Number(row.habit_id)) };
     }
 
     function listHabits(accountId, { includeArchived = false } = {}) {
@@ -244,7 +417,24 @@
       return generic ? String(generic.script_text) : "记下来了——孩子被看见，时间也能存进树里。";
     }
 
-    function pickHint(habit) {
+    function hintFromRow(row) {
+      if (!row) return null;
+      return {
+        id: String(row.id || ""),
+        title: String(row.title),
+        body: String(row.body),
+        image_key: String(row.image_key || ""),
+      };
+    }
+
+    function pickHint(habit, hintId) {
+      if (hintId) {
+        const byId = db().queryOne(
+          "SELECT * FROM offline_celebration_hints WHERE id = ? AND active = 1",
+          [hintId]
+        );
+        if (byId) return hintFromRow(byId);
+      }
       const cat = habit.category || "";
       const rows = db().query(
         "SELECT * FROM offline_celebration_hints WHERE active = 1"
@@ -257,37 +447,38 @@
           return false;
         }
       });
-      const row = match || rows.find((r) => {
-        try {
-          return JSON.parse(r.categories_json || "[]").length === 0;
-        } catch {
-          return false;
-        }
-      }) || rows[0];
-      if (!row) return null;
-      return {
-        title: String(row.title),
-        body: String(row.body),
-        image_key: String(row.image_key || ""),
-      };
+      const row =
+        match ||
+        rows.find((r) => {
+          try {
+            return JSON.parse(r.categories_json || "[]").length === 0;
+          } catch {
+            return false;
+          }
+        }) ||
+        rows[0];
+      return hintFromRow(row);
     }
 
-    function pickEmotions(habit) {
+    function pickCelebration(habit) {
       const slug = habit.template_slug || "";
       const cat = habit.category || "";
-      const rows = db().query("SELECT * FROM emotion_copy WHERE active = 1");
-      function one(path) {
-        return (
-          rows.find((r) => r.path === path && r.habit_slug === slug) ||
-          rows.find((r) => r.path === path && !r.habit_slug && r.category === cat) ||
-          rows.find((r) => r.path === path && !r.habit_slug && !r.category)
-        );
+      const rows = db().query("SELECT * FROM celebration_copy WHERE active = 1");
+      const row =
+        rows.find((r) => r.habit_slug && r.habit_slug === slug) ||
+        rows.find((r) => !r.habit_slug && r.category && r.category === cat) ||
+        rows.find((r) => !r.habit_slug && !r.category);
+      if (!row) {
+        return {
+          incentive_text: "被看见真好",
+          small_celebration: "做到了，一起高兴",
+          offline_hint_id: "",
+        };
       }
-      const a = one("approach");
-      const v = one("avoid");
       return {
-        approach: { emotion_copy: a ? String(a.emotion_copy) : "被看见的感觉真好" },
-        avoid: { emotion_copy: v ? String(v.emotion_copy) : "" },
+        incentive_text: String(row.incentive_text || "被看见真好"),
+        small_celebration: String(row.small_celebration || "做到了！"),
+        offline_hint_id: String(row.offline_hint_id || ""),
       };
     }
 
@@ -312,6 +503,11 @@
       const byHabit = new Map(logs.map((l) => [Number(l.habit_id), l]));
       const items = habits.map((h) => {
         const log = byHabit.get(h.id);
+        const slug = templateSlugForHabit(h.id);
+        h.template_slug = slug;
+        const micro_steps = listMicroSteps(accountId, h.id);
+        const scriptText = pickScript(h);
+        const celeb = pickCelebration(h);
         return {
           habit_id: h.id,
           title: h.title,
@@ -319,6 +515,11 @@
           minutes: h.minutes_per_completion,
           done: Boolean(log),
           log_id: log ? Number(log.id) : null,
+          color: habitColor(h.id),
+          micro_steps,
+          parent_script: { script_text: scriptText },
+          incentive_text: celeb.incentive_text,
+          small_celebration: celeb.small_celebration,
         };
       });
       return {
@@ -387,9 +588,9 @@
       );
 
       habit.template_slug = templateSlugForHabit(habitId);
-      const motivation = pickEmotions(habit);
+      const celeb = pickCelebration(habit);
       const scriptText = pickScript(habit);
-      const hint = pickHint(habit);
+      const hint = pickHint(habit, celeb.offline_hint_id);
       const celebration = { kind: "small", habit_id: habitId, log_id: logId };
       db().exec(
         `INSERT INTO celebration_events (account_id, kind, day_key, habit_log_id, payload_json, created_at)
@@ -398,7 +599,12 @@
           accountId,
           day,
           logId,
-          JSON.stringify({ motivation, scriptText, hint }),
+          JSON.stringify({
+            incentive_text: celeb.incentive_text,
+            small_celebration: celeb.small_celebration,
+            scriptText,
+            hint,
+          }),
           created,
         ]
       );
@@ -450,7 +656,8 @@
           ledger_entry_id: entry.id,
         },
         minutes_credited: minutes,
-        motivation_payload: motivation,
+        incentive_text: celeb.incentive_text,
+        small_celebration: celeb.small_celebration,
         celebration: boardCelebration || celebration,
         parent_script: { script_text: scriptText },
         offline_hint: hint,
@@ -518,6 +725,14 @@
           [accountId, from, to]
         ).c
       );
+      const monthHeat = monthHeatmap(accountId);
+      const boardCopyRows = db()
+        .query("SELECT * FROM habit_board_copy WHERE active = 1")
+        .map((r) => ({
+          id: String(r.id),
+          slot: String(r.slot),
+          copy_text: String(r.copy_text),
+        }));
       return {
         timeline,
         categories: [...catMap.values()],
@@ -530,6 +745,59 @@
           },
           entries: timeline.slice(0, 20),
         },
+        month_heatmap: monthHeat,
+        board_copy: boardCopyRows,
+        legend: monthHeat.legend,
+      };
+    }
+
+    function monthHeatmap(accountId) {
+      const day = todayStr();
+      const [y, m] = day.split("-").map(Number);
+      const daysInMonth = new Date(y, m, 0).getDate();
+      const habits = listHabits(accountId);
+      const legend = habits.map((h) => ({
+        habit_id: h.id,
+        title: h.title,
+        color: habitColor(h.id),
+      }));
+      const from = `${String(y).padStart(4, "0")}-${String(m).padStart(2, "0")}-01`;
+      const to = `${String(y).padStart(4, "0")}-${String(m).padStart(2, "0")}-${String(daysInMonth).padStart(2, "0")}`;
+      const logs = db().query(
+        `SELECT habit_id, day_key FROM habit_logs
+         WHERE account_id = ? AND day_key >= ? AND day_key <= ?`,
+        [accountId, from, to]
+      );
+      const byDay = new Map();
+      for (const l of logs) {
+        const key = String(l.day_key);
+        const arr = byDay.get(key) || [];
+        arr.push({
+          habit_id: Number(l.habit_id),
+          color: habitColor(l.habit_id),
+        });
+        byDay.set(key, arr);
+      }
+      // Pad leading blanks so week starts Monday
+      const firstDow = new Date(`${from}T12:00:00+08:00`).getDay();
+      const mondayPad = firstDow === 0 ? 6 : firstDow - 1;
+      const cells = [];
+      for (let i = 0; i < mondayPad; i++) {
+        cells.push({ day_key: null, habits: [] });
+      }
+      for (let d = 1; d <= daysInMonth; d++) {
+        const key = `${String(y).padStart(4, "0")}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+        cells.push({ day_key: key, habits: byDay.get(key) || [] });
+      }
+      const weeks = [];
+      for (let i = 0; i < cells.length; i += 7) {
+        weeks.push(cells.slice(i, i + 7));
+      }
+      return {
+        year: y,
+        month: m,
+        weeks,
+        legend,
       };
     }
 
@@ -632,12 +900,14 @@
       return { rule_id: ruleId, minutes_per_completion: mins };
     }
 
-    async function handleRoute({ path, method, body }) {
+    async function handleRoute({ path, method, body, searchParams }) {
       if (!path.startsWith("/api/portal/habits") && path !== "/api/analytics/habits/weekly") {
         return null;
       }
       const acc = requireCurrent();
+      syncContentTables();
       ensureStarterHabits(acc.id);
+      const sp = searchParams || { get: () => null };
 
       if (path === "/api/portal/habits/today" && method === "GET") {
         return { status: 200, body: todayItems(acc.id) };
@@ -691,6 +961,32 @@
         return {
           status: 200,
           body: patchRule(acc.id, Number(body.rule_id), body.minutes_per_completion),
+        };
+      }
+      if (path === "/api/portal/habits/micro-steps" && method === "GET") {
+        const hid = Number(sp.get("habit_id") || body.habit_id || 0);
+        ensure(hid > 0, "validation", "habit_id 无效");
+        return {
+          status: 200,
+          body: { habit_id: hid, steps: listMicroSteps(acc.id, hid) },
+        };
+      }
+      if (path === "/api/portal/habits/micro-steps" && method === "POST") {
+        return {
+          status: 200,
+          body: addMicroStep(acc.id, Number(body.habit_id), body.step_text),
+        };
+      }
+      if (path === "/api/portal/habits/micro-steps" && method === "PATCH") {
+        return {
+          status: 200,
+          body: patchMicroStep(acc.id, Number(body.step_id), body.step_text),
+        };
+      }
+      if (path === "/api/portal/habits/micro-steps/archive" && method === "POST") {
+        return {
+          status: 200,
+          body: archiveMicroStep(acc.id, Number(body.step_id)),
         };
       }
       if (path === "/api/analytics/habits/weekly" && method === "GET") {
