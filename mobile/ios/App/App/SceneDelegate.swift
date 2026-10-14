@@ -3,6 +3,9 @@ import Capacitor
 
 /// iOS 13+ scene lifecycle. Required on iOS 26/27+: without this, UIKit traps at launch
 /// (`UIApplicationEvaluateRuntimeIssueForNoSceneLifecycleAdoption`).
+///
+/// Create the window in code (do not rely on UISceneStoryboardFile alone) — on newer
+/// Xcode/iOS simulators an empty Main.storyboard VC can leave a permanent black screen.
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
 
@@ -11,8 +14,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         willConnectTo session: UISceneSession,
         options connectionOptions: UIScene.ConnectionOptions
     ) {
-        guard let _ = (scene as? UIWindowScene) else { return }
-        // Main.storyboard (UISceneStoryboardFile) creates the window + MainViewController.
+        guard let windowScene = scene as? UIWindowScene else { return }
+
+        let window = UIWindow(windowScene: windowScene)
+        window.rootViewController = MainViewController()
+        window.makeKeyAndVisible()
+        self.window = window
 
         for context in connectionOptions.urlContexts {
             _ = ApplicationDelegateProxy.shared.application(

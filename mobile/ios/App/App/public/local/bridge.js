@@ -135,6 +135,28 @@
 
   console.info("[MyTimeTree] local bridge active", window.MyTimeTreeLocal.version);
 
+  // Avoid stuck splash / black frame on Capacitor after first paint.
+  function hideNativeSplash() {
+    try {
+      const Cap = window.Capacitor;
+      const Splash =
+        Cap && typeof Cap.registerPlugin === "function"
+          ? Cap.registerPlugin("SplashScreen")
+          : Cap && Cap.Plugins && Cap.Plugins.SplashScreen;
+      if (Splash && typeof Splash.hide === "function") {
+        Splash.hide().catch(() => {});
+      }
+    } catch {
+      /* ignore */
+    }
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", hideNativeSplash);
+  } else {
+    hideNativeSplash();
+  }
+  setTimeout(hideNativeSplash, 1200);
+
   // Capacitor App pause → flush DB (also handled in lock.js); keep a bridge-level backup.
   try {
     const Cap = window.Capacitor;
