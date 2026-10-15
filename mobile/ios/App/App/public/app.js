@@ -688,9 +688,12 @@
       const data = await api("/api/portal/habits/list");
       const habits = (data.habits || []).filter((h) => !h.archived);
       list.innerHTML = "";
-      habits.forEach((h) => {
+      habits.forEach((h, idx) => {
+        const onStrip = h.on_home_strip === true || (h.on_home_strip == null && idx < 9);
+        const swatchColor = h.color || (onStrip ? h.color_featured : h.color_muted) || "#7a9e8c";
         const row = document.createElement("li");
-        row.className = "habit-settings-row";
+        row.className =
+          "habit-settings-row" + (onStrip ? " on-home-strip" : " off-home-strip");
         row.dataset.habitId = String(h.id);
 
         const del = document.createElement("button");
@@ -711,11 +714,18 @@
         const front = document.createElement("div");
         front.className = "habit-settings-front";
         front.draggable = true;
+        front.style.setProperty("--habit-color", swatchColor);
 
         const handle = document.createElement("span");
         handle.className = "habit-drag-handle";
         handle.textContent = "⋮⋮";
         handle.title = "拖拽排序";
+        const swatch = document.createElement("span");
+        swatch.className =
+          "habit-settings-swatch" + (onStrip ? " featured" : " muted");
+        swatch.style.background = swatchColor;
+        swatch.title = onStrip ? "主屏展示色" : "清单第 10 条及以后（略降饱和）";
+        swatch.setAttribute("aria-hidden", "true");
         const label = document.createElement("span");
         label.className = "habit-settings-label";
         label.textContent = `${h.title} · ${h.minutes_per_completion} 分`;
@@ -744,7 +754,7 @@
           await refreshHabitSettings();
         });
         actions.append(microBtn, editMin);
-        front.append(handle, label, actions);
+        front.append(handle, swatch, label, actions);
         row.append(del, front);
         list.appendChild(row);
       });
@@ -1084,6 +1094,18 @@
       root.innerHTML = `<p class="muted">暂无点阵</p>`;
       return;
     }
+    // Monday-first weekday labels (matches monthHeatmap pad)
+    const weekdayRow = document.createElement("div");
+    weekdayRow.className = "habit-heatmap-weekdays";
+    weekdayRow.setAttribute("aria-hidden", "true");
+    for (const label of ["一", "二", "三", "四", "五", "六", "日"]) {
+      const w = document.createElement("span");
+      w.className = "habit-heatmap-weekday";
+      w.textContent = label;
+      weekdayRow.appendChild(w);
+    }
+    root.appendChild(weekdayRow);
+
     for (const week of weeks) {
       const row = document.createElement("div");
       row.className = "habit-heatmap-week";
@@ -1092,15 +1114,21 @@
         day.className = "habit-heatmap-day" + (cell.day_key ? "" : " empty");
         if (cell.day_key) {
           day.title = cell.day_key;
+          const dayNum = String(cell.day_key).split("-")[2];
+          const dateEl = document.createElement("span");
+          dateEl.className = "habit-heatmap-date";
+          dateEl.textContent = String(Number(dayNum) || dayNum || "");
           const dots = document.createElement("div");
           dots.className = "habit-heatmap-dots";
-          for (const h of cell.habits || []) {
+          // Cap at 9 (3×3) to match home strip capacity
+          const shown = (cell.habits || []).slice(0, 9);
+          for (const h of shown) {
             const d = document.createElement("span");
             d.className = "habit-heatmap-dot";
-            d.style.background = h.color || "#2f9e6b";
+            d.style.background = h.color || "#4ec98a";
             dots.appendChild(d);
           }
-          day.appendChild(dots);
+          day.append(dateEl, dots);
         }
         row.appendChild(day);
       }
@@ -1108,7 +1136,14 @@
     }
     for (const g of heat.legend || []) {
       const li = document.createElement("li");
-      li.innerHTML = `<span class="habit-legend-swatch" style="background:${g.color}"></span>${g.title}`;
+      const legendColor =
+        g.on_home_strip === false
+          ? g.color
+          : g.color_featured || g.color || "#4ec98a";
+      // Legend: featured for strip habits; muted color already on g.color for rank 10+
+      li.innerHTML = `<span class="habit-legend-swatch${
+        g.on_home_strip === false ? " muted" : ""
+      }" style="background:${g.color || legendColor}"></span>${g.title}`;
       legend.appendChild(li);
     }
   }

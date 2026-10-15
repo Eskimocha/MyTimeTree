@@ -130,14 +130,13 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 
 # Scratchpad
 
-## Task: App能开仍旧UI（强制刷新 + sync mirror）
-- [X] sync-web mirror→ios public + meta web-build=20261015c + strip meta N/9
-- checklist §6
-
-## Task: Kai pull 未生效排查（cache-bust）
-- [X] 根因：sync-web 写死 ?v=p5h1/local-p2 → 改为 LOCAL_ASSET_V=20261015b + sync 指纹校验
-- [X] 本机 checklist → Store internal/kai-local-sync-checklist.md
-- 产品逻辑未改
+## Task: 设置前9色阶 + 分析点阵星期/日期/9格亮点（PR#3）
+- [X] habits.js FEATURED/MUTED + listHabits color tiers
+- [X] settings swatch featured vs muted
+- [X] heatmap 一…日 + 日期左上 + 3×3 亮点
+- [X] LOCAL_ASSET_V=20261015d + sync-web asserts
+- [ ] smoke:habits + commit/push PR#3
+- [ ] checklist 提醒：须在 habit-polish 支 sync（勿停 replan）
 
 ## Lessons (this task)
 - Content tables: `docs/v2/content/*.md` → `build-habit-content.mjs` → `habit-seed.js`；`sync-web` 必须先 build
@@ -145,5 +144,6 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 - deleteAccount 必须显式清 habit_* / earned_credits / celebration_events
 - 多媒体进 `portal/habit/`（勿只写 ios/public）；路径用 `/static/portal/habit/…`，sync 改写为 `./habit/…`
 - tip/小庆祝文案源：`celebration-copy`（incentive + small_celebration + offline_hint_id），不再用 emotion-copy
+- Kai 错支：停在 `habit-ios-replan` 上 pull polish ≠ 工作在 polish；须 `checkout -B … origin/habit-polish…` + `reset --hard` + sync
 
-## Archived: IH0–IH9 / 差距盘点 / Web habit PR#1 / iOS 1.0 phases
+## Archived: strip9/swipe / App旧UI / Kai pull / IH0–IH9

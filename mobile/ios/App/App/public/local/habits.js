@@ -5,20 +5,40 @@
 (function (global) {
   "use strict";
 
-  /** Soft 12-slot palette: distinguishable within a group, not neon/harsh. */
-  const HABIT_COLORS = [
-    "#4a9b7a", // sage green
-    "#5b8fbf", // soft blue
-    "#c4894a", // warm amber
-    "#7a8f5a", // olive
-    "#8b6b9e", // muted violet
-    "#c27a6a", // dusty terracotta
-    "#4f9a9a", // teal
-    "#b08968", // tan
-    "#6b8e9b", // slate blue
-    "#9a7b5c", // mocha
-    "#73996b", // soft leaf
-    "#a67c8a", // dusty rose
+  /**
+   * Soft 12-slot palette (same hue family per slot):
+   * - featured: home strip / settings top-9 / heatmap dots (brighter, kid-friendly)
+   * - muted: settings rank 10+ (same hue, lower sat / slight gray)
+   */
+  // Featured: a bit brighter / more saturated (home strip + settings top-9 + heatmap dots)
+  const HABIT_COLORS_FEATURED = [
+    "#4ec98a",
+    "#5eb0e8",
+    "#e8a84a",
+    "#8fbc5c",
+    "#b08cd4",
+    "#e8957e",
+    "#4ec4c4",
+    "#d4a66a",
+    "#6eb4cc",
+    "#c49a5e",
+    "#7ec46e",
+    "#d498b0",
+  ];
+  // Muted: same hue family, lower sat + slight gray (settings rank 10+)
+  const HABIT_COLORS_MUTED = [
+    "#7a9e8c",
+    "#7e95a8",
+    "#a99478",
+    "#8a9478",
+    "#918899",
+    "#a89088",
+    "#7a9898",
+    "#9a8e80",
+    "#84949c",
+    "#968a7c",
+    "#869684",
+    "#9a8890",
   ];
   const HOME_STRIP_LIMIT = 9;
   const TIMELINE_LIMIT = 30;
@@ -37,10 +57,12 @@
     );
   }
 
-  function habitColor(habitId) {
-    // Stable by id; slots cycle every 12 (group), same for strip / heatmap / legend
+  function habitColor(habitId, variant) {
+    // Stable by id; slots cycle every 12 (group)
     const n = Math.abs(Number(habitId) || 0);
-    return HABIT_COLORS[n % HABIT_COLORS.length];
+    const slot = n % HABIT_COLORS_FEATURED.length;
+    if (variant === "muted") return HABIT_COLORS_MUTED[slot];
+    return HABIT_COLORS_FEATURED[slot];
   }
 
   function install(api) {
@@ -377,18 +399,27 @@
            LEFT JOIN exchange_rules r ON r.habit_id = h.id
            WHERE h.account_id = ? AND h.archived = 0
            ORDER BY h.sort_order ASC, h.id ASC`;
-      return db().query(sql, [accountId]).map((r) => ({
-        id: Number(r.id),
-        account_id: Number(r.account_id),
-        template_id: r.template_id == null ? null : Number(r.template_id),
-        title: String(r.title),
-        category: String(r.category || ""),
-        sort_order: Number(r.sort_order),
-        archived: Number(r.archived) === 1,
-        minutes_per_completion: Number(r.minutes_per_completion || 5),
-        rule_id: r.rule_id == null ? null : Number(r.rule_id),
-        rule_active: r.rule_active == null ? true : Number(r.rule_active) === 1,
-      }));
+      return db().query(sql, [accountId]).map((r, idx) => {
+        const id = Number(r.id);
+        const on_home_strip = idx < HOME_STRIP_LIMIT && Number(r.archived) !== 1;
+        return {
+          id,
+          account_id: Number(r.account_id),
+          template_id: r.template_id == null ? null : Number(r.template_id),
+          title: String(r.title),
+          category: String(r.category || ""),
+          sort_order: Number(r.sort_order),
+          archived: Number(r.archived) === 1,
+          minutes_per_completion: Number(r.minutes_per_completion || 5),
+          rule_id: r.rule_id == null ? null : Number(r.rule_id),
+          rule_active: r.rule_active == null ? true : Number(r.rule_active) === 1,
+          strip_index: idx,
+          on_home_strip,
+          color: habitColor(id, on_home_strip ? "featured" : "muted"),
+          color_featured: habitColor(id, "featured"),
+          color_muted: habitColor(id, "muted"),
+        };
+      });
     }
 
     function badgeCount(accountId) {
@@ -520,7 +551,7 @@
           minutes: h.minutes_per_completion,
           done: Boolean(log),
           log_id: log ? Number(log.id) : null,
-          color: habitColor(h.id),
+          color: habitColor(h.id, "featured"),
           micro_steps,
           parent_script: { script_text: scriptText },
           incentive_text: celeb.incentive_text,
@@ -763,11 +794,16 @@
       const [y, m] = day.split("-").map(Number);
       const daysInMonth = new Date(y, m, 0).getDate();
       const habits = listHabits(accountId);
+      // Heatmap dots: featured (brighter) for kid-friendly read; legend matches settings tier
       const legend = habits.map((h) => ({
         habit_id: h.id,
         title: h.title,
-        color: habitColor(h.id),
+        color: h.color,
+        on_home_strip: h.on_home_strip,
       }));
+      const colorById = new Map(
+        habits.map((h) => [h.id, habitColor(h.id, "featured")])
+      );
       const from = `${String(y).padStart(4, "0")}-${String(m).padStart(2, "0")}-01`;
       const to = `${String(y).padStart(4, "0")}-${String(m).padStart(2, "0")}-${String(daysInMonth).padStart(2, "0")}`;
       const logs = db().query(
@@ -778,10 +814,11 @@
       const byDay = new Map();
       for (const l of logs) {
         const key = String(l.day_key);
+        const hid = Number(l.habit_id);
         const arr = byDay.get(key) || [];
         arr.push({
-          habit_id: Number(l.habit_id),
-          color: habitColor(l.habit_id),
+          habit_id: hid,
+          color: colorById.get(hid) || habitColor(hid, "featured"),
         });
         byDay.set(key, arr);
       }
