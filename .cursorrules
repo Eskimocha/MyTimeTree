@@ -130,13 +130,10 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 
 # Scratchpad
 
-## Task: 庆祝/tip 媒体钩子（等 ≥24+12 PNG）
-- [X] 接入 celebration-actions + board-milestones + 新 celebration-copy
-- [X] schema v11 + evaluateBoardMilestone + 分析页 12 格
-- [X] HABIT_IMAGE_ALIASES + tip/小庆/大庆 image_key 钩子
-- [X] sync-habit-media（素材未齐：2/24 + 0/12）
-- [X] smoke + push 20261015f
-- [ ] 素材齐后立刻 re-sync 推 PR
+## Task: 庆祝/tip 媒体齐套镜像
+- [X] tip+28 ca+12 bm 镜像 portal/ios；别名改为旧→新
+- [X] sync-web 20261015g；resolve-probe 41 keys OK
+- [X] push 9cba8b6 PR#3
 
 ## Archived: 左滑改奖励 / 色阶点阵 / strip9 / Kai pull
 
