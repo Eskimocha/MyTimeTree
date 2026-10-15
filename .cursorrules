@@ -135,8 +135,8 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 - [X] settings swatch featured vs muted
 - [X] heatmap 一…日 + 日期左上 + 3×3 亮点
 - [X] LOCAL_ASSET_V=20261015d + sync-web asserts
-- [ ] smoke:habits + commit/push PR#3
-- [ ] checklist 提醒：须在 habit-polish 支 sync（勿停 replan）
+- [X] smoke:habits + commit/push PR#3 (e59ee9e)
+- [X] checklist 提醒：须在 habit-polish 支 sync（勿停 replan）
 
 ## Lessons (this task)
 - Content tables: `docs/v2/content/*.md` → `build-habit-content.mjs` → `habit-seed.js`；`sync-web` 必须先 build
