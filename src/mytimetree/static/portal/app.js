@@ -53,15 +53,61 @@
     bird: `/static/portal/ornaments/bird.png?v=${ASSET_V}`,
   };
 
-  const HABIT_MEDIA_V = "20261014b";
+  const HABIT_MEDIA_V = "20261015f";
   const HABIT_TIP_ICON = `/static/portal/habit/icon-tip-seed.png?v=${HABIT_MEDIA_V}`;
   const HABIT_TIP_ICON_2X = `/static/portal/habit/icon-tip-seed@2x.png?v=${HABIT_MEDIA_V}`;
   const HABIT_CELEB_MARK = `/static/portal/habit/mark-celeb-small.png?v=${HABIT_MEDIA_V}`;
   const HABIT_CELEB_MARK_2X = `/static/portal/habit/mark-celeb-small@2x.png?v=${HABIT_MEDIA_V}`;
 
+  /**
+   * Content table keys (img-ca-*, img-bm-*) → multimedia KEYS.md file stems.
+   * Missing PNGs hide via onerror until store delivers full batch.
+   */
+  const HABIT_IMAGE_ALIASES = {
+    "img-ca-high-five": "img-high-five",
+    "img-ca-pillow-bump": "img-pillow-bump",
+    "img-ca-shoulder-bump": "img-shoulder-bump",
+    "img-ca-spin-clap": "img-spin-clap",
+    "img-ca-fridge-star": "img-fridge-sticker",
+    "img-ca-hug-3s": "img-hug",
+    "img-ca-victory-dance": "img-dance",
+    "img-ca-nod-smile": "img-nod-smile",
+    "img-ca-thumbs-up": "img-thumbs-up",
+    "img-ca-fist-bump": "img-fist-bump",
+    "img-ca-silent-clap": "img-soft-clap",
+    "img-ca-whisper-ok": "img-ear-whisper",
+    "img-ca-quiet-heart": "img-heart-hands",
+    "img-ca-blanket-squeeze": "img-blanket-tuck",
+    "img-ca-cheek-soft": "img-cheek-pat",
+    "img-ca-seated-stretch": "img-stretch-smile",
+    "img-ca-double-high-five": "img-high-five",
+    "img-ca-air-high-five": "img-high-five",
+    "img-ca-elbow-bump": "img-shoulder-bump",
+    "img-ca-desk-tap": "img-book-bookmark",
+    "img-ca-chair-shimmy": "img-soft-clap",
+    "img-ca-pencil-twirl": "img-drawing-show",
+    "img-ca-toe-wiggle": "img-pillow-bump",
+    "img-ca-bed-shoulder": "img-shoulder-bump",
+    "img-ca-outdoor-spin": "img-spin-clap",
+    "img-ca-nature-point": "img-seed-sprout",
+    "img-ca-jump-once": "img-dance",
+    "img-ca-mirror-wink": "img-nod-smile",
+    ...Object.fromEntries(
+      Array.from({ length: 12 }, (_, i) => {
+        const n = String(i + 1).padStart(2, "0");
+        return [`img-bm-${n}`, `mark-celeb-board-${n}`];
+      })
+    ),
+  };
+
+  function resolveHabitImageKey(imageKey) {
+    const safe = String(imageKey || "").replace(/[^a-zA-Z0-9_-]/g, "");
+    if (!safe) return "";
+    return HABIT_IMAGE_ALIASES[safe] || safe;
+  }
+
   function habitHintArtSrc(imageKey, density) {
-    if (!imageKey) return "";
-    const safe = String(imageKey).replace(/[^a-zA-Z0-9_-]/g, "");
+    const safe = resolveHabitImageKey(imageKey);
     if (!safe) return "";
     const suffix = density === 2 ? "@2x" : "";
     return `/static/portal/habit/${safe}${suffix}.png?v=${HABIT_MEDIA_V}`;
@@ -624,10 +670,20 @@
     if (board) {
       const mask = $("#habit-board-mask");
       if (!mask) return;
-      $("#habit-board-mask-title").textContent = "大庆祝！这周习惯满满";
-      $("#habit-board-mask-body").textContent = res.minutes_credited
-        ? `本记已存入 ${res.minutes_credited} 分 · 本周坚持很棒`
-        : "本周坚持很棒";
+      const celeb = res.celebration;
+      $("#habit-board-mask-title").textContent =
+        celeb.title || "大庆祝！习惯里程碑";
+      $("#habit-board-mask-body").textContent =
+        celeb.body ||
+        (res.minutes_credited
+          ? `本记已存入 ${res.minutes_credited} 分 · 坚持很棒`
+          : "坚持很棒");
+      const levelEl = $("#habit-board-mask-level");
+      if (levelEl) {
+        levelEl.textContent = celeb.level ? `里程碑 L${celeb.level}` : "";
+        levelEl.hidden = !celeb.level;
+      }
+      bindHabitHintArt($("#habit-board-art"), celeb.image_key);
       mask.hidden = false;
       return;
     }
@@ -652,11 +708,18 @@
     const hint = res.offline_hint;
     const hintEl = $("#habit-celeb-hint");
     const hintArt = $("#habit-hint-art");
+    const artKey =
+      (hint && hint.image_key) || res.image_key || "";
     if (hint && hint.title) {
       hintEl.hidden = false;
       $("#habit-hint-title").textContent = hint.title;
       $("#habit-hint-body").textContent = hint.body || "";
-      bindHabitHintArt(hintArt, hint.image_key);
+      bindHabitHintArt(hintArt, artKey);
+    } else if (artKey) {
+      hintEl.hidden = false;
+      $("#habit-hint-title").textContent = "线下小庆祝";
+      $("#habit-hint-body").textContent = "";
+      bindHabitHintArt(hintArt, artKey);
     } else {
       hintEl.hidden = true;
       if (hintArt) {
@@ -665,6 +728,52 @@
       }
     }
     overlay.hidden = false;
+  }
+
+  function renderHabitMilestones(list) {
+    const root = $("#habit-milestones");
+    if (!root) return;
+    root.innerHTML = "";
+    const items = list || [];
+    if (!items.length) {
+      root.hidden = true;
+      return;
+    }
+    root.hidden = false;
+    const title = document.createElement("p");
+    title.className = "habit-milestones-title";
+    title.textContent = "大庆祝里程碑";
+    const grid = document.createElement("div");
+    grid.className = "habit-milestones-grid";
+    grid.setAttribute("role", "list");
+    for (const ms of items) {
+      const cell = document.createElement("div");
+      cell.className =
+        "habit-milestone-cell" + (ms.achieved ? " achieved" : "");
+      cell.setAttribute("role", "listitem");
+      cell.title = ms.title || "";
+      const art = document.createElement("img");
+      art.className = "habit-milestone-art";
+      art.alt = "";
+      art.width = 40;
+      art.height = 40;
+      bindHabitHintArt(art, ms.image_key);
+      if (art.hidden) {
+        art.remove();
+        const stub = document.createElement("span");
+        stub.className = "habit-milestone-stub";
+        stub.textContent = String(ms.level || "");
+        cell.appendChild(stub);
+      } else {
+        cell.appendChild(art);
+      }
+      const lab = document.createElement("span");
+      lab.className = "habit-milestone-label";
+      lab.textContent = ms.achieved ? `✓${ms.level}` : String(ms.level || "");
+      cell.appendChild(lab);
+      grid.appendChild(cell);
+    }
+    root.append(title, grid);
   }
 
   async function completeHabitFromHome(habitId) {
@@ -1083,10 +1192,14 @@
         copyEl.textContent = intro ? intro.copy_text : "";
       }
       renderHabitHeatmap(data.month_heatmap || data);
+      renderHabitMilestones(data.milestones || []);
       const stats = $("#habit-board-stats");
       if (stats) {
+        const achieved = (data.milestones || []).filter((m) => m.achieved).length;
+        const totalMs = (data.milestones || []).length;
         stats.textContent =
-          `本周 ${data.board?.stats?.week_logs || 0} 记 · 近记 ${data.board?.stats?.total_logs || 0} 条 · 已兑 ${data.board?.stats?.minutes_redeemed || 0} 分`;
+          `本周 ${data.board?.stats?.week_logs || 0} 记 · 近记 ${data.board?.stats?.total_logs || 0} 条 · 已兑 ${data.board?.stats?.minutes_redeemed || 0} 分` +
+          (totalMs ? ` · 里程碑 ${achieved}/${totalMs}` : "");
       }
       const tl = $("#habit-timeline-list");
       if (tl) {

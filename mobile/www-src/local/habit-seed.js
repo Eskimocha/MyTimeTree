@@ -2,8 +2,8 @@
 (function (global) {
   "use strict";
   global.MyTimeTreeHabitSeed = {
-  "version": 3,
-  "generated_at": "2026-10-15T07:57:02.953Z",
+  "version": 4,
+  "generated_at": "2026-10-15T10:09:05.190Z",
   "templates": [
     {
       "slug": "brush_teeth",
@@ -990,6 +990,327 @@
   ],
   "hints": [
     {
+      "id": "ca_high_five",
+      "title": "击掌",
+      "body": "面对面击掌，短促有力说「做到了！」",
+      "image_key": "img-ca-high-five",
+      "categories": [],
+      "env_tags": [
+        "standing",
+        "any"
+      ],
+      "active": true
+    },
+    {
+      "id": "ca_fist_bump",
+      "title": "碰拳",
+      "body": "轻碰拳头一下，相视一笑",
+      "image_key": "img-ca-fist-bump",
+      "categories": [],
+      "env_tags": [
+        "standing",
+        "any"
+      ],
+      "active": true
+    },
+    {
+      "id": "ca_elbow_bump",
+      "title": "碰肘",
+      "body": "轻轻碰一下手肘",
+      "image_key": "img-ca-elbow-bump",
+      "categories": [],
+      "env_tags": [
+        "standing",
+        "any"
+      ],
+      "active": true
+    },
+    {
+      "id": "ca_shoulder_bump",
+      "title": "碰肩",
+      "body": "站着轻碰肩膀，说「我看见你了」",
+      "image_key": "img-ca-shoulder-bump",
+      "categories": [],
+      "env_tags": [
+        "standing"
+      ],
+      "active": true
+    },
+    {
+      "id": "ca_hug_3s",
+      "title": "拥抱三秒",
+      "body": "抱一下，默数到三",
+      "image_key": "img-ca-hug-3s",
+      "categories": [],
+      "env_tags": [
+        "standing",
+        "any"
+      ],
+      "active": true
+    },
+    {
+      "id": "ca_thumbs_up",
+      "title": "竖大拇指",
+      "body": "对孩子竖起大拇指并点头",
+      "image_key": "img-ca-thumbs-up",
+      "categories": [],
+      "env_tags": [
+        "any"
+      ],
+      "active": true
+    },
+    {
+      "id": "ca_air_high_five",
+      "title": "隔空击掌",
+      "body": "隔空「啪」一下，不必碰到",
+      "image_key": "img-ca-air-high-five",
+      "categories": [],
+      "env_tags": [
+        "any"
+      ],
+      "active": true
+    },
+    {
+      "id": "ca_nod_smile",
+      "title": "点头微笑",
+      "body": "蹲下或平视，点头微笑",
+      "image_key": "img-ca-nod-smile",
+      "categories": [],
+      "env_tags": [
+        "any"
+      ],
+      "active": true
+    },
+    {
+      "id": "ca_mirror_wink",
+      "title": "对镜眨眼",
+      "body": "一起对着镜子眨眨眼",
+      "image_key": "img-ca-mirror-wink",
+      "categories": [],
+      "env_tags": [
+        "standing"
+      ],
+      "active": true
+    },
+    {
+      "id": "ca_fridge_star",
+      "title": "冰箱贴纸",
+      "body": "在贴纸墙/冰箱贴一颗星（或口头加星）",
+      "image_key": "img-ca-fridge-star",
+      "categories": [],
+      "env_tags": [
+        "standing"
+      ],
+      "active": true
+    },
+    {
+      "id": "ca_spin_clap",
+      "title": "转圈鼓掌",
+      "body": "原地小转一圈，再鼓掌三下",
+      "image_key": "img-ca-spin-clap",
+      "categories": [],
+      "env_tags": [
+        "standing"
+      ],
+      "active": true
+    },
+    {
+      "id": "ca_victory_dance",
+      "title": "胜利小舞",
+      "body": "一起跳两下傻傻胜利舞",
+      "image_key": "img-ca-victory-dance",
+      "categories": [],
+      "env_tags": [
+        "standing"
+      ],
+      "active": true
+    },
+    {
+      "id": "ca_jump_once",
+      "title": "原地跳一下",
+      "body": "轻轻跳一下再落地站稳",
+      "image_key": "img-ca-jump-once",
+      "categories": [],
+      "env_tags": [
+        "standing"
+      ],
+      "active": true
+    },
+    {
+      "id": "ca_desk_tap",
+      "title": "桌面轻敲",
+      "body": "在桌上轻敲两下当小鼓点",
+      "image_key": "img-ca-desk-tap",
+      "categories": [],
+      "env_tags": [
+        "seated"
+      ],
+      "active": true
+    },
+    {
+      "id": "ca_chair_shimmy",
+      "title": "坐着晃肩",
+      "body": "坐着左右晃晃肩膀两下",
+      "image_key": "img-ca-chair-shimmy",
+      "categories": [],
+      "env_tags": [
+        "seated"
+      ],
+      "active": true
+    },
+    {
+      "id": "ca_pencil_twirl",
+      "title": "笔转庆祝",
+      "body": "笔或手指转一小圈，说「收工」",
+      "image_key": "img-ca-pencil-twirl",
+      "categories": [],
+      "env_tags": [
+        "seated"
+      ],
+      "active": true
+    },
+    {
+      "id": "ca_silent_clap",
+      "title": "无声鼓掌",
+      "body": "双手轻轻合两下，不出大声",
+      "image_key": "img-ca-silent-clap",
+      "categories": [],
+      "env_tags": [
+        "quiet_bed",
+        "seated",
+        "any"
+      ],
+      "active": true
+    },
+    {
+      "id": "ca_whisper_ok",
+      "title": "轻声说成功",
+      "body": "贴近耳边轻声说「成功了」",
+      "image_key": "img-ca-whisper-ok",
+      "categories": [],
+      "env_tags": [
+        "quiet_bed",
+        "seated",
+        "any"
+      ],
+      "active": true
+    },
+    {
+      "id": "ca_quiet_heart",
+      "title": "胸口比心",
+      "body": "双手在胸口比心，停一秒",
+      "image_key": "img-ca-quiet-heart",
+      "categories": [],
+      "env_tags": [
+        "quiet_bed",
+        "seated",
+        "any"
+      ],
+      "active": true
+    },
+    {
+      "id": "ca_pillow_bump",
+      "title": "碰枕头",
+      "body": "轻轻碰一下枕头，宣布充电完成",
+      "image_key": "img-ca-pillow-bump",
+      "categories": [],
+      "env_tags": [
+        "quiet_bed"
+      ],
+      "active": true
+    },
+    {
+      "id": "ca_blanket_squeeze",
+      "title": "抱抱被子",
+      "body": "把被子搂紧一下再放松",
+      "image_key": "img-ca-blanket-squeeze",
+      "categories": [],
+      "env_tags": [
+        "quiet_bed"
+      ],
+      "active": true
+    },
+    {
+      "id": "ca_toe_wiggle",
+      "title": "脚趾动一动",
+      "body": "被子里动动脚趾当小庆祝",
+      "image_key": "img-ca-toe-wiggle",
+      "categories": [],
+      "env_tags": [
+        "quiet_bed"
+      ],
+      "active": true
+    },
+    {
+      "id": "ca_bed_shoulder",
+      "title": "床上轻碰肩",
+      "body": "躺/坐在床上轻轻碰一下肩",
+      "image_key": "img-ca-bed-shoulder",
+      "categories": [],
+      "env_tags": [
+        "quiet_bed"
+      ],
+      "active": true
+    },
+    {
+      "id": "ca_outdoor_spin",
+      "title": "户外转一圈",
+      "body": "在户外原地转一小圈",
+      "image_key": "img-ca-outdoor-spin",
+      "categories": [],
+      "env_tags": [
+        "outdoor"
+      ],
+      "active": true
+    },
+    {
+      "id": "ca_nature_point",
+      "title": "指一下风景",
+      "body": "指一下树或天空，说「看见了」",
+      "image_key": "img-ca-nature-point",
+      "categories": [],
+      "env_tags": [
+        "outdoor",
+        "any"
+      ],
+      "active": true
+    },
+    {
+      "id": "ca_double_high_five",
+      "title": "双击掌",
+      "body": "击掌两次，第二次可以轻一点",
+      "image_key": "img-ca-double-high-five",
+      "categories": [],
+      "env_tags": [
+        "standing",
+        "any"
+      ],
+      "active": true
+    },
+    {
+      "id": "ca_cheek_soft",
+      "title": "轻轻点额头",
+      "body": "用指尖轻轻点一下额头（征得同意）",
+      "image_key": "img-ca-cheek-soft",
+      "categories": [],
+      "env_tags": [
+        "any"
+      ],
+      "active": true
+    },
+    {
+      "id": "ca_seated_stretch",
+      "title": "坐姿伸臂",
+      "body": "坐着向上伸一下手臂再放下",
+      "image_key": "img-ca-seated-stretch",
+      "categories": [],
+      "env_tags": [
+        "seated",
+        "quiet_bed"
+      ],
+      "active": true
+    },
+    {
       "id": "och_high_five",
       "title": "击掌",
       "body": "和孩子面对面击掌，大声说『做到了！』",
@@ -1000,6 +1321,7 @@
         "study",
         "kindness"
       ],
+      "env_tags": [],
       "active": true
     },
     {
@@ -1010,6 +1332,7 @@
       "categories": [
         "sleep"
       ],
+      "env_tags": [],
       "active": true
     },
     {
@@ -1022,6 +1345,7 @@
         "kindness",
         "calm"
       ],
+      "env_tags": [],
       "active": true
     },
     {
@@ -1033,6 +1357,7 @@
         "movement",
         "arts"
       ],
+      "env_tags": [],
       "active": true
     },
     {
@@ -1045,6 +1370,7 @@
         "chores",
         "health"
       ],
+      "env_tags": [],
       "active": true
     },
     {
@@ -1057,6 +1383,7 @@
         "calm",
         "sleep"
       ],
+      "env_tags": [],
       "active": true
     },
     {
@@ -1068,6 +1395,7 @@
         "movement",
         "screen"
       ],
+      "env_tags": [],
       "active": true
     },
     {
@@ -1076,6 +1404,302 @@
       "body": "蹲下平视孩子，点头微笑说『看见你了』。",
       "image_key": "",
       "categories": [],
+      "env_tags": [],
+      "active": true
+    }
+  ],
+  "celebration_actions": [
+    {
+      "id": "ca_high_five",
+      "title": "击掌",
+      "body": "面对面击掌，短促有力说「做到了！」",
+      "image_key": "img-ca-high-five",
+      "env_tags": [
+        "standing",
+        "any"
+      ],
+      "active": true
+    },
+    {
+      "id": "ca_fist_bump",
+      "title": "碰拳",
+      "body": "轻碰拳头一下，相视一笑",
+      "image_key": "img-ca-fist-bump",
+      "env_tags": [
+        "standing",
+        "any"
+      ],
+      "active": true
+    },
+    {
+      "id": "ca_elbow_bump",
+      "title": "碰肘",
+      "body": "轻轻碰一下手肘",
+      "image_key": "img-ca-elbow-bump",
+      "env_tags": [
+        "standing",
+        "any"
+      ],
+      "active": true
+    },
+    {
+      "id": "ca_shoulder_bump",
+      "title": "碰肩",
+      "body": "站着轻碰肩膀，说「我看见你了」",
+      "image_key": "img-ca-shoulder-bump",
+      "env_tags": [
+        "standing"
+      ],
+      "active": true
+    },
+    {
+      "id": "ca_hug_3s",
+      "title": "拥抱三秒",
+      "body": "抱一下，默数到三",
+      "image_key": "img-ca-hug-3s",
+      "env_tags": [
+        "standing",
+        "any"
+      ],
+      "active": true
+    },
+    {
+      "id": "ca_thumbs_up",
+      "title": "竖大拇指",
+      "body": "对孩子竖起大拇指并点头",
+      "image_key": "img-ca-thumbs-up",
+      "env_tags": [
+        "any"
+      ],
+      "active": true
+    },
+    {
+      "id": "ca_air_high_five",
+      "title": "隔空击掌",
+      "body": "隔空「啪」一下，不必碰到",
+      "image_key": "img-ca-air-high-five",
+      "env_tags": [
+        "any"
+      ],
+      "active": true
+    },
+    {
+      "id": "ca_nod_smile",
+      "title": "点头微笑",
+      "body": "蹲下或平视，点头微笑",
+      "image_key": "img-ca-nod-smile",
+      "env_tags": [
+        "any"
+      ],
+      "active": true
+    },
+    {
+      "id": "ca_mirror_wink",
+      "title": "对镜眨眼",
+      "body": "一起对着镜子眨眨眼",
+      "image_key": "img-ca-mirror-wink",
+      "env_tags": [
+        "standing"
+      ],
+      "active": true
+    },
+    {
+      "id": "ca_fridge_star",
+      "title": "冰箱贴纸",
+      "body": "在贴纸墙/冰箱贴一颗星（或口头加星）",
+      "image_key": "img-ca-fridge-star",
+      "env_tags": [
+        "standing"
+      ],
+      "active": true
+    },
+    {
+      "id": "ca_spin_clap",
+      "title": "转圈鼓掌",
+      "body": "原地小转一圈，再鼓掌三下",
+      "image_key": "img-ca-spin-clap",
+      "env_tags": [
+        "standing"
+      ],
+      "active": true
+    },
+    {
+      "id": "ca_victory_dance",
+      "title": "胜利小舞",
+      "body": "一起跳两下傻傻胜利舞",
+      "image_key": "img-ca-victory-dance",
+      "env_tags": [
+        "standing"
+      ],
+      "active": true
+    },
+    {
+      "id": "ca_jump_once",
+      "title": "原地跳一下",
+      "body": "轻轻跳一下再落地站稳",
+      "image_key": "img-ca-jump-once",
+      "env_tags": [
+        "standing"
+      ],
+      "active": true
+    },
+    {
+      "id": "ca_desk_tap",
+      "title": "桌面轻敲",
+      "body": "在桌上轻敲两下当小鼓点",
+      "image_key": "img-ca-desk-tap",
+      "env_tags": [
+        "seated"
+      ],
+      "active": true
+    },
+    {
+      "id": "ca_chair_shimmy",
+      "title": "坐着晃肩",
+      "body": "坐着左右晃晃肩膀两下",
+      "image_key": "img-ca-chair-shimmy",
+      "env_tags": [
+        "seated"
+      ],
+      "active": true
+    },
+    {
+      "id": "ca_pencil_twirl",
+      "title": "笔转庆祝",
+      "body": "笔或手指转一小圈，说「收工」",
+      "image_key": "img-ca-pencil-twirl",
+      "env_tags": [
+        "seated"
+      ],
+      "active": true
+    },
+    {
+      "id": "ca_silent_clap",
+      "title": "无声鼓掌",
+      "body": "双手轻轻合两下，不出大声",
+      "image_key": "img-ca-silent-clap",
+      "env_tags": [
+        "quiet_bed",
+        "seated",
+        "any"
+      ],
+      "active": true
+    },
+    {
+      "id": "ca_whisper_ok",
+      "title": "轻声说成功",
+      "body": "贴近耳边轻声说「成功了」",
+      "image_key": "img-ca-whisper-ok",
+      "env_tags": [
+        "quiet_bed",
+        "seated",
+        "any"
+      ],
+      "active": true
+    },
+    {
+      "id": "ca_quiet_heart",
+      "title": "胸口比心",
+      "body": "双手在胸口比心，停一秒",
+      "image_key": "img-ca-quiet-heart",
+      "env_tags": [
+        "quiet_bed",
+        "seated",
+        "any"
+      ],
+      "active": true
+    },
+    {
+      "id": "ca_pillow_bump",
+      "title": "碰枕头",
+      "body": "轻轻碰一下枕头，宣布充电完成",
+      "image_key": "img-ca-pillow-bump",
+      "env_tags": [
+        "quiet_bed"
+      ],
+      "active": true
+    },
+    {
+      "id": "ca_blanket_squeeze",
+      "title": "抱抱被子",
+      "body": "把被子搂紧一下再放松",
+      "image_key": "img-ca-blanket-squeeze",
+      "env_tags": [
+        "quiet_bed"
+      ],
+      "active": true
+    },
+    {
+      "id": "ca_toe_wiggle",
+      "title": "脚趾动一动",
+      "body": "被子里动动脚趾当小庆祝",
+      "image_key": "img-ca-toe-wiggle",
+      "env_tags": [
+        "quiet_bed"
+      ],
+      "active": true
+    },
+    {
+      "id": "ca_bed_shoulder",
+      "title": "床上轻碰肩",
+      "body": "躺/坐在床上轻轻碰一下肩",
+      "image_key": "img-ca-bed-shoulder",
+      "env_tags": [
+        "quiet_bed"
+      ],
+      "active": true
+    },
+    {
+      "id": "ca_outdoor_spin",
+      "title": "户外转一圈",
+      "body": "在户外原地转一小圈",
+      "image_key": "img-ca-outdoor-spin",
+      "env_tags": [
+        "outdoor"
+      ],
+      "active": true
+    },
+    {
+      "id": "ca_nature_point",
+      "title": "指一下风景",
+      "body": "指一下树或天空，说「看见了」",
+      "image_key": "img-ca-nature-point",
+      "env_tags": [
+        "outdoor",
+        "any"
+      ],
+      "active": true
+    },
+    {
+      "id": "ca_double_high_five",
+      "title": "双击掌",
+      "body": "击掌两次，第二次可以轻一点",
+      "image_key": "img-ca-double-high-five",
+      "env_tags": [
+        "standing",
+        "any"
+      ],
+      "active": true
+    },
+    {
+      "id": "ca_cheek_soft",
+      "title": "轻轻点额头",
+      "body": "用指尖轻轻点一下额头（征得同意）",
+      "image_key": "img-ca-cheek-soft",
+      "env_tags": [
+        "any"
+      ],
+      "active": true
+    },
+    {
+      "id": "ca_seated_stretch",
+      "title": "坐姿伸臂",
+      "body": "坐着向上伸一下手臂再放下",
+      "image_key": "img-ca-seated-stretch",
+      "env_tags": [
+        "seated",
+        "quiet_bed"
+      ],
       "active": true
     }
   ],
@@ -1084,603 +1708,882 @@
       "id": "cc_brush",
       "habit_slug": "brush_teeth",
       "category": "hygiene",
-      "incentive_text": "口气清新",
+      "habit_env": "standing",
+      "incentive_text": "",
       "small_celebration": "牙齿保卫战，击掌！",
-      "offline_hint_id": "och_high_five",
-      "active": true
-    },
-    {
-      "id": "cc_brushe",
-      "habit_slug": "brush_evening",
-      "category": "hygiene",
-      "incentive_text": "嘴巴香香的",
-      "small_celebration": "夜间清洁完成",
-      "offline_hint_id": "och_high_five",
+      "offline_hint_id": "ca_high_five",
+      "image_key": "img-ca-high-five",
       "active": true
     },
     {
       "id": "cc_wash_f",
       "habit_slug": "wash_face",
       "category": "hygiene",
-      "incentive_text": "脸蛋清爽",
-      "small_celebration": "洗脸打卡亮一下",
-      "offline_hint_id": "och_high_five",
+      "habit_env": "standing",
+      "incentive_text": "",
+      "small_celebration": "洗脸完成，亮一下",
+      "offline_hint_id": "ca_mirror_wink",
+      "image_key": "img-ca-mirror-wink",
       "active": true
     },
     {
       "id": "cc_hands",
       "habit_slug": "wash_hands",
       "category": "hygiene",
-      "incentive_text": "小手干干净净",
+      "habit_env": "standing",
+      "incentive_text": "",
       "small_celebration": "洗手完成，开饭",
-      "offline_hint_id": "och_high_five",
+      "offline_hint_id": "ca_high_five",
+      "image_key": "img-ca-high-five",
       "active": true
     },
     {
       "id": "cc_floss",
       "habit_slug": "floss_once",
       "category": "hygiene",
-      "incentive_text": "缝隙清清爽爽",
+      "habit_env": "standing",
+      "incentive_text": "",
       "small_celebration": "牙线一次成功",
-      "offline_hint_id": "och_high_five",
+      "offline_hint_id": "ca_mirror_wink",
+      "image_key": "img-ca-mirror-wink",
+      "active": true
+    },
+    {
+      "id": "cc_brushe",
+      "habit_slug": "brush_evening",
+      "category": "hygiene",
+      "habit_env": "standing",
+      "incentive_text": "",
+      "small_celebration": "夜间清洁完成",
+      "offline_hint_id": "ca_thumbs_up",
+      "image_key": "img-ca-thumbs-up",
       "active": true
     },
     {
       "id": "cc_towel",
       "habit_slug": "tidy_bathroom",
       "category": "hygiene",
-      "incentive_text": "毛巾归位了",
+      "habit_env": "standing",
+      "incentive_text": "",
       "small_celebration": "浴室整齐一分",
-      "offline_hint_id": "och_shoulder",
+      "offline_hint_id": "ca_thumbs_up",
+      "image_key": "img-ca-thumbs-up",
       "active": true
     },
     {
       "id": "cc_bed",
       "habit_slug": "bedtime_on_time",
       "category": "sleep",
-      "incentive_text": "身体开始放松",
+      "habit_env": "quiet_bed",
+      "incentive_text": "",
       "small_celebration": "上床充电开始",
-      "offline_hint_id": "och_pillow",
+      "offline_hint_id": "ca_pillow_bump",
+      "image_key": "img-ca-pillow-bump",
       "active": true
     },
     {
       "id": "cc_nophone",
       "habit_slug": "no_phone_bed",
       "category": "sleep",
-      "incentive_text": "眼睛可以歇歇",
+      "habit_env": "quiet_bed",
+      "incentive_text": "",
       "small_celebration": "屏幕放下了",
-      "offline_hint_id": "och_pillow",
+      "offline_hint_id": "ca_whisper_ok",
+      "image_key": "img-ca-whisper-ok",
       "active": true
     },
     {
       "id": "cc_lights",
       "habit_slug": "lights_out",
       "category": "sleep",
-      "incentive_text": "房间暗下来了",
+      "habit_env": "quiet_bed",
+      "incentive_text": "",
       "small_celebration": "关灯仪式完成",
-      "offline_hint_id": "och_pillow",
+      "offline_hint_id": "ca_blanket_squeeze",
+      "image_key": "img-ca-blanket-squeeze",
       "active": true
     },
     {
       "id": "cc_wake",
       "habit_slug": "morning_wake",
       "category": "sleep",
-      "incentive_text": "新的一天见面",
-      "small_celebration": "起床第一步成功",
-      "offline_hint_id": "och_spin",
+      "habit_env": "standing",
+      "incentive_text": "",
+      "small_celebration": "默念“成功了！”",
+      "offline_hint_id": "ca_air_high_five",
+      "image_key": "img-ca-air-high-five",
       "active": true
     },
     {
       "id": "cc_read1",
       "habit_slug": "read_one_page",
       "category": "reading",
-      "incentive_text": "故事又前进一页",
+      "habit_env": "seated",
+      "incentive_text": "",
       "small_celebration": "又一页！",
-      "offline_hint_id": "och_high_five",
+      "offline_hint_id": "ca_desk_tap",
+      "image_key": "img-ca-desk-tap",
       "active": true
     },
     {
-      "id": "cc_read10",
-      "habit_slug": "read_ten_min",
+      "id": "cc_readnote",
+      "habit_slug": "read_note",
       "category": "reading",
-      "incentive_text": "沉浸在故事里",
-      "small_celebration": "十分钟阅读到位",
-      "offline_hint_id": "och_high_five",
+      "habit_env": "seated",
+      "incentive_text": "",
+      "small_celebration": "再欣赏一番自己的笔记吧",
+      "offline_hint_id": "ca_pencil_twirl",
+      "image_key": "img-ca-pencil-twirl",
       "active": true
     },
     {
       "id": "cc_poem",
       "habit_slug": "recite_poem",
       "category": "reading",
-      "incentive_text": "嘴里有一句诗",
+      "habit_env": "any",
+      "incentive_text": "",
       "small_celebration": "古诗一句进袋",
-      "offline_hint_id": "och_high_five",
+      "offline_hint_id": "ca_thumbs_up",
+      "image_key": "img-ca-thumbs-up",
       "active": true
     },
     {
       "id": "cc_vocab",
       "habit_slug": "vocab_five",
       "category": "reading",
-      "incentive_text": "多认识几个词",
+      "habit_env": "seated",
+      "incentive_text": "",
       "small_celebration": "五个词收下",
-      "offline_hint_id": "och_fridge",
+      "offline_hint_id": "ca_desk_tap",
+      "image_key": "img-ca-desk-tap",
       "active": true
     },
     {
       "id": "cc_story",
       "habit_slug": "listen_story",
       "category": "reading",
-      "incentive_text": "耳朵吃饱故事",
-      "small_celebration": "故事听到尾",
-      "offline_hint_id": "och_high_five",
+      "habit_env": "quiet_bed",
+      "incentive_text": "",
+      "small_celebration": "好故事让人开怀",
+      "offline_hint_id": "ca_quiet_heart",
+      "image_key": "img-ca-quiet-heart",
       "active": true
     },
     {
       "id": "cc_makebed",
       "habit_slug": "make_bed",
       "category": "chores",
-      "incentive_text": "床面平整好看",
+      "habit_env": "standing",
+      "incentive_text": "",
       "small_celebration": "叠被完成",
-      "offline_hint_id": "och_shoulder",
+      "offline_hint_id": "ca_shoulder_bump",
+      "image_key": "img-ca-shoulder-bump",
       "active": true
     },
     {
       "id": "cc_desk",
       "habit_slug": "tidy_desk",
       "category": "chores",
-      "incentive_text": "桌面清爽",
+      "habit_env": "seated",
+      "incentive_text": "",
       "small_celebration": "书桌归位",
-      "offline_hint_id": "och_shoulder",
+      "offline_hint_id": "ca_chair_shimmy",
+      "image_key": "img-ca-chair-shimmy",
       "active": true
     },
     {
       "id": "cc_toys",
       "habit_slug": "put_away_toys",
       "category": "chores",
-      "incentive_text": "玩具有了家",
-      "small_celebration": "收玩具完成",
-      "offline_hint_id": "och_shoulder",
+      "habit_env": "standing",
+      "incentive_text": "",
+      "small_celebration": "玩具箱整洁又闪亮",
+      "offline_hint_id": "ca_high_five",
+      "image_key": "img-ca-high-five",
       "active": true
     },
     {
       "id": "cc_trash",
       "habit_slug": "trash_out",
       "category": "chores",
-      "incentive_text": "家里更清爽",
+      "habit_env": "standing",
+      "incentive_text": "",
       "small_celebration": "垃圾送走",
-      "offline_hint_id": "och_fridge",
+      "offline_hint_id": "ca_fridge_star",
+      "image_key": "img-ca-fridge-star",
       "active": true
     },
     {
       "id": "cc_plant",
       "habit_slug": "water_plant",
       "category": "chores",
-      "incentive_text": "叶子喝到水",
+      "habit_env": "standing",
+      "incentive_text": "",
       "small_celebration": "浇水完成",
-      "offline_hint_id": "och_shoulder",
+      "offline_hint_id": "ca_thumbs_up",
+      "image_key": "img-ca-thumbs-up",
       "active": true
     },
     {
       "id": "cc_table",
       "habit_slug": "set_table",
       "category": "chores",
-      "incentive_text": "饭桌准备好",
+      "habit_env": "standing",
+      "incentive_text": "",
       "small_celebration": "碗筷摆齐",
-      "offline_hint_id": "och_shoulder",
+      "offline_hint_id": "ca_fist_bump",
+      "image_key": "img-ca-fist-bump",
       "active": true
     },
     {
       "id": "cc_shoe",
       "habit_slug": "shoe_rack",
       "category": "chores",
-      "incentive_text": "门口整齐",
+      "habit_env": "standing",
+      "incentive_text": "",
       "small_celebration": "鞋子摆齐",
-      "offline_hint_id": "och_shoulder",
+      "offline_hint_id": "ca_elbow_bump",
+      "image_key": "img-ca-elbow-bump",
       "active": true
     },
     {
       "id": "cc_hamper",
       "habit_slug": "clothes_hamper",
       "category": "chores",
-      "incentive_text": "脏衣进篮",
+      "habit_env": "standing",
+      "incentive_text": "",
       "small_celebration": "衣物归位",
-      "offline_hint_id": "och_shoulder",
+      "offline_hint_id": "ca_nod_smile",
+      "image_key": "img-ca-nod-smile",
       "active": true
     },
     {
       "id": "cc_thank",
       "habit_slug": "thank_you",
       "category": "kindness",
-      "incentive_text": "谢谢说出口",
+      "habit_env": "any",
+      "incentive_text": "",
       "small_celebration": "温暖一句送达",
-      "offline_hint_id": "och_hug",
+      "offline_hint_id": "ca_hug_3s",
+      "image_key": "img-ca-hug-3s",
       "active": true
     },
     {
       "id": "cc_help",
       "habit_slug": "help_sibling",
       "category": "kindness",
-      "incentive_text": "被需要的感觉",
+      "habit_env": "standing",
+      "incentive_text": "",
       "small_celebration": "帮忙一次看见",
-      "offline_hint_id": "och_shoulder",
+      "offline_hint_id": "ca_shoulder_bump",
+      "image_key": "img-ca-shoulder-bump",
       "active": true
     },
     {
       "id": "cc_share",
       "habit_slug": "share_toy",
       "category": "kindness",
-      "incentive_text": "一起玩更开心",
+      "habit_env": "standing",
+      "incentive_text": "",
       "small_celebration": "分享成功",
-      "offline_hint_id": "och_hug",
+      "offline_hint_id": "ca_fist_bump",
+      "image_key": "img-ca-fist-bump",
       "active": true
     },
     {
       "id": "cc_greet",
       "habit_slug": "greeting",
       "category": "kindness",
-      "incentive_text": "对方会回以微笑",
+      "habit_env": "standing",
+      "incentive_text": "",
       "small_celebration": "主动问好",
-      "offline_hint_id": "och_high_five",
+      "offline_hint_id": "ca_high_five",
+      "image_key": "img-ca-high-five",
       "active": true
     },
     {
       "id": "cc_pet",
       "habit_slug": "feed_pet",
       "category": "kindness",
-      "incentive_text": "小动物靠你",
+      "habit_env": "standing",
+      "incentive_text": "",
       "small_celebration": "喂食完成",
-      "offline_hint_id": "och_shoulder",
+      "offline_hint_id": "ca_thumbs_up",
+      "image_key": "img-ca-thumbs-up",
       "active": true
     },
     {
       "id": "cc_call",
       "habit_slug": "call_grandma",
       "category": "kindness",
-      "incentive_text": "声音连到长辈",
+      "habit_env": "seated",
+      "incentive_text": "",
       "small_celebration": "问候送到",
-      "offline_hint_id": "och_hug",
+      "offline_hint_id": "ca_silent_clap",
+      "image_key": "img-ca-silent-clap",
       "active": true
     },
     {
       "id": "cc_game",
       "habit_slug": "family_game",
       "category": "kindness",
-      "incentive_text": "一起笑一场",
+      "habit_env": "standing",
+      "incentive_text": "",
       "small_celebration": "亲子一局完成",
-      "offline_hint_id": "och_spin",
+      "offline_hint_id": "ca_double_high_five",
+      "image_key": "img-ca-double-high-five",
       "active": true
     },
     {
       "id": "cc_out",
       "habit_slug": "outdoor_ten",
       "category": "movement",
-      "incentive_text": "身体暖起来",
+      "habit_env": "outdoor",
+      "incentive_text": "",
       "small_celebration": "户外十分钟",
-      "offline_hint_id": "och_spin",
+      "offline_hint_id": "ca_outdoor_spin",
+      "image_key": "img-ca-outdoor-spin",
       "active": true
     },
     {
       "id": "cc_stretch",
       "habit_slug": "stretch",
       "category": "movement",
-      "incentive_text": "肩膀松一点",
+      "habit_env": "standing",
+      "incentive_text": "",
       "small_celebration": "伸展完成",
-      "offline_hint_id": "och_spin",
+      "offline_hint_id": "ca_spin_clap",
+      "image_key": "img-ca-spin-clap",
       "active": true
     },
     {
       "id": "cc_stairs",
       "habit_slug": "stairs_walk",
       "category": "movement",
-      "incentive_text": "腿脚在动",
+      "habit_env": "standing",
+      "incentive_text": "",
       "small_celebration": "一层楼梯达成",
-      "offline_hint_id": "och_spin",
+      "offline_hint_id": "ca_jump_once",
+      "image_key": "img-ca-jump-once",
       "active": true
     },
     {
       "id": "cc_squat",
       "habit_slug": "pushup_or_squat",
       "category": "movement",
-      "incentive_text": "肌肉醒一醒",
+      "habit_env": "standing",
+      "incentive_text": "",
       "small_celebration": "五个动作完成",
-      "offline_hint_id": "och_spin",
+      "offline_hint_id": "ca_victory_dance",
+      "image_key": "img-ca-victory-dance",
       "active": true
     },
     {
       "id": "cc_stretchb",
       "habit_slug": "stretch_bed",
       "category": "movement",
-      "incentive_text": "身体舒展开",
+      "habit_env": "quiet_bed",
+      "incentive_text": "",
       "small_celebration": "起床懒腰完成",
-      "offline_hint_id": "och_spin",
+      "offline_hint_id": "ca_seated_stretch",
+      "image_key": "img-ca-seated-stretch",
       "active": true
     },
     {
       "id": "cc_water",
       "habit_slug": "drink_water",
       "category": "health",
-      "incentive_text": "喉咙润润的",
+      "habit_env": "any",
+      "incentive_text": "",
       "small_celebration": "咕咚一杯完成",
-      "offline_hint_id": "och_high_five",
+      "offline_hint_id": "ca_high_five",
+      "image_key": "img-ca-high-five",
       "active": true
     },
     {
       "id": "cc_fruit",
       "habit_slug": "fruit_one",
       "category": "health",
-      "incentive_text": "嘴里甜甜的",
+      "habit_env": "standing",
+      "incentive_text": "",
       "small_celebration": "水果一份完成",
-      "offline_hint_id": "och_fridge",
+      "offline_hint_id": "ca_fridge_star",
+      "image_key": "img-ca-fridge-star",
       "active": true
     },
     {
       "id": "cc_snack",
       "habit_slug": "no_snack_rush",
       "category": "health",
-      "incentive_text": "吃得更从容",
+      "habit_env": "any",
+      "incentive_text": "",
       "small_celebration": "停下再吃",
-      "offline_hint_id": "och_fridge",
+      "offline_hint_id": "ca_nod_smile",
+      "image_key": "img-ca-nod-smile",
       "active": true
     },
     {
       "id": "cc_vit",
       "habit_slug": "vitamin",
       "category": "health",
-      "incentive_text": "今日份完成",
+      "habit_env": "any",
+      "incentive_text": "",
       "small_celebration": "按时吃过了",
-      "offline_hint_id": "och_fridge",
+      "offline_hint_id": "ca_thumbs_up",
+      "image_key": "img-ca-thumbs-up",
       "active": true
     },
     {
       "id": "cc_lunch",
       "habit_slug": "lunch_finish",
       "category": "health",
-      "incentive_text": "肚子踏实",
+      "habit_env": "seated",
+      "incentive_text": "",
       "small_celebration": "饭碗清空",
-      "offline_hint_id": "och_high_five",
+      "offline_hint_id": "ca_desk_tap",
+      "image_key": "img-ca-desk-tap",
       "active": true
     },
     {
       "id": "cc_hw",
       "habit_slug": "homework_start",
       "category": "study",
-      "incentive_text": "本子打开了",
+      "habit_env": "seated",
+      "incentive_text": "",
       "small_celebration": "作业开动",
-      "offline_hint_id": "och_fridge",
+      "offline_hint_id": "ca_desk_tap",
+      "image_key": "img-ca-desk-tap",
       "active": true
     },
     {
       "id": "cc_hwfocus",
       "habit_slug": "homework_focus",
       "category": "study",
-      "incentive_text": "注意力在题上",
+      "habit_env": "seated",
+      "incentive_text": "",
       "small_celebration": "专注段完成",
-      "offline_hint_id": "och_fridge",
+      "offline_hint_id": "ca_pencil_twirl",
+      "image_key": "img-ca-pencil-twirl",
       "active": true
     },
     {
       "id": "cc_bag",
       "habit_slug": "bag_pack",
       "category": "study",
-      "incentive_text": "明天不慌乱",
+      "habit_env": "standing",
+      "incentive_text": "",
       "small_celebration": "书包收好",
-      "offline_hint_id": "och_fridge",
+      "offline_hint_id": "ca_thumbs_up",
+      "image_key": "img-ca-thumbs-up",
       "active": true
     },
     {
       "id": "cc_mistake",
       "habit_slug": "review_mistakes",
       "category": "study",
-      "incentive_text": "这道题弄明白",
+      "habit_env": "seated",
+      "incentive_text": "",
       "small_celebration": "错题订正",
-      "offline_hint_id": "och_fridge",
+      "offline_hint_id": "ca_desk_tap",
+      "image_key": "img-ca-desk-tap",
       "active": true
     },
     {
       "id": "cc_plan",
       "habit_slug": "plan_tomorrow",
       "category": "study",
-      "incentive_text": "明天心里有数",
+      "habit_env": "seated",
+      "incentive_text": "",
       "small_celebration": "一件事写下",
-      "offline_hint_id": "och_fridge",
+      "offline_hint_id": "ca_pencil_twirl",
+      "image_key": "img-ca-pencil-twirl",
       "active": true
     },
     {
       "id": "cc_math",
       "habit_slug": "math_drill",
       "category": "study",
-      "incentive_text": "脑子转起来",
+      "habit_env": "seated",
+      "incentive_text": "",
       "small_celebration": "五题口算完成",
-      "offline_hint_id": "och_fridge",
+      "offline_hint_id": "ca_desk_tap",
+      "image_key": "img-ca-desk-tap",
       "active": true
     },
     {
       "id": "cc_piano",
       "habit_slug": "practice_instrument",
       "category": "arts",
-      "incentive_text": "琴声出来了",
+      "habit_env": "seated",
+      "incentive_text": "",
       "small_celebration": "练琴五分钟",
-      "offline_hint_id": "och_spin",
+      "offline_hint_id": "ca_thumbs_up",
+      "image_key": "img-ca-thumbs-up",
       "active": true
     },
     {
       "id": "cc_draw",
       "habit_slug": "draw_one",
       "category": "arts",
-      "incentive_text": "纸上留下痕迹",
+      "habit_env": "seated",
+      "incentive_text": "",
       "small_celebration": "小画完成",
-      "offline_hint_id": "och_spin",
+      "offline_hint_id": "ca_pencil_twirl",
+      "image_key": "img-ca-pencil-twirl",
       "active": true
     },
     {
       "id": "cc_sing",
       "habit_slug": "sing_one",
       "category": "arts",
-      "incentive_text": "歌声在房间",
+      "habit_env": "standing",
+      "incentive_text": "",
       "small_celebration": "一首歌唱完",
-      "offline_hint_id": "och_spin",
+      "offline_hint_id": "ca_double_high_five",
+      "image_key": "img-ca-double-high-five",
       "active": true
     },
     {
       "id": "cc_journal",
       "habit_slug": "journal_line",
       "category": "arts",
-      "incentive_text": "今天留下一句",
+      "habit_env": "seated",
+      "incentive_text": "",
       "small_celebration": "日记一句记下",
-      "offline_hint_id": "och_high_five",
+      "offline_hint_id": "ca_desk_tap",
+      "image_key": "img-ca-desk-tap",
       "active": true
     },
     {
       "id": "cc_screen",
       "habit_slug": "screen_limit",
       "category": "screen",
-      "incentive_text": "说到做到的感觉",
+      "habit_env": "standing",
+      "incentive_text": "",
       "small_celebration": "准时下线",
-      "offline_hint_id": "och_dance",
+      "offline_hint_id": "ca_victory_dance",
+      "image_key": "img-ca-victory-dance",
       "active": true
     },
     {
       "id": "cc_oneep",
       "habit_slug": "one_show_only",
       "category": "screen",
-      "incentive_text": "一集就够了",
+      "habit_env": "seated",
+      "incentive_text": "",
       "small_celebration": "看完即停",
-      "offline_hint_id": "och_dance",
+      "offline_hint_id": "ca_air_high_five",
+      "image_key": "img-ca-air-high-five",
       "active": true
     },
     {
       "id": "cc_breath",
       "habit_slug": "deep_breath",
       "category": "calm",
-      "incentive_text": "胸口松一点",
+      "habit_env": "any",
+      "incentive_text": "",
       "small_celebration": "三次呼吸完成",
-      "offline_hint_id": "och_hug",
+      "offline_hint_id": "ca_quiet_heart",
+      "image_key": "img-ca-quiet-heart",
       "active": true
     },
     {
       "id": "cc_quiet",
       "habit_slug": "quiet_five",
       "category": "calm",
-      "incentive_text": "耳朵安静下来",
+      "habit_env": "seated",
+      "incentive_text": "",
       "small_celebration": "安静五分钟",
-      "offline_hint_id": "och_hug",
+      "offline_hint_id": "ca_silent_clap",
+      "image_key": "img-ca-silent-clap",
       "active": true
     },
     {
       "id": "cc_nature",
       "habit_slug": "nature_look",
       "category": "calm",
-      "incentive_text": "看见一片风景",
+      "habit_env": "outdoor",
+      "incentive_text": "",
       "small_celebration": "观察一刻",
-      "offline_hint_id": "och_generic",
+      "offline_hint_id": "ca_nature_point",
+      "image_key": "img-ca-nature-point",
       "active": true
     },
     {
       "id": "cc_hygiene",
       "habit_slug": "",
       "category": "hygiene",
-      "incentive_text": "清清爽爽",
+      "habit_env": "standing",
+      "incentive_text": "",
       "small_celebration": "清洁完成，击掌",
-      "offline_hint_id": "och_high_five",
+      "offline_hint_id": "ca_high_five",
+      "image_key": "img-ca-high-five",
       "active": true
     },
     {
       "id": "cc_sleep",
       "habit_slug": "",
       "category": "sleep",
-      "incentive_text": "身体准备休息",
+      "habit_env": "quiet_bed",
+      "incentive_text": "",
       "small_celebration": "休息这一步到位",
-      "offline_hint_id": "och_pillow",
+      "offline_hint_id": "ca_pillow_bump",
+      "image_key": "img-ca-pillow-bump",
       "active": true
     },
     {
       "id": "cc_chores",
       "habit_slug": "",
       "category": "chores",
-      "incentive_text": "家里更整齐",
+      "habit_env": "standing",
+      "incentive_text": "",
       "small_celebration": "家务一小步",
-      "offline_hint_id": "och_shoulder",
+      "offline_hint_id": "ca_shoulder_bump",
+      "image_key": "img-ca-shoulder-bump",
       "active": true
     },
     {
       "id": "cc_kind",
       "habit_slug": "",
       "category": "kindness",
-      "incentive_text": "被看见的温暖",
+      "habit_env": "any",
+      "incentive_text": "",
       "small_celebration": "善意被记下",
-      "offline_hint_id": "och_hug",
+      "offline_hint_id": "ca_hug_3s",
+      "image_key": "img-ca-hug-3s",
       "active": true
     },
     {
       "id": "cc_move",
       "habit_slug": "",
       "category": "movement",
-      "incentive_text": "身体更有劲",
+      "habit_env": "standing",
+      "incentive_text": "",
       "small_celebration": "动起来了",
-      "offline_hint_id": "och_spin",
+      "offline_hint_id": "ca_spin_clap",
+      "image_key": "img-ca-spin-clap",
       "active": true
     },
     {
       "id": "cc_health",
       "habit_slug": "",
       "category": "health",
-      "incentive_text": "照顾好自己一下",
+      "habit_env": "any",
+      "incentive_text": "",
       "small_celebration": "健康一小步",
-      "offline_hint_id": "och_fridge",
+      "offline_hint_id": "ca_thumbs_up",
+      "image_key": "img-ca-thumbs-up",
       "active": true
     },
     {
       "id": "cc_study",
       "habit_slug": "",
       "category": "study",
-      "incentive_text": "心里更踏实",
+      "habit_env": "seated",
+      "incentive_text": "",
       "small_celebration": "学习一小步",
-      "offline_hint_id": "och_fridge",
+      "offline_hint_id": "ca_desk_tap",
+      "image_key": "img-ca-desk-tap",
       "active": true
     },
     {
       "id": "cc_arts",
       "habit_slug": "",
       "category": "arts",
-      "incentive_text": "创作留下来了",
+      "habit_env": "seated",
+      "incentive_text": "",
       "small_celebration": "艺术一小步",
-      "offline_hint_id": "och_spin",
+      "offline_hint_id": "ca_pencil_twirl",
+      "image_key": "img-ca-pencil-twirl",
       "active": true
     },
     {
       "id": "cc_screen_c",
       "habit_slug": "",
       "category": "screen",
-      "incentive_text": "约定守住了",
+      "habit_env": "standing",
+      "incentive_text": "",
       "small_celebration": "屏幕约定达成",
-      "offline_hint_id": "och_dance",
+      "offline_hint_id": "ca_air_high_five",
+      "image_key": "img-ca-air-high-five",
       "active": true
     },
     {
       "id": "cc_calm",
       "habit_slug": "",
       "category": "calm",
-      "incentive_text": "心里稳一点",
+      "habit_env": "any",
+      "incentive_text": "",
       "small_celebration": "平静一刻",
-      "offline_hint_id": "och_hug",
+      "offline_hint_id": "ca_quiet_heart",
+      "image_key": "img-ca-quiet-heart",
       "active": true
     },
     {
       "id": "cc_reading",
       "habit_slug": "",
       "category": "reading",
-      "incentive_text": "故事在脑子里",
+      "habit_env": "seated",
+      "incentive_text": "",
       "small_celebration": "阅读一小步",
-      "offline_hint_id": "och_high_five",
+      "offline_hint_id": "ca_desk_tap",
+      "image_key": "img-ca-desk-tap",
       "active": true
     },
     {
       "id": "cc_generic",
       "habit_slug": "",
       "category": "",
-      "incentive_text": "被看见真好",
+      "habit_env": "any",
+      "incentive_text": "",
       "small_celebration": "做到了，一起高兴",
-      "offline_hint_id": "och_generic",
+      "offline_hint_id": "ca_nod_smile",
+      "image_key": "img-ca-nod-smile",
+      "active": true
+    },
+    {
+      "id": "cc_read10",
+      "habit_slug": "read_ten_min",
+      "category": "reading",
+      "habit_env": "seated",
+      "incentive_text": "",
+      "small_celebration": "十分钟阅读到位",
+      "offline_hint_id": "ca_desk_tap",
+      "image_key": "img-ca-desk-tap",
+      "active": false
+    }
+  ],
+  "board_milestones": [
+    {
+      "level": 1,
+      "id": "bm_first",
+      "title": "第一颗星",
+      "body": "第一次记下来了——习惯树发芽了。",
+      "trigger_rule": "lifetime_logs >= 1",
+      "repeatable": false,
+      "offline_action_id": "ca_high_five",
+      "image_key": "img-bm-01",
+      "active": true
+    },
+    {
+      "level": 2,
+      "id": "bm_life_5",
+      "title": "五次打卡",
+      "body": "已经记下五次好习惯，小树晃了晃叶子。",
+      "trigger_rule": "lifetime_logs >= 5",
+      "repeatable": false,
+      "offline_action_id": "ca_thumbs_up",
+      "image_key": "img-bm-02",
+      "active": true
+    },
+    {
+      "level": 3,
+      "id": "bm_life_15",
+      "title": "十五次",
+      "body": "十五次被看见，时间开始存进树里。",
+      "trigger_rule": "lifetime_logs >= 15",
+      "repeatable": false,
+      "offline_action_id": "ca_fridge_star",
+      "image_key": "img-bm-03",
+      "active": true
+    },
+    {
+      "level": 4,
+      "id": "bm_life_30",
+      "title": "三十次",
+      "body": "三十次！像攒了一小篮星星。",
+      "trigger_rule": "lifetime_logs >= 30",
+      "repeatable": false,
+      "offline_action_id": "ca_double_high_five",
+      "image_key": "img-bm-04",
+      "active": true
+    },
+    {
+      "level": 5,
+      "id": "bm_streak_3",
+      "title": "连续三天",
+      "body": "连续三天都有记录，节奏出现了。",
+      "trigger_rule": "streak_days >= 3",
+      "repeatable": false,
+      "offline_action_id": "ca_air_high_five",
+      "image_key": "img-bm-05",
+      "active": true
+    },
+    {
+      "level": 6,
+      "id": "bm_week_5",
+      "title": "本周满五",
+      "body": "这一周记下五次——小庆祝升级！",
+      "trigger_rule": "week_logs >= 5",
+      "repeatable": false,
+      "offline_action_id": "ca_spin_clap",
+      "image_key": "img-bm-06",
+      "active": true
+    },
+    {
+      "level": 7,
+      "id": "bm_life_60",
+      "title": "六十次",
+      "body": "六十次好习惯，树冠更密了一点。",
+      "trigger_rule": "lifetime_logs >= 60",
+      "repeatable": false,
+      "offline_action_id": "ca_hug_3s",
+      "image_key": "img-bm-07",
+      "active": true
+    },
+    {
+      "level": 8,
+      "id": "bm_streak_7",
+      "title": "连续七天",
+      "body": "一整周每天都有记，太稳了。",
+      "trigger_rule": "streak_days >= 7",
+      "repeatable": false,
+      "offline_action_id": "ca_victory_dance",
+      "image_key": "img-bm-08",
+      "active": true
+    },
+    {
+      "level": 9,
+      "id": "bm_week_cats_3",
+      "title": "本周三色",
+      "body": "本周至少三个不同类别的好习惯都记下了。",
+      "trigger_rule": "week_categories >= 3",
+      "repeatable": false,
+      "offline_action_id": "ca_fridge_star",
+      "image_key": "img-bm-09",
+      "active": true
+    },
+    {
+      "level": 10,
+      "id": "bm_life_100",
+      "title": "一百次",
+      "body": "一百次被看见——总表闪了一下。",
+      "trigger_rule": "lifetime_logs >= 100",
+      "repeatable": false,
+      "offline_action_id": "ca_double_high_five",
+      "image_key": "img-bm-10",
+      "active": true
+    },
+    {
+      "level": 11,
+      "id": "bm_streak_14",
+      "title": "连续十四天",
+      "body": "两周不断档，习惯像小路被踩实了。",
+      "trigger_rule": "streak_days >= 14",
+      "repeatable": false,
+      "offline_action_id": "ca_outdoor_spin",
+      "image_key": "img-bm-11",
+      "active": true
+    },
+    {
+      "level": 12,
+      "id": "bm_month_20",
+      "title": "月满二十",
+      "body": "这个月记下二十次，大树为你们鼓掌。",
+      "trigger_rule": "month_logs >= 20",
+      "repeatable": false,
+      "offline_action_id": "ca_spin_clap",
+      "image_key": "img-bm-12",
       "active": true
     }
   ],

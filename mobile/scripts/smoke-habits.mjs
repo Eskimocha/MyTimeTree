@@ -50,8 +50,8 @@ runScript("habits.js");
 const L = window.MyTimeTreeLocal;
 const init = await L.init();
 console.log("[smoke-habits] init schema", init.schema_version);
-if (Number(init.schema_version) < 8) {
-  throw new Error(`expected schema_version >= 8, got ${init.schema_version}`);
+if (Number(init.schema_version) < 11) {
+  throw new Error(`expected schema_version >= 11, got ${init.schema_version}`);
 }
 
 const seed = window.MyTimeTreeHabitSeed;
@@ -60,8 +60,18 @@ if (!seed || !seed.templates || seed.templates.length < 50) {
     `habit seed too small: templates=${seed?.templates?.length ?? 0}`
   );
 }
+if (!seed.board_milestones || seed.board_milestones.length < 12) {
+  throw new Error(
+    `board_milestones want ≥12 got ${seed.board_milestones?.length ?? 0}`
+  );
+}
+if (!seed.celebration_actions || seed.celebration_actions.length < 24) {
+  throw new Error(
+    `celebration_actions want ≥24 got ${seed.celebration_actions?.length ?? 0}`
+  );
+}
 console.log(
-  `[smoke-habits] seed templates=${seed.templates.length} scripts=${seed.scripts.length} hints=${seed.hints.length}`
+  `[smoke-habits] seed templates=${seed.templates.length} scripts=${seed.scripts.length} hints=${seed.hints.length} actions=${seed.celebration_actions.length} milestones=${seed.board_milestones.length}`
 );
 
 async function api(path, initOpts = {}) {
@@ -186,8 +196,16 @@ const heatLegend = overview.month_heatmap.legend || [];
 if (heatLegend.length && !heatLegend[0].color) {
   throw new Error("heatmap legend missing colors");
 }
+const milestones = overview.milestones || [];
+if (milestones.length < 12) {
+  throw new Error(`milestones want ≥12 got ${milestones.length}`);
+}
+const achieved = milestones.filter((m) => m.achieved);
+if (!achieved.length) {
+  throw new Error("expected at least bm_first after one complete");
+}
 console.log(
-  `[smoke-habits] overview week=${overview.board?.stats?.week_logs} cats=${overview.categories?.length} heatWeeks=${overview.month_heatmap.weeks.length} timeline=${overview.timeline.length}`
+  `[smoke-habits] overview week=${overview.board?.stats?.week_logs} cats=${overview.categories?.length} heatWeeks=${overview.month_heatmap.weeks.length} timeline=${overview.timeline.length} milestones=${achieved.length}/${milestones.length}`
 );
 
 // Grow enabled list past 9 → strip still caps at 9 and keeps settings order head

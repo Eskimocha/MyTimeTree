@@ -278,6 +278,37 @@
           ON celebration_copy(habit_slug, category)`,
       ],
     },
+    {
+      version: 11,
+      sql: [
+        `ALTER TABLE celebration_copy ADD COLUMN image_key TEXT NOT NULL DEFAULT ''`,
+        `ALTER TABLE celebration_copy ADD COLUMN habit_env TEXT NOT NULL DEFAULT ''`,
+        `ALTER TABLE offline_celebration_hints ADD COLUMN env_tags_json TEXT NOT NULL DEFAULT '[]'`,
+        `CREATE TABLE IF NOT EXISTS habit_board_milestones (
+          id TEXT PRIMARY KEY,
+          level INTEGER NOT NULL,
+          title TEXT NOT NULL,
+          body TEXT NOT NULL,
+          trigger_rule TEXT NOT NULL DEFAULT '',
+          repeatable INTEGER NOT NULL DEFAULT 0,
+          offline_action_id TEXT NOT NULL DEFAULT '',
+          image_key TEXT NOT NULL DEFAULT '',
+          active INTEGER NOT NULL DEFAULT 1
+        )`,
+        `CREATE INDEX IF NOT EXISTS idx_board_milestones_level
+          ON habit_board_milestones(active, level)`,
+        `CREATE TABLE IF NOT EXISTS habit_milestone_done (
+          account_id INTEGER NOT NULL,
+          milestone_id TEXT NOT NULL,
+          period_key TEXT NOT NULL DEFAULT '',
+          level INTEGER NOT NULL DEFAULT 0,
+          day_key TEXT NOT NULL,
+          achieved_at TEXT NOT NULL,
+          PRIMARY KEY (account_id, milestone_id, period_key),
+          FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE
+        )`,
+      ],
+    },
   ];
 
   let lastSyncMeta = {

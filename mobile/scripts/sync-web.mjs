@@ -14,7 +14,7 @@ const www = path.join(root, "mobile/www");
 const localSrc = path.join(root, "mobile/www-src/local");
 const sqlJsDist = path.join(root, "mobile/node_modules/sql.js/dist");
 /** Bust WKWebView caches for injected local scripts + app.js (was stuck on p5h1 / local-p2). */
-const LOCAL_ASSET_V = "20261015e";
+const LOCAL_ASSET_V = "20261015f";
 const iosPublic = path.join(root, "mobile/ios/App/App/public");
 
 function rmrf(dir) {
@@ -246,12 +246,18 @@ function assertBuildTree(base, tag) {
   assertMarker(base, "local/habits.js", /HABIT_COLORS_FEATURED/, `${tag} HABIT_COLORS_FEATURED`);
   assertMarker(base, "app.js", /habit-swipe-actions/, `${tag} habit-swipe-actions`);
   assertMarker(base, "app.js", /改奖励/, `${tag} 改奖励`);
+  assertMarker(base, "app.js", /HABIT_IMAGE_ALIASES/, `${tag} HABIT_IMAGE_ALIASES`);
+  assertMarker(base, "app.js", /renderHabitMilestones/, `${tag} renderHabitMilestones`);
   assertMarker(base, "app.js", /habit-settings-swatch/, `${tag} habit-settings-swatch`);
   assertMarker(base, "app.js", /habit-heatmap-weekdays/, `${tag} habit-heatmap-weekdays`);
   assertMarker(base, "styles.css", /\.habit-swipe-actions/, `${tag} CSS .habit-swipe-actions`);
+  assertMarker(base, "styles.css", /\.habit-milestones-grid/, `${tag} CSS milestones`);
   assertMarker(base, "styles.css", /\.habit-heatmap-date/, `${tag} CSS .habit-heatmap-date`);
   assertMarker(base, "index.html", /最近好习惯记录/, `${tag} 最近好习惯记录`);
+  assertMarker(base, "index.html", /habit-milestones/, `${tag} habit-milestones`);
   assertMarker(base, "index.html", /改奖励/, `${tag} lede 改奖励`);
+  assertMarker(base, "local/habits.js", /evaluateBoardMilestone/, `${tag} evaluateBoardMilestone`);
+  assertMarker(base, "local/habit-seed.js", /board_milestones/, `${tag} board_milestones seed`);
   assertMarker(base, "index.html", new RegExp(`habits\\.js\\?v=${esc}`), `${tag} habits.js?v=${LOCAL_ASSET_V}`);
   assertMarker(
     base,

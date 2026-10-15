@@ -6,7 +6,8 @@
   "description": "MyTimeTree iOS Capacitor shell (offline local-first)",
   "scripts": {
     "build:habit-content": "node scripts/build-habit-content.mjs",
-    "sync-web": "npm run build:habit-content && node scripts/sync-web.mjs",
+    "sync-habit-media": "node scripts/sync-habit-media.mjs",
+    "sync-web": "npm run build:habit-content && npm run sync-habit-media && node scripts/sync-web.mjs",
     "add:ios": "node scripts/add-ios-spm.mjs",
     "cap:sync": "npm run sync-web && npx cap sync ios",
     "open:ios": "open -a Xcode ios/App/App.xcodeproj",

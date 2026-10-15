@@ -49,7 +49,9 @@
         templates: [],
         scripts: [],
         hints: [],
+        celebration_actions: [],
         celebration_copy: [],
+        board_milestones: [],
         emotions: [],
         micro_steps: [],
         board_copy: [],
@@ -92,7 +94,9 @@
         (s.templates || []).length,
         (s.scripts || []).length,
         (s.hints || []).length,
+        (s.celebration_actions || []).length,
         (s.celebration_copy || []).length,
+        (s.board_milestones || []).length,
         (s.micro_steps || []).length,
         (s.board_copy || []).length,
       ].join(":");
@@ -152,13 +156,15 @@
         }
         for (const h of s.hints || []) {
           db().exec(
-            `INSERT INTO offline_celebration_hints (id, title, body, image_key, categories_json, active)
-             VALUES (?, ?, ?, ?, ?, ?)
+            `INSERT INTO offline_celebration_hints (
+               id, title, body, image_key, categories_json, env_tags_json, active
+             ) VALUES (?, ?, ?, ?, ?, ?, ?)
              ON CONFLICT(id) DO UPDATE SET
                title=excluded.title,
                body=excluded.body,
                image_key=excluded.image_key,
                categories_json=excluded.categories_json,
+               env_tags_json=excluded.env_tags_json,
                active=excluded.active`,
             [
               h.id,
@@ -166,6 +172,7 @@
               h.body,
               h.image_key || "",
               JSON.stringify(h.categories || []),
+              JSON.stringify(h.env_tags || []),
               h.active ? 1 : 0,
             ]
           );
@@ -173,14 +180,17 @@
         for (const c of s.celebration_copy || []) {
           db().exec(
             `INSERT INTO celebration_copy (
-               id, habit_slug, category, incentive_text, small_celebration, offline_hint_id, active
-             ) VALUES (?, ?, ?, ?, ?, ?, ?)
+               id, habit_slug, category, incentive_text, small_celebration,
+               offline_hint_id, image_key, habit_env, active
+             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
              ON CONFLICT(id) DO UPDATE SET
                habit_slug=excluded.habit_slug,
                category=excluded.category,
                incentive_text=excluded.incentive_text,
                small_celebration=excluded.small_celebration,
                offline_hint_id=excluded.offline_hint_id,
+               image_key=excluded.image_key,
+               habit_env=excluded.habit_env,
                active=excluded.active`,
             [
               c.id,
@@ -189,7 +199,37 @@
               c.incentive_text || "",
               c.small_celebration || "",
               c.offline_hint_id || "",
+              c.image_key || "",
+              c.habit_env || "",
               c.active ? 1 : 0,
+            ]
+          );
+        }
+        for (const ms of s.board_milestones || []) {
+          db().exec(
+            `INSERT INTO habit_board_milestones (
+               id, level, title, body, trigger_rule, repeatable,
+               offline_action_id, image_key, active
+             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+             ON CONFLICT(id) DO UPDATE SET
+               level=excluded.level,
+               title=excluded.title,
+               body=excluded.body,
+               trigger_rule=excluded.trigger_rule,
+               repeatable=excluded.repeatable,
+               offline_action_id=excluded.offline_action_id,
+               image_key=excluded.image_key,
+               active=excluded.active`,
+            [
+              ms.id,
+              Number(ms.level) || 0,
+              ms.title,
+              ms.body,
+              ms.trigger_rule || "",
+              ms.repeatable ? 1 : 0,
+              ms.offline_action_id || "",
+              ms.image_key || "",
+              ms.active ? 1 : 0,
             ]
           );
         }
@@ -508,13 +548,197 @@
           incentive_text: "被看见真好",
           small_celebration: "做到了，一起高兴",
           offline_hint_id: "",
+          image_key: "",
+          habit_env: "",
         };
       }
       return {
         incentive_text: String(row.incentive_text || "被看见真好"),
         small_celebration: String(row.small_celebration || "做到了！"),
         offline_hint_id: String(row.offline_hint_id || ""),
+        image_key: String(row.image_key || ""),
+        habit_env: String(row.habit_env || ""),
       };
+    }
+
+    function parseTriggerRule(rule) {
+      const m = String(rule || "")
+        .trim()
+        .match(
+          /^(lifetime_logs|week_logs|month_logs|streak_days|week_categories)\s*>=\s*(\d+)$/
+        );
+      if (!m) return null;
+      return { kind: m[1], n: Number(m[2]) };
+    }
+
+    function monthKeyBounds(day) {
+      const [y, m] = String(day).split("-").map(Number);
+      const last = new Date(y, m, 0).getDate();
+      const ym = `${String(y).padStart(4, "0")}-${String(m).padStart(2, "0")}`;
+      return {
+        from: `${ym}-01`,
+        to: `${ym}-${String(last).padStart(2, "0")}`,
+        key: ym,
+      };
+    }
+
+    function streakDaysEnding(accountId, day) {
+      const days = db()
+        .query(
+          `SELECT DISTINCT day_key FROM habit_logs
+           WHERE account_id = ? AND day_key <= ?
+           ORDER BY day_key DESC`,
+          [accountId, day]
+        )
+        .map((r) => String(r.day_key));
+      if (!days.length || days[0] !== day) return 0;
+      let streak = 1;
+      let prev = day;
+      for (let i = 1; i < days.length; i++) {
+        const [py, pm, pd] = prev.split("-").map(Number);
+        const pdate = new Date(py, pm - 1, pd);
+        pdate.setDate(pdate.getDate() - 1);
+        const expectLocal = `${pdate.getFullYear()}-${String(
+          pdate.getMonth() + 1
+        ).padStart(2, "0")}-${String(pdate.getDate()).padStart(2, "0")}`;
+        if (days[i] !== expectLocal) break;
+        streak += 1;
+        prev = days[i];
+      }
+      return streak;
+    }
+
+    function triggerMet(accountId, day, trigger) {
+      if (!trigger) return false;
+      if (trigger.kind === "lifetime_logs") {
+        const c = Number(
+          db().queryOne(
+            "SELECT COUNT(*) AS c FROM habit_logs WHERE account_id = ?",
+            [accountId]
+          ).c
+        );
+        return c >= trigger.n;
+      }
+      if (trigger.kind === "week_logs") {
+        const { from, to } = weekKeyBounds();
+        const c = Number(
+          db().queryOne(
+            `SELECT COUNT(*) AS c FROM habit_logs
+             WHERE account_id = ? AND day_key >= ? AND day_key <= ?`,
+            [accountId, from, to]
+          ).c
+        );
+        return c >= trigger.n;
+      }
+      if (trigger.kind === "month_logs") {
+        const { from, to } = monthKeyBounds(day);
+        const c = Number(
+          db().queryOne(
+            `SELECT COUNT(*) AS c FROM habit_logs
+             WHERE account_id = ? AND day_key >= ? AND day_key <= ?`,
+            [accountId, from, to]
+          ).c
+        );
+        return c >= trigger.n;
+      }
+      if (trigger.kind === "streak_days") {
+        return streakDaysEnding(accountId, day) >= trigger.n;
+      }
+      if (trigger.kind === "week_categories") {
+        const { from, to } = weekKeyBounds();
+        const c = Number(
+          db().queryOne(
+            `SELECT COUNT(DISTINCT h.category) AS c
+             FROM habit_logs l
+             JOIN habits h ON h.id = l.habit_id
+             WHERE l.account_id = ? AND l.day_key >= ? AND l.day_key <= ?
+               AND h.category != ''`,
+            [accountId, from, to]
+          ).c
+        );
+        return c >= trigger.n;
+      }
+      return false;
+    }
+
+    function periodKeyFor(trigger, day, repeatable) {
+      if (!repeatable || !trigger) return "";
+      if (trigger.kind === "week_logs" || trigger.kind === "week_categories") {
+        const { from } = weekKeyBounds();
+        return `w:${from}`;
+      }
+      if (trigger.kind === "month_logs") {
+        return `m:${monthKeyBounds(day).key}`;
+      }
+      return "";
+    }
+
+    /** First unmet milestone that now qualifies (max one board celeb per complete). */
+    function evaluateBoardMilestone(accountId, day) {
+      const rows = db().query(
+        `SELECT * FROM habit_board_milestones
+         WHERE active = 1 ORDER BY level ASC, id ASC`
+      );
+      for (const ms of rows) {
+        const trigger = parseTriggerRule(ms.trigger_rule);
+        if (!trigger) continue;
+        const periodKey = periodKeyFor(trigger, day, Number(ms.repeatable) === 1);
+        const already = db().queryOne(
+          `SELECT 1 AS ok FROM habit_milestone_done
+           WHERE account_id = ? AND milestone_id = ? AND period_key = ?`,
+          [accountId, ms.id, periodKey]
+        );
+        if (already) continue;
+        if (!triggerMet(accountId, day, trigger)) continue;
+        const achievedAt = nowIso();
+        db().exec(
+          `INSERT INTO habit_milestone_done
+             (account_id, milestone_id, period_key, level, day_key, achieved_at)
+           VALUES (?, ?, ?, ?, ?, ?)`,
+          [
+            accountId,
+            ms.id,
+            periodKey,
+            Number(ms.level) || 0,
+            day,
+            achievedAt,
+          ]
+        );
+        return {
+          kind: "board",
+          milestone_id: String(ms.id),
+          level: Number(ms.level) || 0,
+          title: String(ms.title || "大庆祝"),
+          body: String(ms.body || ""),
+          image_key: String(ms.image_key || ""),
+          offline_action_id: String(ms.offline_action_id || ""),
+          trigger_rule: String(ms.trigger_rule || ""),
+        };
+      }
+      return null;
+    }
+
+    function listMilestonesProgress(accountId) {
+      const rows = db().query(
+        `SELECT * FROM habit_board_milestones
+         WHERE active = 1 ORDER BY level ASC, id ASC`
+      );
+      const done = new Set(
+        db()
+          .query(
+            `SELECT milestone_id FROM habit_milestone_done WHERE account_id = ?`,
+            [accountId]
+          )
+          .map((r) => String(r.milestone_id))
+      );
+      return rows.map((ms) => ({
+        id: String(ms.id),
+        level: Number(ms.level) || 0,
+        title: String(ms.title),
+        body: String(ms.body),
+        image_key: String(ms.image_key || ""),
+        achieved: done.has(String(ms.id)),
+      }));
     }
 
     function templateSlugForHabit(habitId) {
@@ -627,7 +851,18 @@
       habit.template_slug = templateSlugForHabit(habitId);
       const celeb = pickCelebration(habit);
       const scriptText = pickScript(habit);
-      const hint = pickHint(habit, celeb.offline_hint_id);
+      let hint = pickHint(habit, celeb.offline_hint_id);
+      // Prefer celebration_copy.image_key when hint lacks art (ca_* / KEYS alias ready)
+      if (hint && celeb.image_key && !hint.image_key) {
+        hint = { ...hint, image_key: celeb.image_key };
+      } else if (!hint && celeb.image_key) {
+        hint = {
+          id: "",
+          title: "线下小庆祝",
+          body: "",
+          image_key: celeb.image_key,
+        };
+      }
       const celebration = { kind: "small", habit_id: habitId, log_id: logId };
       db().exec(
         `INSERT INTO celebration_events (account_id, kind, day_key, habit_log_id, payload_json, created_at)
@@ -639,6 +874,7 @@
           JSON.stringify({
             incentive_text: celeb.incentive_text,
             small_celebration: celeb.small_celebration,
+            image_key: celeb.image_key || (hint && hint.image_key) || "",
             scriptText,
             hint,
           }),
@@ -646,36 +882,20 @@
         ]
       );
 
-      // Board celebration: week full 5 logs once
-      const { from, to } = weekKeyBounds();
-      const weekCount = Number(
-        db().queryOne(
-          `SELECT COUNT(*) AS c FROM habit_logs
-           WHERE account_id = ? AND day_key >= ? AND day_key <= ?`,
-          [accountId, from, to]
-        ).c
-      );
-      let boardCelebration = null;
-      if (weekCount >= 5) {
-        const already = db().queryOne(
-          `SELECT id FROM celebration_events
-           WHERE account_id = ? AND kind = 'board' AND day_key >= ? AND day_key <= ?`,
-          [accountId, from, to]
+      // Board: evaluate 12 milestones (at most one overlay per complete)
+      const boardCelebration = evaluateBoardMilestone(accountId, day);
+      if (boardCelebration) {
+        db().exec(
+          `INSERT INTO celebration_events (account_id, kind, day_key, habit_log_id, payload_json, created_at)
+           VALUES (?, 'board', ?, ?, ?, ?)`,
+          [
+            accountId,
+            day,
+            logId,
+            JSON.stringify(boardCelebration),
+            created,
+          ]
         );
-        if (!already) {
-          boardCelebration = { kind: "board", week_logs: weekCount };
-          db().exec(
-            `INSERT INTO celebration_events (account_id, kind, day_key, habit_log_id, payload_json, created_at)
-             VALUES (?, 'board', ?, ?, ?, ?)`,
-            [
-              accountId,
-              day,
-              logId,
-              JSON.stringify(boardCelebration),
-              created,
-            ]
-          );
-        }
       }
 
       persist();
@@ -695,6 +915,7 @@
         minutes_credited: minutes,
         incentive_text: celeb.incentive_text,
         small_celebration: celeb.small_celebration,
+        image_key: celeb.image_key || (hint && hint.image_key) || "",
         celebration: boardCelebration || celebration,
         parent_script: { script_text: scriptText },
         offline_hint: hint,
@@ -784,6 +1005,7 @@
         },
         month_heatmap: monthHeat,
         board_copy: boardCopyRows,
+        milestones: listMilestonesProgress(accountId),
         legend: monthHeat.legend,
         timeline_limit: TIMELINE_LIMIT,
       };
