@@ -53,49 +53,40 @@
     bird: `/static/portal/ornaments/bird.png?v=${ASSET_V}`,
   };
 
-  const HABIT_MEDIA_V = "20261015f";
+  const HABIT_MEDIA_V = "20261015g";
   const HABIT_TIP_ICON = `/static/portal/habit/icon-tip-seed.png?v=${HABIT_MEDIA_V}`;
   const HABIT_TIP_ICON_2X = `/static/portal/habit/icon-tip-seed@2x.png?v=${HABIT_MEDIA_V}`;
   const HABIT_CELEB_MARK = `/static/portal/habit/mark-celeb-small.png?v=${HABIT_MEDIA_V}`;
   const HABIT_CELEB_MARK_2X = `/static/portal/habit/mark-celeb-small@2x.png?v=${HABIT_MEDIA_V}`;
 
   /**
-   * Content table keys (img-ca-*, img-bm-*) → multimedia KEYS.md file stems.
-   * Missing PNGs hide via onerror until store delivers full batch.
+   * Canonical file stems = content image_key (img-ca-*, img-bm-*).
+   * Only map deprecated KEYS names → new stems for leftover och_* rows.
    */
   const HABIT_IMAGE_ALIASES = {
-    "img-ca-high-five": "img-high-five",
-    "img-ca-pillow-bump": "img-pillow-bump",
-    "img-ca-shoulder-bump": "img-shoulder-bump",
-    "img-ca-spin-clap": "img-spin-clap",
-    "img-ca-fridge-star": "img-fridge-sticker",
-    "img-ca-hug-3s": "img-hug",
-    "img-ca-victory-dance": "img-dance",
-    "img-ca-nod-smile": "img-nod-smile",
-    "img-ca-thumbs-up": "img-thumbs-up",
-    "img-ca-fist-bump": "img-fist-bump",
-    "img-ca-silent-clap": "img-soft-clap",
-    "img-ca-whisper-ok": "img-ear-whisper",
-    "img-ca-quiet-heart": "img-heart-hands",
-    "img-ca-blanket-squeeze": "img-blanket-tuck",
-    "img-ca-cheek-soft": "img-cheek-pat",
-    "img-ca-seated-stretch": "img-stretch-smile",
-    "img-ca-double-high-five": "img-high-five",
-    "img-ca-air-high-five": "img-high-five",
-    "img-ca-elbow-bump": "img-shoulder-bump",
-    "img-ca-desk-tap": "img-book-bookmark",
-    "img-ca-chair-shimmy": "img-soft-clap",
-    "img-ca-pencil-twirl": "img-drawing-show",
-    "img-ca-toe-wiggle": "img-pillow-bump",
-    "img-ca-bed-shoulder": "img-shoulder-bump",
-    "img-ca-outdoor-spin": "img-spin-clap",
-    "img-ca-nature-point": "img-seed-sprout",
-    "img-ca-jump-once": "img-dance",
-    "img-ca-mirror-wink": "img-nod-smile",
+    "img-high-five": "img-ca-high-five",
+    "img-pillow-bump": "img-ca-pillow-bump",
+    "img-shoulder-bump": "img-ca-shoulder-bump",
+    "img-spin-clap": "img-ca-spin-clap",
+    "img-fridge-sticker": "img-ca-fridge-star",
+    "img-hug": "img-ca-hug-3s",
+    "img-dance": "img-ca-victory-dance",
+    "img-nod-smile": "img-ca-nod-smile",
+    "img-thumbs-up": "img-ca-thumbs-up",
+    "img-fist-bump": "img-ca-fist-bump",
+    "img-soft-clap": "img-ca-silent-clap",
+    "img-ear-whisper": "img-ca-whisper-ok",
+    "img-heart-hands": "img-ca-quiet-heart",
+    "img-blanket-tuck": "img-ca-blanket-squeeze",
+    "img-cheek-pat": "img-ca-cheek-soft",
+    "img-stretch-smile": "img-ca-seated-stretch",
+    "img-book-bookmark": "img-ca-desk-tap",
+    "img-drawing-show": "img-ca-pencil-twirl",
+    "img-seed-sprout": "img-ca-nature-point",
     ...Object.fromEntries(
       Array.from({ length: 12 }, (_, i) => {
         const n = String(i + 1).padStart(2, "0");
-        return [`img-bm-${n}`, `mark-celeb-board-${n}`];
+        return [`mark-celeb-board-${n}`, `img-bm-${n}`];
       })
     ),
   };

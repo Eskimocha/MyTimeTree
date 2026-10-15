@@ -7,7 +7,8 @@
  *   2) /cursor/stores/self/media/habit
  *   3) /cursor/stores/<sibling>/media/habit (optional)
  *
- * Copies *.png only (skips _style-refs). Safe to run when media incomplete.
+ * Canonical keys (KEYS.md 2026-10-15): tip + 28×img-ca-* + 12×img-bm-*
+ * Copies *.png only (skips _style-refs).
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -49,47 +50,58 @@ for (const f of files) {
 const keys = new Set(
   files.map((f) => f.replace(/@2x\.png$/i, ".png").replace(/\.png$/i, ""))
 );
+
 const expectedSmall = [
-  "img-high-five",
-  "img-pillow-bump",
-  "img-shoulder-bump",
-  "img-spin-clap",
-  "img-fridge-sticker",
-  "img-hug",
-  "img-dance",
-  "img-nod-smile",
-  "img-thumbs-up",
-  "img-fist-bump",
-  "img-soft-clap",
-  "img-star-sticker",
-  "img-cheek-pat",
-  "img-ear-whisper",
-  "img-blanket-tuck",
-  "img-forehead-touch",
-  "img-moon-goodnight",
-  "img-water-cheers",
-  "img-book-bookmark",
-  "img-drawing-show",
-  "img-stretch-smile",
-  "img-deep-breath",
-  "img-seed-sprout",
-  "img-heart-hands",
+  "img-ca-high-five",
+  "img-ca-fist-bump",
+  "img-ca-elbow-bump",
+  "img-ca-shoulder-bump",
+  "img-ca-hug-3s",
+  "img-ca-thumbs-up",
+  "img-ca-air-high-five",
+  "img-ca-nod-smile",
+  "img-ca-mirror-wink",
+  "img-ca-fridge-star",
+  "img-ca-spin-clap",
+  "img-ca-victory-dance",
+  "img-ca-jump-once",
+  "img-ca-desk-tap",
+  "img-ca-chair-shimmy",
+  "img-ca-pencil-twirl",
+  "img-ca-silent-clap",
+  "img-ca-whisper-ok",
+  "img-ca-quiet-heart",
+  "img-ca-pillow-bump",
+  "img-ca-blanket-squeeze",
+  "img-ca-toe-wiggle",
+  "img-ca-bed-shoulder",
+  "img-ca-outdoor-spin",
+  "img-ca-nature-point",
+  "img-ca-double-high-five",
+  "img-ca-cheek-soft",
+  "img-ca-seated-stretch",
 ];
 const expectedBoard = Array.from({ length: 12 }, (_, i) =>
-  `mark-celeb-board-${String(i + 1).padStart(2, "0")}`
+  `img-bm-${String(i + 1).padStart(2, "0")}`
 );
 const tipOk = keys.has("icon-tip-seed");
 const smallHave = expectedSmall.filter((k) => keys.has(k)).length;
 const boardHave = expectedBoard.filter((k) => keys.has(k)).length;
+const smallMissing = expectedSmall.filter((k) => !keys.has(k));
+const boardMissing = expectedBoard.filter((k) => !keys.has(k));
 
 console.log(
   `[sync-habit-media] ${copied} png → ${path.relative(root, dest)} (from ${src})`
 );
 console.log(
-  `[sync-habit-media] tip=${tipOk ? "ok" : "missing"} small=${smallHave}/24 board=${boardHave}/12 keys=${keys.size}`
+  `[sync-habit-media] tip=${tipOk ? "ok" : "missing"} small=${smallHave}/28 board=${boardHave}/12 keys=${keys.size}`
 );
-if (smallHave < 24 || boardHave < 12) {
+if (!tipOk || smallHave < 28 || boardHave < 12) {
   console.warn(
-    "[sync-habit-media] media incomplete — schema/UI hooks ready; re-run when store delivers PNGs"
+    "[sync-habit-media] media incomplete",
+    { smallMissing, boardMissing }
   );
+  process.exitCode = 1;
+} else {
+  console.log("[sync-habit-media] complete tip+28+12");
 }
