@@ -1304,8 +1304,33 @@ html.share-capture body {
   display: grid;
   gap: 0.45rem;
 }
-.habit-settings-list li,
-.habit-settings-item {
+.habit-settings-row {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #e57373;
+  list-style: none;
+}
+.habit-swipe-delete {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 76px;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  background: #e57373;
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.92rem;
+  cursor: pointer;
+  z-index: 0;
+}
+.habit-settings-front {
+  position: relative;
+  z-index: 1;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -1315,9 +1340,17 @@ html.share-capture body {
   border-radius: 12px;
   font-size: 0.9rem;
   cursor: grab;
+  transition: transform 0.18s ease;
+  touch-action: pan-y;
 }
-.habit-settings-item.dragging {
+.habit-settings-row.open .habit-settings-front {
+  border-radius: 12px 0 0 12px;
+}
+.habit-settings-row.dragging .habit-settings-front,
+.habit-settings-row.dragging {
   opacity: 0.65;
+}
+.habit-settings-row.dragging .habit-settings-front {
   background: #e8f5e9;
 }
 .habit-drag-handle {
@@ -1332,7 +1365,7 @@ html.share-capture body {
   cursor: grab;
   flex: 0 0 auto;
 }
-.habit-settings-item.touch-dragging {
+.habit-settings-row.touch-dragging .habit-settings-front {
   opacity: 0.7;
   box-shadow: 0 6px 18px #1a3d3220;
   background: #e8f5e9;

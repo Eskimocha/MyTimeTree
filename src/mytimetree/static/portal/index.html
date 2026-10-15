@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/static/portal/styles.css?v=20261014p" />
+  <link rel="stylesheet" href="/static/portal/styles.css?v=20261015a" />
 </head>
 <body>
   <div id="portal" class="portal">
@@ -137,7 +137,7 @@
 
         <section id="habit-settings" class="habit-settings" aria-label="好习惯清单">
           <h2 class="rules-title">好习惯清单</h2>
-          <p class="muted habit-settings-lede">拖 ⋮⋮ 排序；点「微步骤」可增删改建议步骤。清单会反映到主屏「今日好习惯」。</p>
+          <p class="muted habit-settings-lede">拖 ⋮⋮ 排序；左滑露出红色「移除」。主屏最多显示排序后的前 9 条。「微步骤」可增删改建议步骤。</p>
           <ul id="habit-settings-list" class="habit-settings-list"></ul>
           <div class="habit-settings-add stack">
             <label>从种子启用
@@ -204,6 +204,7 @@
           <div id="habit-month-heatmap" class="habit-heatmap" aria-label="本月好习惯点阵"></div>
           <ul id="habit-heatmap-legend" class="habit-heatmap-legend"></ul>
           <p id="habit-board-stats" class="muted"></p>
+          <h3 class="habit-review-sub">最近好习惯记录</h3>
           <ul id="habit-timeline-list" class="habit-review-list"></ul>
           <h3 class="habit-review-sub">分类</h3>
           <ul id="habit-category-list" class="habit-review-list"></ul>
@@ -322,6 +323,6 @@
     </div>
   </div>
 
-  <script src="/static/portal/app.js?v=20261014p"></script>
+  <script src="/static/portal/app.js?v=20261015a"></script>
 </body>
 </html>

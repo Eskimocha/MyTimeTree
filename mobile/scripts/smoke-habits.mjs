@@ -90,12 +90,17 @@ console.log("[smoke-habits] account", acc.id);
 
 const today = await api("/api/portal/habits/today");
 console.log(
-  `[smoke-habits] today items=${today.items.length} badge=${today.badge_count}`
+  `[smoke-habits] today items=${today.items.length} badge=${today.badge_count} limit=${today.strip_limit}`
 );
 if (!today.items.length) throw new Error("starter habits missing");
+if (today.items.length > 9) throw new Error("home strip must be ≤9");
+if (today.strip_limit !== 9) throw new Error("strip_limit should be 9");
 if (today.badge_count !== today.items.length) {
   throw new Error("badge should equal pending count at start");
 }
+const colorSet = new Set(today.items.map((i) => i.color).filter(Boolean));
+if (!colorSet.size) throw new Error("habit colors missing on today items");
+console.log(`[smoke-habits] colors sample=${[...colorSet].slice(0, 4).join(",")}`);
 
 const first = today.items[0];
 const beforeHome = await api("/api/portal/home");
@@ -168,12 +173,59 @@ if (swapped.length >= 2) {
 
 const overview = await api("/api/portal/habits/overview");
 if (!overview.timeline?.length) throw new Error("overview timeline empty");
+if (overview.timeline.length > 30) {
+  throw new Error(`timeline must be ≤30, got ${overview.timeline.length}`);
+}
+if (overview.timeline_limit !== 30) {
+  throw new Error("timeline_limit should be 30");
+}
 if (!overview.month_heatmap?.weeks?.length) {
   throw new Error("month_heatmap missing");
 }
+const heatLegend = overview.month_heatmap.legend || [];
+if (heatLegend.length && !heatLegend[0].color) {
+  throw new Error("heatmap legend missing colors");
+}
 console.log(
-  `[smoke-habits] overview week=${overview.board?.stats?.week_logs} cats=${overview.categories?.length} heatWeeks=${overview.month_heatmap.weeks.length}`
+  `[smoke-habits] overview week=${overview.board?.stats?.week_logs} cats=${overview.categories?.length} heatWeeks=${overview.month_heatmap.weeks.length} timeline=${overview.timeline.length}`
 );
+
+// Grow enabled list past 9 → strip still caps at 9 and keeps settings order head
+const listBeforeCap = await api("/api/portal/habits/list");
+const unused = (listBeforeCap.templates || []).filter(
+  (t) =>
+    !(listBeforeCap.habits || []).some(
+      (h) => !h.archived && h.template_id === t.id
+    )
+);
+for (const t of unused.slice(0, 4)) {
+  await api("/api/portal/habits/enable", {
+    method: "POST",
+    body: JSON.stringify({ template_id: t.id }),
+  });
+}
+const listCap = await api("/api/portal/habits/list");
+const enabledIds = (listCap.habits || []).filter((h) => !h.archived).map((h) => h.id);
+if (enabledIds.length <= 9) {
+  console.log(
+    `[smoke-habits] strip-cap skip (enabled=${enabledIds.length}, need >9)`
+  );
+} else {
+  const todayCap = await api("/api/portal/habits/today");
+  if (todayCap.items.length !== 9) {
+    throw new Error(
+      `strip cap: want 9 got ${todayCap.items.length} (enabled=${enabledIds.length})`
+    );
+  }
+  const head = enabledIds.slice(0, 9);
+  const got = todayCap.items.map((i) => i.habit_id);
+  if (got.join(",") !== head.join(",")) {
+    throw new Error(
+      `strip order not settings head: want ${head.join(",")} got ${got.join(",")}`
+    );
+  }
+  console.log(`[smoke-habits] strip-cap OK enabled=${enabledIds.length} shown=9`);
+}
 
 const todayFull = await api("/api/portal/habits/today");
 const tipItem = todayFull.items?.[0];

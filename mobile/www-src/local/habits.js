@@ -5,20 +5,23 @@
 (function (global) {
   "use strict";
 
+  /** Soft 12-slot palette: distinguishable within a group, not neon/harsh. */
   const HABIT_COLORS = [
-    "#2f9e6b",
-    "#e67e22",
-    "#5c6bc0",
-    "#c0392b",
-    "#16a085",
-    "#8e44ad",
-    "#d35400",
-    "#2980b9",
-    "#27ae60",
-    "#f39c12",
-    "#7f8c8d",
-    "#e91e63",
+    "#4a9b7a", // sage green
+    "#5b8fbf", // soft blue
+    "#c4894a", // warm amber
+    "#7a8f5a", // olive
+    "#8b6b9e", // muted violet
+    "#c27a6a", // dusty terracotta
+    "#4f9a9a", // teal
+    "#b08968", // tan
+    "#6b8e9b", // slate blue
+    "#9a7b5c", // mocha
+    "#73996b", // soft leaf
+    "#a67c8a", // dusty rose
   ];
+  const HOME_STRIP_LIMIT = 9;
+  const TIMELINE_LIMIT = 30;
 
   function seed() {
     return (
@@ -35,6 +38,7 @@
   }
 
   function habitColor(habitId) {
+    // Stable by id; slots cycle every 12 (group), same for strip / heatmap / legend
     const n = Math.abs(Number(habitId) || 0);
     return HABIT_COLORS[n % HABIT_COLORS.length];
   }
@@ -390,7 +394,7 @@
     function badgeCount(accountId) {
       ensureStarterHabits(accountId);
       const day = todayStr();
-      const habits = listHabits(accountId);
+      const habits = listHabits(accountId).slice(0, HOME_STRIP_LIMIT);
       if (!habits.length) return 0;
       const logged = new Set(
         db()
@@ -495,7 +499,8 @@
     function todayItems(accountId) {
       ensureStarterHabits(accountId);
       const day = todayStr();
-      const habits = listHabits(accountId);
+      // Settings sort order → first 9 only on home strip
+      const habits = listHabits(accountId).slice(0, HOME_STRIP_LIMIT);
       const logs = db().query(
         "SELECT * FROM habit_logs WHERE account_id = ? AND day_key = ?",
         [accountId, day]
@@ -525,6 +530,7 @@
       return {
         day_key: day,
         badge_count: items.filter((i) => !i.done).length,
+        strip_limit: HOME_STRIP_LIMIT,
         items,
       };
     }
@@ -674,7 +680,7 @@
          LEFT JOIN earned_credits c ON c.habit_log_id = l.id
          WHERE l.account_id = ?
          ORDER BY l.created_at DESC
-         LIMIT 40`,
+         LIMIT ${TIMELINE_LIMIT}`,
         [accountId]
       );
       const timeline = logs.map((l) => ({
@@ -743,11 +749,12 @@
             week_logs: weekLogs,
             minutes_redeemed: timeline.reduce((s, t) => s + t.minutes, 0),
           },
-          entries: timeline.slice(0, 20),
+          entries: timeline.slice(0, TIMELINE_LIMIT),
         },
         month_heatmap: monthHeat,
         board_copy: boardCopyRows,
         legend: monthHeat.legend,
+        timeline_limit: TIMELINE_LIMIT,
       };
     }
 

@@ -539,14 +539,14 @@
     try {
       const data = await api("/api/portal/habits/today");
       setHomeHabitBadge(data.badge_count || 0);
-      const pending = (data.items || []).filter((i) => !i.done);
-      const done = (data.items || []).filter((i) => i.done);
+      // Keep settings sort order (API already returns first 9)
+      const show = data.items || [];
+      const pending = show.filter((i) => !i.done).length;
       strip.hidden = false;
-      $("#habit-strip-meta").textContent = pending.length
-        ? `还剩 ${pending.length}`
+      $("#habit-strip-meta").textContent = pending
+        ? `还剩 ${pending}`
         : "今日已记完";
       rail.innerHTML = "";
-      const show = [...pending, ...done];
       for (const it of show) {
         const row = document.createElement("div");
         row.className = "habit-row" + (it.done ? " done" : "");
@@ -687,10 +687,29 @@
       const habits = (data.habits || []).filter((h) => !h.archived);
       list.innerHTML = "";
       habits.forEach((h) => {
-        const li = document.createElement("li");
-        li.className = "habit-settings-item";
-        li.draggable = true;
-        li.dataset.habitId = String(h.id);
+        const row = document.createElement("li");
+        row.className = "habit-settings-row";
+        row.dataset.habitId = String(h.id);
+
+        const del = document.createElement("button");
+        del.type = "button";
+        del.className = "habit-swipe-delete";
+        del.textContent = "移除";
+        del.setAttribute("aria-label", `移除 ${h.title}`);
+        del.addEventListener("click", async (e) => {
+          e.stopPropagation();
+          await api("/api/portal/habits/archive", {
+            method: "POST",
+            body: JSON.stringify({ habit_id: h.id }),
+          });
+          await refreshHabitSettings();
+          await refreshHabitsStrip();
+        });
+
+        const front = document.createElement("div");
+        front.className = "habit-settings-front";
+        front.draggable = true;
+
         const handle = document.createElement("span");
         handle.className = "habit-drag-handle";
         handle.textContent = "⋮⋮";
@@ -707,18 +726,6 @@
         microBtn.addEventListener("click", async () => {
           await editMicroStepsForHabit(h);
         });
-        const arch = document.createElement("button");
-        arch.type = "button";
-        arch.className = "btn compact";
-        arch.textContent = "移除";
-        arch.addEventListener("click", async () => {
-          await api("/api/portal/habits/archive", {
-            method: "POST",
-            body: JSON.stringify({ habit_id: h.id }),
-          });
-          await refreshHabitSettings();
-          await refreshHabitsStrip();
-        });
         const editMin = document.createElement("button");
         editMin.type = "button";
         editMin.className = "btn compact";
@@ -734,11 +741,13 @@
           });
           await refreshHabitSettings();
         });
-        actions.append(microBtn, editMin, arch);
-        li.append(handle, label, actions);
-        list.appendChild(li);
+        actions.append(microBtn, editMin);
+        front.append(handle, label, actions);
+        row.append(del, front);
+        list.appendChild(row);
       });
       wireHabitDragReorder(list);
+      wireHabitSwipeDelete(list);
       if (sel) {
         const enabledSlugs = new Set(
           (data.habits || [])
@@ -759,6 +768,89 @@
     }
   }
 
+  function closeAllHabitSwipes(list, except) {
+    list.querySelectorAll(".habit-settings-row.open").forEach((row) => {
+      if (except && row === except) return;
+      row.classList.remove("open");
+      const front = row.querySelector(".habit-settings-front");
+      if (front) front.style.transform = "";
+    });
+  }
+
+  function wireHabitSwipeDelete(list) {
+    if (!list || list.dataset.swipeWired === "1") return;
+    list.dataset.swipeWired = "1";
+    const REVEAL = 76;
+    let swipe = null;
+
+    list.addEventListener(
+      "touchstart",
+      (e) => {
+        if (e.touches.length !== 1) return;
+        if (e.target.closest(".habit-drag-handle, .habit-swipe-delete, button")) {
+          return;
+        }
+        const row = e.target.closest(".habit-settings-row");
+        const front = row && row.querySelector(".habit-settings-front");
+        if (!row || !front) return;
+        swipe = {
+          row,
+          front,
+          x0: e.touches[0].clientX,
+          y0: e.touches[0].clientY,
+          opened: row.classList.contains("open"),
+          axis: null,
+        };
+      },
+      { passive: true }
+    );
+
+    list.addEventListener(
+      "touchmove",
+      (e) => {
+        if (!swipe || e.touches.length !== 1) return;
+        const dx = e.touches[0].clientX - swipe.x0;
+        const dy = e.touches[0].clientY - swipe.y0;
+        if (!swipe.axis) {
+          if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+          swipe.axis = Math.abs(dx) > Math.abs(dy) * 1.15 ? "x" : "y";
+          if (swipe.axis === "y") {
+            swipe = null;
+            return;
+          }
+          closeAllHabitSwipes(list, swipe.row);
+        }
+        if (swipe.axis !== "x") return;
+        e.preventDefault();
+        let x = swipe.opened ? -REVEAL + dx : dx;
+        if (x > 0) x = 0;
+        if (x < -REVEAL) x = -REVEAL;
+        swipe.front.style.transform = `translateX(${x}px)`;
+        swipe.front.style.transition = "none";
+      },
+      { passive: false }
+    );
+
+    function endSwipe() {
+      if (!swipe) return;
+      const { row, front } = swipe;
+      front.style.transition = "";
+      const m = /translateX\((-?\d+(?:\.\d+)?)px\)/.exec(front.style.transform || "");
+      const x = m ? Number(m[1]) : 0;
+      if (x <= -REVEAL * 0.45) {
+        row.classList.add("open");
+        front.style.transform = `translateX(${-REVEAL}px)`;
+      } else {
+        row.classList.remove("open");
+        front.style.transform = "";
+      }
+      swipe = null;
+    }
+
+    list.addEventListener("touchend", endSwipe, { passive: true });
+    list.addEventListener("touchcancel", endSwipe, { passive: true });
+  }
+
   function wireHabitDragReorder(list) {
     if (!list || list.dataset.dragWired === "1") return;
     list.dataset.dragWired = "1";
@@ -766,7 +858,7 @@
     let touchDrag = null;
 
     async function persistOrder() {
-      const ids = [...list.querySelectorAll("li.habit-settings-item")].map((li) =>
+      const ids = [...list.querySelectorAll("li.habit-settings-row")].map((li) =>
         Number(li.dataset.habitId)
       );
       try {
@@ -783,7 +875,7 @@
 
     function placeBefore(clientY) {
       if (!dragEl) return;
-      const items = [...list.querySelectorAll("li.habit-settings-item")].filter(
+      const items = [...list.querySelectorAll("li.habit-settings-row")].filter(
         (li) => li !== dragEl
       );
       let target = null;
@@ -803,16 +895,17 @@
     }
 
     list.addEventListener("dragstart", (e) => {
-      const li = e.target.closest("li.habit-settings-item");
-      if (!li || e.target.closest("button")) {
+      const row = e.target.closest("li.habit-settings-row");
+      if (!row || e.target.closest("button, .habit-swipe-delete")) {
         e.preventDefault();
         return;
       }
-      dragEl = li;
-      li.classList.add("dragging");
+      closeAllHabitSwipes(list);
+      dragEl = row;
+      row.classList.add("dragging");
       e.dataTransfer.effectAllowed = "move";
       try {
-        e.dataTransfer.setData("text/plain", li.dataset.habitId || "");
+        e.dataTransfer.setData("text/plain", row.dataset.habitId || "");
       } catch {
         /* ignore */
       }
@@ -833,11 +926,12 @@
       (e) => {
         const handle = e.target.closest(".habit-drag-handle");
         if (!handle || e.touches.length !== 1) return;
-        const li = handle.closest("li.habit-settings-item");
-        if (!li) return;
-        touchDrag = { li, startY: e.touches[0].clientY };
-        dragEl = li;
-        li.classList.add("touch-dragging");
+        const row = handle.closest("li.habit-settings-row");
+        if (!row) return;
+        closeAllHabitSwipes(list);
+        touchDrag = { li: row, startY: e.touches[0].clientY };
+        dragEl = row;
+        row.classList.add("touch-dragging");
       },
       { passive: true }
     );
@@ -1546,7 +1640,7 @@
       return Boolean(
         el &&
           el.closest(
-            "input, textarea, select, button, a, label, .question-picker, .keypad-modal, .account-modal, .sync-actions, .habit-drag-handle, .habit-settings-item, .habit-overlay, .habit-board-mask"
+            "input, textarea, select, button, a, label, .question-picker, .keypad-modal, .account-modal, .sync-actions, .habit-drag-handle, .habit-settings-row, .habit-settings-front, .habit-overlay, .habit-board-mask"
           )
       );
     }

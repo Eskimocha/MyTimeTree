@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
   <title>MyTimeTree</title>
-  <link rel="stylesheet" href="./styles.css?v=20261014p" />
+  <link rel="stylesheet" href="./styles.css?v=20261015a" />
   <script>document.documentElement.dataset.mode="local";</script>
   <link rel="stylesheet" href="./local/lock.css?v=p4r12" />
 </head>
@@ -137,7 +137,7 @@
 
         <section id="habit-settings" class="habit-settings" aria-label="好习惯清单">
           <h2 class="rules-title">好习惯清单</h2>
-          <p class="muted habit-settings-lede">拖 ⋮⋮ 排序；点「微步骤」可增删改建议步骤。清单会反映到主屏「今日好习惯」。</p>
+          <p class="muted habit-settings-lede">拖 ⋮⋮ 排序；左滑露出红色「移除」。主屏最多显示排序后的前 9 条。「微步骤」可增删改建议步骤。</p>
           <ul id="habit-settings-list" class="habit-settings-list"></ul>
           <div class="habit-settings-add stack">
             <label>从种子启用
@@ -204,6 +204,7 @@
           <div id="habit-month-heatmap" class="habit-heatmap" aria-label="本月好习惯点阵"></div>
           <ul id="habit-heatmap-legend" class="habit-heatmap-legend"></ul>
           <p id="habit-board-stats" class="muted"></p>
+          <h3 class="habit-review-sub">最近好习惯记录</h3>
           <ul id="habit-timeline-list" class="habit-review-list"></ul>
           <h3 class="habit-review-sub">分类</h3>
           <ul id="habit-category-list" class="habit-review-list"></ul>
