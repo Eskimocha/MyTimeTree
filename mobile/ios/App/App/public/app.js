@@ -542,10 +542,12 @@
       // Keep settings sort order (API already returns first 9)
       const show = data.items || [];
       const pending = show.filter((i) => !i.done).length;
+      const limit = Number(data.strip_limit) || 9;
       strip.hidden = false;
+      // Visible probe: count/limit so Kai can confirm polish strip without Inspector
       $("#habit-strip-meta").textContent = pending
-        ? `还剩 ${pending}`
-        : "今日已记完";
+        ? `还剩 ${pending} · ${show.length}/${limit}`
+        : `今日已记完 · ${show.length}/${limit}`;
       rail.innerHTML = "";
       for (const it of show) {
         const row = document.createElement("div");
@@ -1791,6 +1793,17 @@
 
   const homeVersion = $("#app-version");
   if (homeVersion) homeVersion.textContent = `v${APP_VERSION}`;
+
+  // Build probe (Safari Console): confirms Capacitor loaded post-sync bundle
+  try {
+    const buildMeta = document.querySelector('meta[name="mytimetree-web-build"]');
+    const webBuild = buildMeta?.getAttribute("content") || "(no meta)";
+    console.info(
+      `[MyTimeTree] web-build=${webBuild} habit-swipe=${typeof document.querySelector === "function"}`
+    );
+  } catch {
+    /* ignore */
+  }
 
   document.querySelectorAll("[data-habit-dismiss]").forEach((el) => {
     el.addEventListener("click", () => {

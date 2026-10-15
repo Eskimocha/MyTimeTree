@@ -14,7 +14,8 @@ const www = path.join(root, "mobile/www");
 const localSrc = path.join(root, "mobile/www-src/local");
 const sqlJsDist = path.join(root, "mobile/node_modules/sql.js/dist");
 /** Bust WKWebView caches for injected local scripts + app.js (was stuck on p5h1 / local-p2). */
-const LOCAL_ASSET_V = "20261015b";
+const LOCAL_ASSET_V = "20261015c";
+const iosPublic = path.join(root, "mobile/ios/App/App/public");
 
 function rmrf(dir) {
   fs.rmSync(dir, { recursive: true, force: true });
@@ -118,6 +119,20 @@ function rewritePortalHtml(html) {
       '<head>\n  <meta name="mytimetree-mode" content="local-capacitor" />'
     );
   }
+  // Visible build probe for Safari Inspector / "App opens but old UI"
+  const buildMeta = `<meta name="mytimetree-web-build" content="${LOCAL_ASSET_V}" />`;
+  out = out.replace(
+    /<meta name="mytimetree-web-build" content="[^"]*"\s*\/>\s*/g,
+    ""
+  );
+  if (out.includes('name="mytimetree-mode"')) {
+    out = out.replace(
+      /(<meta name="mytimetree-mode" content="[^"]*"\s*\/>)/,
+      `$1\n  ${buildMeta}`
+    );
+  } else {
+    out = out.replace("<head>", `<head>\n  ${buildMeta}`);
+  }
   return out;
 }
 
@@ -181,30 +196,71 @@ if (fs.existsSync(cssPath)) {
 
 rewriteStaticPortalPaths(www);
 
+fs.writeFileSync(
+  path.join(www, "WEB_BUILD.txt"),
+  `${LOCAL_ASSET_V}\n`,
+  "utf8"
+);
+
+/**
+ * Mirror www → ios/App/App/public so Xcode always sees the same bytes even if
+ * `npx cap sync` is skipped or only partially run. Preserve cordova stubs.
+ */
+function mirrorWwwToIosPublic() {
+  if (!fs.existsSync(path.dirname(iosPublic))) {
+    console.warn("[sync-web] ios App path missing — skip public mirror");
+    return false;
+  }
+  const keep = new Map();
+  for (const name of ["cordova.js", "cordova_plugins.js"]) {
+    const p = path.join(iosPublic, name);
+    if (fs.existsSync(p)) keep.set(name, fs.readFileSync(p));
+  }
+  rmrf(iosPublic);
+  copyDir(www, iosPublic);
+  for (const [name, buf] of keep) {
+    fs.writeFileSync(path.join(iosPublic, name), buf);
+  }
+  console.log("[sync-web] mirrored www → ios/App/App/public");
+  return true;
+}
+
 // Fingerprint markers Kai can grep after sync (strip-9 / swipe-delete / soft colors)
-function assertMarker(rel, re, label) {
-  const p = path.join(www, rel);
+function assertMarker(base, rel, re, label) {
+  const p = path.join(base, rel);
   if (!fs.existsSync(p)) {
-    console.error(`[sync-web] MISSING ${rel}`);
+    console.error(`[sync-web] MISSING ${path.relative(root, p)}`);
     process.exit(1);
   }
   const text = fs.readFileSync(p, "utf8");
   if (!re.test(text)) {
-    console.error(`[sync-web] ${label} not found in ${rel}`);
+    console.error(`[sync-web] ${label} not found in ${path.relative(root, p)}`);
     process.exit(1);
   }
-  console.log(`[sync-web] ok ${label} → ${rel}`);
+  console.log(`[sync-web] ok ${label} → ${path.relative(root, p)}`);
 }
-assertMarker("local/habits.js", /HOME_STRIP_LIMIT\s*=\s*9/, "HOME_STRIP_LIMIT=9");
-assertMarker("app.js", /habit-swipe-delete/, "habit-swipe-delete");
-assertMarker("styles.css", /\.habit-swipe-delete/, "CSS .habit-swipe-delete");
-assertMarker("index.html", /最近好习惯记录/, "最近好习惯记录");
-assertMarker(
-  "index.html",
-  new RegExp(`habits\\.js\\?v=${LOCAL_ASSET_V.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`),
-  `habits.js?v=${LOCAL_ASSET_V}`
-);
+
+function assertBuildTree(base, tag) {
+  const esc = LOCAL_ASSET_V.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  assertMarker(base, "local/habits.js", /HOME_STRIP_LIMIT\s*=\s*9/, `${tag} HOME_STRIP_LIMIT=9`);
+  assertMarker(base, "app.js", /habit-swipe-delete/, `${tag} habit-swipe-delete`);
+  assertMarker(base, "styles.css", /\.habit-swipe-delete/, `${tag} CSS .habit-swipe-delete`);
+  assertMarker(base, "index.html", /最近好习惯记录/, `${tag} 最近好习惯记录`);
+  assertMarker(base, "index.html", new RegExp(`habits\\.js\\?v=${esc}`), `${tag} habits.js?v=${LOCAL_ASSET_V}`);
+  assertMarker(
+    base,
+    "index.html",
+    new RegExp(`mytimetree-web-build" content="${esc}"`),
+    `${tag} meta web-build`
+  );
+}
+
+assertBuildTree(www, "www");
+const mirrored = mirrorWwwToIosPublic();
+if (mirrored) assertBuildTree(iosPublic, "ios-public");
 
 console.log("[sync-web] portal → mobile/www OK");
 console.log(`[sync-web] local asset cache-bust v=${LOCAL_ASSET_V}`);
-console.log("[sync-web] next: npx cap sync ios  (or npm run cap:sync) to copy www → ios/App/App/public");
+console.log(
+  "[sync-web] next: npx cap sync ios (or npm run cap:sync) — public already mirrored; cap sync refreshes native plugins"
+);

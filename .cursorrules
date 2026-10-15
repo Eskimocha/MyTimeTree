@@ -130,6 +130,10 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 
 # Scratchpad
 
+## Task: App能开仍旧UI（强制刷新 + sync mirror）
+- [X] sync-web mirror→ios public + meta web-build=20261015c + strip meta N/9
+- checklist §6
+
 ## Task: Kai pull 未生效排查（cache-bust）
 - [X] 根因：sync-web 写死 ?v=p5h1/local-p2 → 改为 LOCAL_ASSET_V=20261015b + sync 指纹校验
 - [X] 本机 checklist → Store internal/kai-local-sync-checklist.md
