@@ -134,7 +134,7 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 - [X] 正常态隐藏操作按钮；左滑三键
 - [X] 「改分钟」→「改奖励」
 - [X] LOCAL_ASSET_V=20261015e + sync + smoke
-- [ ] commit/push PR#3 + checklist 测点
+- [X] commit/push PR#3 (ad85d85) + checklist 测点
 
 ## Archived: 色阶/点阵 / strip9/swipe / Kai pull / IH0–IH9
 
