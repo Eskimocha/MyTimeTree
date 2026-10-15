@@ -13,6 +13,8 @@ const portalSrc = path.join(root, "src/mytimetree/static/portal");
 const www = path.join(root, "mobile/www");
 const localSrc = path.join(root, "mobile/www-src/local");
 const sqlJsDist = path.join(root, "mobile/node_modules/sql.js/dist");
+/** Bust WKWebView caches for injected local scripts + app.js (was stuck on p5h1 / local-p2). */
+const LOCAL_ASSET_V = "20261015b";
 
 function rmrf(dir) {
   fs.rmSync(dir, { recursive: true, force: true });
@@ -60,16 +62,17 @@ function rewritePortalHtml(html) {
   );
 
   // Order: sql.js → db → habit-seed → store → habits → bridge → lock → share → app
+  const v = LOCAL_ASSET_V;
   const injectScripts = [
     '  <script src="./local/sql-wasm.js"></script>',
-    '  <script src="./local/db.js?v=p5h1"></script>',
-    '  <script src="./local/habit-seed.js?v=p5h1"></script>',
-    '  <script src="./local/store.js?v=p5h1"></script>',
-    '  <script src="./local/habits.js?v=p5h1"></script>',
-    '  <script src="./local/bridge.js?v=p4r2"></script>',
-    '  <script src="./local/lock.js?v=p4r9"></script>',
+    `  <script src="./local/db.js?v=${v}"></script>`,
+    `  <script src="./local/habit-seed.js?v=${v}"></script>`,
+    `  <script src="./local/store.js?v=${v}"></script>`,
+    `  <script src="./local/habits.js?v=${v}"></script>`,
+    `  <script src="./local/bridge.js?v=${v}"></script>`,
+    `  <script src="./local/lock.js?v=${v}"></script>`,
     '  <script src="./local/html2canvas.min.js"></script>',
-    '  <script src="./local/share.js?v=p4s3"></script>',
+    `  <script src="./local/share.js?v=${v}"></script>`,
   ].join("\n");
 
   // Strip any prior local inject then re-add
@@ -98,12 +101,12 @@ function rewritePortalHtml(html) {
   if (out.includes('<script src="./app.js')) {
     out = out.replace(
       /<script src="\.\/app\.js[^"]*"><\/script>/,
-      `${injectScripts}\n  <script src="./app.js?v=local-p2"></script>`
+      `${injectScripts}\n  <script src="./app.js?v=${LOCAL_ASSET_V}"></script>`
     );
   } else if (out.includes("app.js")) {
     out = out.replace(
       /<script src="[^"]*app\.js[^"]*"><\/script>/,
-      `${injectScripts}\n  <script src="./app.js?v=local-p2"></script>`
+      `${injectScripts}\n  <script src="./app.js?v=${LOCAL_ASSET_V}"></script>`
     );
   } else {
     out = out.replace("</body>", `${injectScripts}\n</body>`);
@@ -178,5 +181,30 @@ if (fs.existsSync(cssPath)) {
 
 rewriteStaticPortalPaths(www);
 
+// Fingerprint markers Kai can grep after sync (strip-9 / swipe-delete / soft colors)
+function assertMarker(rel, re, label) {
+  const p = path.join(www, rel);
+  if (!fs.existsSync(p)) {
+    console.error(`[sync-web] MISSING ${rel}`);
+    process.exit(1);
+  }
+  const text = fs.readFileSync(p, "utf8");
+  if (!re.test(text)) {
+    console.error(`[sync-web] ${label} not found in ${rel}`);
+    process.exit(1);
+  }
+  console.log(`[sync-web] ok ${label} → ${rel}`);
+}
+assertMarker("local/habits.js", /HOME_STRIP_LIMIT\s*=\s*9/, "HOME_STRIP_LIMIT=9");
+assertMarker("app.js", /habit-swipe-delete/, "habit-swipe-delete");
+assertMarker("styles.css", /\.habit-swipe-delete/, "CSS .habit-swipe-delete");
+assertMarker("index.html", /最近好习惯记录/, "最近好习惯记录");
+assertMarker(
+  "index.html",
+  new RegExp(`habits\\.js\\?v=${LOCAL_ASSET_V.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`),
+  `habits.js?v=${LOCAL_ASSET_V}`
+);
+
 console.log("[sync-web] portal → mobile/www OK");
-console.log("[sync-web] local SQLite + Phase 2 lock bridge injected");
+console.log(`[sync-web] local asset cache-bust v=${LOCAL_ASSET_V}`);
+console.log("[sync-web] next: npx cap sync ios  (or npm run cap:sync) to copy www → ios/App/App/public");

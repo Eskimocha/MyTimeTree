@@ -130,12 +130,10 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 
 # Scratchpad
 
-## Task: PR#3 UI 微调（主屏9 / 左滑移除 / 时间线30 / 软12色）
-- 支：`cursor/habit-polish-o1-o6-5c97` / PR#3
-- [X] today 前 9 + badge 对齐；设置左滑移除；timeline≤30；软 12 色板
-- [X] smoke + push `45ce4ac` + 回报 `internal/habit-ui-tweaks-strip9-swipe.md`
-- 教训：太阳白边裁切 → 多媒体出图前规划裁切盒；工程不批量新出图；iOS 设置排序须触摸拖（不可只靠 HTML5 DnD）
-- 详报：`/cursor/stores/self/internal/habit-polish-o1-o6-closure.md`
+## Task: Kai pull 未生效排查（cache-bust）
+- [X] 根因：sync-web 写死 ?v=p5h1/local-p2 → 改为 LOCAL_ASSET_V=20261015b + sync 指纹校验
+- [X] 本机 checklist → Store internal/kai-local-sync-checklist.md
+- 产品逻辑未改
 
 ## Lessons (this task)
 - Content tables: `docs/v2/content/*.md` → `build-habit-content.mjs` → `habit-seed.js`；`sync-web` 必须先 build
