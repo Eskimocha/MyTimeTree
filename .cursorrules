@@ -130,13 +130,13 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 
 # Scratchpad
 
-## Task: 设置前9色阶 + 分析点阵星期/日期/9格亮点（PR#3）
-- [X] habits.js FEATURED/MUTED + listHabits color tiers
-- [X] settings swatch featured vs muted
-- [X] heatmap 一…日 + 日期左上 + 3×3 亮点
-- [X] LOCAL_ASSET_V=20261015d + sync-web asserts
-- [X] smoke:habits + commit/push PR#3 (e59ee9e)
-- [X] checklist 提醒：须在 habit-polish 支 sync（勿停 replan）
+## Task: 设置左滑露出 微步骤/改奖励/移除（PR#3）
+- [X] 正常态隐藏操作按钮；左滑三键
+- [X] 「改分钟」→「改奖励」
+- [X] LOCAL_ASSET_V=20261015e + sync + smoke
+- [ ] commit/push PR#3 + checklist 测点
+
+## Archived: 色阶/点阵 / strip9/swipe / Kai pull / IH0–IH9
 
 ## Lessons (this task)
 - Content tables: `docs/v2/content/*.md` → `build-habit-content.mjs` → `habit-seed.js`；`sync-web` 必须先 build

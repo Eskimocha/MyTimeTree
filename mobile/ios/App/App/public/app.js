@@ -696,9 +696,47 @@
           "habit-settings-row" + (onStrip ? " on-home-strip" : " off-home-strip");
         row.dataset.habitId = String(h.id);
 
+        // Swipe actions (hidden until left-swipe): 微步骤 / 改奖励 / 移除
+        const swipe = document.createElement("div");
+        swipe.className = "habit-swipe-actions";
+        swipe.setAttribute("aria-hidden", "true");
+
+        const microBtn = document.createElement("button");
+        microBtn.type = "button";
+        microBtn.className = "habit-swipe-action habit-swipe-micro";
+        microBtn.textContent = "微步骤";
+        microBtn.setAttribute("aria-label", `编辑 ${h.title} 的微步骤`);
+        microBtn.addEventListener("click", async (e) => {
+          e.stopPropagation();
+          closeAllHabitSwipes(list);
+          await editMicroStepsForHabit(h);
+        });
+
+        const rewardBtn = document.createElement("button");
+        rewardBtn.type = "button";
+        rewardBtn.className = "habit-swipe-action habit-swipe-reward";
+        rewardBtn.textContent = "改奖励";
+        rewardBtn.setAttribute("aria-label", `修改 ${h.title} 的兑换分钟奖励`);
+        rewardBtn.addEventListener("click", async (e) => {
+          e.stopPropagation();
+          closeAllHabitSwipes(list);
+          const raw = window.prompt(
+            `${h.title} 每次兑换奖励几分钟？`,
+            String(h.minutes_per_completion)
+          );
+          if (raw == null) return;
+          const n = Math.floor(Number(raw));
+          if (!Number.isFinite(n) || n <= 0) return;
+          await api("/api/portal/habits/rules", {
+            method: "PATCH",
+            body: JSON.stringify({ rule_id: h.rule_id, minutes_per_completion: n }),
+          });
+          await refreshHabitSettings();
+        });
+
         const del = document.createElement("button");
         del.type = "button";
-        del.className = "habit-swipe-delete";
+        del.className = "habit-swipe-action habit-swipe-delete";
         del.textContent = "移除";
         del.setAttribute("aria-label", `移除 ${h.title}`);
         del.addEventListener("click", async (e) => {
@@ -710,6 +748,7 @@
           await refreshHabitSettings();
           await refreshHabitsStrip();
         });
+        swipe.append(microBtn, rewardBtn, del);
 
         const front = document.createElement("div");
         front.className = "habit-settings-front";
@@ -729,33 +768,8 @@
         const label = document.createElement("span");
         label.className = "habit-settings-label";
         label.textContent = `${h.title} · ${h.minutes_per_completion} 分`;
-        const actions = document.createElement("span");
-        actions.className = "habit-settings-actions";
-        const microBtn = document.createElement("button");
-        microBtn.type = "button";
-        microBtn.className = "btn compact";
-        microBtn.textContent = "微步骤";
-        microBtn.addEventListener("click", async () => {
-          await editMicroStepsForHabit(h);
-        });
-        const editMin = document.createElement("button");
-        editMin.type = "button";
-        editMin.className = "btn compact";
-        editMin.textContent = "改分钟";
-        editMin.addEventListener("click", async () => {
-          const raw = window.prompt(`${h.title} 每次几分钟？`, String(h.minutes_per_completion));
-          if (raw == null) return;
-          const n = Math.floor(Number(raw));
-          if (!Number.isFinite(n) || n <= 0) return;
-          await api("/api/portal/habits/rules", {
-            method: "PATCH",
-            body: JSON.stringify({ rule_id: h.rule_id, minutes_per_completion: n }),
-          });
-          await refreshHabitSettings();
-        });
-        actions.append(microBtn, editMin);
-        front.append(handle, swatch, label, actions);
-        row.append(del, front);
+        front.append(handle, swatch, label);
+        row.append(swipe, front);
         list.appendChild(row);
       });
       wireHabitDragReorder(list);
@@ -781,33 +795,47 @@
   }
 
   function closeAllHabitSwipes(list, except) {
-    list.querySelectorAll(".habit-settings-row.open").forEach((row) => {
+    const root = list || document;
+    root.querySelectorAll(".habit-settings-row.open").forEach((row) => {
       if (except && row === except) return;
       row.classList.remove("open");
       const front = row.querySelector(".habit-settings-front");
       if (front) front.style.transform = "";
+      const panel = row.querySelector(".habit-swipe-actions");
+      if (panel) panel.setAttribute("aria-hidden", "true");
     });
+  }
+
+  function habitSwipeRevealWidth(row) {
+    const panel = row && row.querySelector(".habit-swipe-actions");
+    const w = panel ? panel.offsetWidth : 0;
+    return w > 0 ? w : 216;
   }
 
   function wireHabitSwipeDelete(list) {
     if (!list || list.dataset.swipeWired === "1") return;
     list.dataset.swipeWired = "1";
-    const REVEAL = 76;
     let swipe = null;
 
     list.addEventListener(
       "touchstart",
       (e) => {
         if (e.touches.length !== 1) return;
-        if (e.target.closest(".habit-drag-handle, .habit-swipe-delete, button")) {
+        if (
+          e.target.closest(
+            ".habit-drag-handle, .habit-swipe-actions, .habit-swipe-action, button"
+          )
+        ) {
           return;
         }
         const row = e.target.closest(".habit-settings-row");
         const front = row && row.querySelector(".habit-settings-front");
         if (!row || !front) return;
+        const reveal = habitSwipeRevealWidth(row);
         swipe = {
           row,
           front,
+          reveal,
           x0: e.touches[0].clientX,
           y0: e.touches[0].clientY,
           opened: row.classList.contains("open"),
@@ -834,6 +862,7 @@
         }
         if (swipe.axis !== "x") return;
         e.preventDefault();
+        const REVEAL = swipe.reveal || habitSwipeRevealWidth(swipe.row);
         let x = swipe.opened ? -REVEAL + dx : dx;
         if (x > 0) x = 0;
         if (x < -REVEAL) x = -REVEAL;
@@ -846,15 +875,20 @@
     function endSwipe() {
       if (!swipe) return;
       const { row, front } = swipe;
+      const REVEAL = swipe.reveal || habitSwipeRevealWidth(row);
       front.style.transition = "";
       const m = /translateX\((-?\d+(?:\.\d+)?)px\)/.exec(front.style.transform || "");
       const x = m ? Number(m[1]) : 0;
-      if (x <= -REVEAL * 0.45) {
+      if (x <= -REVEAL * 0.35) {
         row.classList.add("open");
         front.style.transform = `translateX(${-REVEAL}px)`;
+        const panel = row.querySelector(".habit-swipe-actions");
+        if (panel) panel.setAttribute("aria-hidden", "false");
       } else {
         row.classList.remove("open");
         front.style.transform = "";
+        const panel = row.querySelector(".habit-swipe-actions");
+        if (panel) panel.setAttribute("aria-hidden", "true");
       }
       swipe = null;
     }
@@ -908,7 +942,7 @@
 
     list.addEventListener("dragstart", (e) => {
       const row = e.target.closest("li.habit-settings-row");
-      if (!row || e.target.closest("button, .habit-swipe-delete")) {
+      if (!row || e.target.closest("button, .habit-swipe-actions, .habit-swipe-action")) {
         e.preventDefault();
         return;
       }
