@@ -3,7 +3,7 @@
   "use strict";
   global.MyTimeTreeHabitSeed = {
   "version": 4,
-  "generated_at": "2026-10-16T07:12:51.202Z",
+  "generated_at": "2026-10-16T07:53:12.982Z",
   "templates": [
     {
       "slug": "brush_teeth",
@@ -1865,8 +1865,8 @@
       "habit_env": "quiet_bed",
       "incentive_text": "",
       "small_celebration": "好故事让人开怀",
-      "offline_hint_id": "ca_quiet_heart",
-      "image_key": "img-ca-quiet-heart",
+      "offline_hint_id": "ca_bed_shoulder",
+      "image_key": "img-ca-bed-shoulder",
       "active": true
     },
     {
@@ -1997,8 +1997,8 @@
       "habit_env": "standing",
       "incentive_text": "",
       "small_celebration": "主动问好",
-      "offline_hint_id": "ca_high_five",
-      "image_key": "img-ca-high-five",
+      "offline_hint_id": "ca_cheek_soft",
+      "image_key": "img-ca-cheek-soft",
       "active": true
     },
     {
@@ -2085,8 +2085,8 @@
       "habit_env": "quiet_bed",
       "incentive_text": "",
       "small_celebration": "起床懒腰完成",
-      "offline_hint_id": "ca_seated_stretch",
-      "image_key": "img-ca-seated-stretch",
+      "offline_hint_id": "ca_toe_wiggle",
+      "image_key": "img-ca-toe-bike-v2",
       "active": true
     },
     {

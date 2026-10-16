@@ -22,7 +22,7 @@
 | cc_readnote | read_note | reading | seated | 再欣赏一番自己的笔记吧 | ca_pencil_twirl | img-ca-pencil-twirl | 1 |
 | cc_poem | recite_poem | reading | any | 古诗一句进袋 | ca_thumbs_up | img-ca-thumbs-up | 1 |
 | cc_vocab | vocab_five | reading | seated | 五个词收下 | ca_desk_tap | img-ca-desk-tap | 1 |
-| cc_story | listen_story | reading | quiet_bed | 好故事让人开怀 | ca_quiet_heart | img-ca-quiet-heart | 1 |
+| cc_story | listen_story | reading | quiet_bed | 好故事让人开怀 | ca_bed_shoulder | img-ca-bed-shoulder | 1 |
 | cc_makebed | make_bed | chores | standing | 叠被完成 | ca_shoulder_bump | img-ca-shoulder-bump | 1 |
 | cc_desk | tidy_desk | chores | seated | 书桌归位 | ca_chair_shimmy | img-ca-chair-shimmy | 1 |
 | cc_toys | put_away_toys | chores | standing | 玩具箱整洁又闪亮 | ca_high_five | img-ca-high-five | 1 |
@@ -34,7 +34,7 @@
 | cc_thank | thank_you | kindness | any | 温暖一句送达 | ca_hug_3s | img-ca-hug-3s | 1 |
 | cc_help | help_sibling | kindness | standing | 帮忙一次看见 | ca_shoulder_bump | img-ca-shoulder-bump | 1 |
 | cc_share | share_toy | kindness | standing | 分享成功 | ca_fist_bump | img-ca-fist-bump | 1 |
-| cc_greet | greeting | kindness | standing | 主动问好 | ca_high_five | img-ca-high-five | 1 |
+| cc_greet | greeting | kindness | standing | 主动问好 | ca_cheek_soft | img-ca-cheek-soft | 1 |
 | cc_pet | feed_pet | kindness | standing | 喂食完成 | ca_thumbs_up | img-ca-thumbs-up | 1 |
 | cc_call | call_grandma | kindness | seated | 问候送到 | ca_silent_clap | img-ca-silent-clap | 1 |
 | cc_game | family_game | kindness | standing | 亲子一局完成 | ca_double_high_five | img-ca-double-high-five | 1 |
@@ -42,7 +42,7 @@
 | cc_stretch | stretch | movement | standing | 伸展完成 | ca_spin_clap | img-ca-spin-clap | 1 |
 | cc_stairs | stairs_walk | movement | standing | 一层楼梯达成 | ca_jump_once | img-ca-jump-once | 1 |
 | cc_squat | pushup_or_squat | movement | standing | 五个动作完成 | ca_victory_dance | img-ca-victory-dance | 1 |
-| cc_stretchb | stretch_bed | movement | quiet_bed | 起床懒腰完成 | ca_seated_stretch | img-ca-seated-stretch | 1 |
+| cc_stretchb | stretch_bed | movement | quiet_bed | 起床懒腰完成 | ca_toe_wiggle | img-ca-toe-bike-v2 | 1 |
 | cc_water | drink_water | health | any | 咕咚一杯完成 | ca_high_five | img-ca-high-five | 1 |
 | cc_fruit | fruit_one | health | standing | 水果一份完成 | ca_fridge_star | img-ca-fridge-star | 1 |
 | cc_snack | no_snack_rush | health | any | 停下再吃 | ca_nod_smile | img-ca-nod-smile | 1 |

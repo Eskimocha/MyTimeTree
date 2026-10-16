@@ -130,10 +130,10 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 
 # Scratchpad
 
-## Task: 改名 v2 破 Context 同名缓存（20261016g）
-- [X] 核实旧路径图已正确；复制为 whisper-ok-v2 / toe-bike-v2
-- [X] KEYS/docs/seed/portal 指向 v2；stamp 20261016g push
-- 教训：同名覆盖 Context 易仍显旧图 → 必须改文件名
+## Task: inventory 小庆绑定对齐 28 ca_*（20261016h）
+- [X] 修 A/B 表 + image_key + 里程碑去重/二百次
+- [X] copy 绑定 toe/bed_shoulder/cheek；seed sync；stamp 20261016h
+- 教训：动作库有 id ≠ 已绑定；inventory 要以 celebration-copy 为准
 
 ## Lessons (this task)
 - Content tables: `docs/v2/content/*.md` → `build-habit-content.mjs` → `habit-seed.js`；`sync-web` 必须先 build
