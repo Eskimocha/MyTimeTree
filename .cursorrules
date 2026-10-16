@@ -131,9 +131,9 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 # Scratchpad
 
 ## Task: 主屏角标居中 + App 图标 badge（20261016p）
-- [ ] tab-badge CSS 数字居中
-- [ ] @capawesome/capacitor-badge ↔ badge_count / 还剩 X
-- [ ] stamp 20261016p sync push PR#3 + report
+- [X] tab-badge CSS 数字居中
+- [X] @capawesome/capacitor-badge ↔ badge_count / 还剩 X
+- [X] stamp 20261016p sync push PR#3 + report
 
 ## Archived: 种子弹框 20261016o / 状态角标 20261016n
 
