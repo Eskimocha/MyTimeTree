@@ -130,10 +130,10 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 
 # Scratchpad
 
-## Task: whisper 整张重渲（去蓝衣第三人 → 20261016e）
-- [X] GenerateImage 全图重渲；Read 自检仅黄妈+红孩
-- [X] 覆盖 store + portal；stamp 20261016e；push 4fbaf59
-- 教训：勿修旧图；禁止背后蓝衣/剪影；Kai 须 sync 新 stamp
+## Task: toe 整张重渲双腿踩单车 + whisper 同批（20261016f）
+- [X] GenerateImage toe 双腿空中蹬；Read 自检
+- [X] whisper 保持 16e 仅妈+孩；同批 stamp 20261016f push
+- 教训：勿修旧图；禁止单脚出被窝；Kai 须 polish + sync 新 stamp
 
 ## Lessons (this task)
 - Content tables: `docs/v2/content/*.md` → `build-habit-content.mjs` → `habit-seed.js`；`sync-web` 必须先 build
