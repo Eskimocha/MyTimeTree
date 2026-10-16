@@ -60,10 +60,16 @@ if (!seed || !seed.templates || seed.templates.length < 50) {
     `habit seed too small: templates=${seed?.templates?.length ?? 0}`
   );
 }
-if (!seed.board_milestones || seed.board_milestones.length < 12) {
+if (!seed.board_milestones || seed.board_milestones.length !== 12) {
   throw new Error(
-    `board_milestones want ≥12 got ${seed.board_milestones?.length ?? 0}`
+    `board_milestones want exactly 12 got ${seed.board_milestones?.length ?? 0}`
   );
+}
+if (seed.board_milestones.some((m) => m.id === "bm_life_15")) {
+  throw new Error("board_milestones must not include retired bm_life_15");
+}
+if (!seed.board_milestones.some((m) => m.id === "bm_life_200")) {
+  throw new Error("board_milestones missing bm_life_200");
 }
 if (!seed.celebration_actions || seed.celebration_actions.length < 24) {
   throw new Error(
@@ -197,8 +203,14 @@ if (heatLegend.length && !heatLegend[0].color) {
   throw new Error("heatmap legend missing colors");
 }
 const milestones = overview.milestones || [];
-if (milestones.length < 12) {
-  throw new Error(`milestones want ≥12 got ${milestones.length}`);
+if (milestones.length !== 12) {
+  throw new Error(`milestones want exactly 12 got ${milestones.length}`);
+}
+if (milestones.some((m) => m.id === "bm_life_15")) {
+  throw new Error("overview still has bm_life_15");
+}
+if (!milestones.some((m) => m.id === "bm_life_200")) {
+  throw new Error("overview missing bm_life_200");
 }
 const achieved = milestones.filter((m) => m.achieved);
 if (!achieved.length) {
@@ -207,6 +219,7 @@ if (!achieved.length) {
 console.log(
   `[smoke-habits] overview week=${overview.board?.stats?.week_logs} cats=${overview.categories?.length} heatWeeks=${overview.month_heatmap.weeks.length} timeline=${overview.timeline.length} milestones=${achieved.length}/${milestones.length}`
 );
+
 
 // Grow enabled list past 9 → strip still caps at 9 and keeps settings order head
 const listBeforeCap = await api("/api/portal/habits/list");

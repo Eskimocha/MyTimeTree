@@ -205,21 +205,15 @@
             ]
           );
         }
-        for (const ms of s.board_milestones || []) {
+        // Replace board milestones wholesale so retired ids (e.g. bm_life_15) leave the DB
+        const msRows = s.board_milestones || [];
+        db().exec(`DELETE FROM habit_board_milestones`);
+        for (const ms of msRows) {
           db().exec(
             `INSERT INTO habit_board_milestones (
                id, level, title, body, trigger_rule, repeatable,
                offline_action_id, image_key, active
-             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-             ON CONFLICT(id) DO UPDATE SET
-               level=excluded.level,
-               title=excluded.title,
-               body=excluded.body,
-               trigger_rule=excluded.trigger_rule,
-               repeatable=excluded.repeatable,
-               offline_action_id=excluded.offline_action_id,
-               image_key=excluded.image_key,
-               active=excluded.active`,
+             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             [
               ms.id,
               Number(ms.level) || 0,

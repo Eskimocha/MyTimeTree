@@ -53,7 +53,7 @@
     bird: `./ornaments/bird.png?v=${ASSET_V}`,
   };
 
-  const HABIT_MEDIA_V = "20261016j";
+  const HABIT_MEDIA_V = "20261016k";
   // Tip: bright star (icon-tip-seed path overwritten; icon-tip-star alias also shipped)
   const HABIT_TIP_ICON = `./habit/icon-tip-star.png?v=${HABIT_MEDIA_V}`;
   const HABIT_TIP_ICON_2X = `./habit/icon-tip-star@2x.png?v=${HABIT_MEDIA_V}`;
@@ -693,7 +693,7 @@
       mark.src = HABIT_CELEB_MARK;
       mark.srcset = `${HABIT_CELEB_MARK_2X} 2x`;
     }
-    $("#habit-celeb-title").textContent = "小庆祝";
+    $("#habit-celeb-title").textContent = "小庆祝一下吧";
     $("#habit-celeb-credit").textContent = res.minutes_credited
       ? `已自动入账 ${res.minutes_credited} 分`
       : "";
@@ -736,7 +736,7 @@
     root.hidden = false;
     const title = document.createElement("p");
     title.className = "habit-milestones-title";
-    title.textContent = "大庆祝里程碑";
+    title.textContent = "里程碑达成奖章";
     const grid = document.createElement("div");
     grid.className = "habit-milestones-grid";
     grid.setAttribute("role", "list");
