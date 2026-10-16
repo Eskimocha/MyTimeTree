@@ -130,10 +130,11 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 
 # Scratchpad
 
-## Task: inventory 小庆绑定对齐 28 ca_*（20261016h）
-- [X] 修 A/B 表 + image_key + 里程碑去重/二百次
-- [X] copy 绑定 toe/bed_shoulder/cheek；seed sync；stamp 20261016h
-- 教训：动作库有 id ≠ 已绑定；inventory 要以 celebration-copy 为准
+## Task: tip「激励」按习惯分化（20261016j）
+- [X] 根因：incentive_text 空 + 硬编码「被看见真好」
+- [X] celebration-copy 填 incentive_text；pickCelebration 回落 small_celebration
+- [X] stamp 20261016j push
+- 教训：UI「激励」= celebration-copy.incentive_text，不是 board_copy
 
 ## Lessons (this task)
 - Content tables: `docs/v2/content/*.md` → `build-habit-content.mjs` → `habit-seed.js`；`sync-web` 必须先 build
