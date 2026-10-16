@@ -7,6 +7,9 @@ import Capacitor
 /// Capawesome Badge requests only `.badge` (often no system dialog) and still uses
 /// deprecated `applicationIconBadgeNumber`. This plugin requests `.alert/.badge/.sound`
 /// so iOS shows the permission alert, then sets the count with `setBadgeCount`.
+///
+/// stamp 20261016u — CAPPlugin permission overrides MUST be `@objc public override`
+/// (Kai: if Xcode still shows bare `@objc func checkPermissions`, you are on a stale checkout).
 @objc(AppIconBadgePlugin)
 public class AppIconBadgePlugin: CAPPlugin, CAPBridgedPlugin {
     public let identifier = "AppIconBadgePlugin"
