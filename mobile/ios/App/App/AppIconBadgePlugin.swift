@@ -21,13 +21,13 @@ public class AppIconBadgePlugin: CAPPlugin, CAPBridgedPlugin {
 
     private let storageKey = "mytimetree.appIconBadge.count"
 
-    @objc func checkPermissions(_ call: CAPPluginCall) {
+    @objc public override func checkPermissions(_ call: CAPPluginCall) {
         UNUserNotificationCenter.current().getNotificationSettings { settings in
             call.resolve(["display": Self.mapStatus(settings.authorizationStatus)])
         }
     }
 
-    @objc func requestPermissions(_ call: CAPPluginCall) {
+    @objc public override func requestPermissions(_ call: CAPPluginCall) {
         DispatchQueue.main.async {
             UNUserNotificationCenter.current().requestAuthorization(
                 options: [.alert, .badge, .sound]

@@ -130,12 +130,12 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 
 # Scratchpad
 
-## Task: App 图标 badge 权限弹窗 + 角标（20261016s）
-- 根因：Capawesome 仅 `.badge` 授权常不弹窗；JS 失败永久缓存；iOS16+ 应用 `setBadgeCount`
-- [X] 本地 AppIconBadgePlugin（alert+badge+sound + setBadgeCount）
-- [X] stamp 20261016s sync push + report
+## Task: AppIconBadgePlugin Swift override（20261016t）
+- [X] checkPermissions / requestPermissions → `@objc public override`
+- [ ] stamp 20261016t sync push + report
+- Lesson: CAPPlugin 权限方法必须 `public override`（与 Capawesome Badge 一致）
 
-## Archived: 种子文案 20261016r / tab 对齐 20261016q
+## Archived: badge 权限 20261016s / 种子文案 20261016r
 - Lesson: 自定义 select 替身勿放在关联该 select 的 `<label>` 内
 - Lesson: iOS 图标 badge 勿只 request `.badge`；要 `.alert,.badge,.sound` 才会出系统弹窗
 
