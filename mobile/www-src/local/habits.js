@@ -545,16 +545,19 @@
         rows.find((r) => !r.habit_slug && !r.category);
       if (!row) {
         return {
-          incentive_text: "被看见真好",
+          incentive_text: "做到了，一起高兴",
           small_celebration: "做到了，一起高兴",
           offline_hint_id: "",
           image_key: "",
           habit_env: "",
         };
       }
+      // Tip「激励」= incentive_text；缺省回落 small_celebration（计划表真源），禁止全员同一默认句
+      const small = String(row.small_celebration || "做到了！");
+      const incentive = String(row.incentive_text || small);
       return {
-        incentive_text: String(row.incentive_text || "被看见真好"),
-        small_celebration: String(row.small_celebration || "做到了！"),
+        incentive_text: incentive,
+        small_celebration: small,
         offline_hint_id: String(row.offline_hint_id || ""),
         image_key: String(row.image_key || ""),
         habit_env: String(row.habit_env || ""),

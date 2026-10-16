@@ -13,7 +13,7 @@
 | 微步骤 | 55 | micro-steps.md |
 | 毛伊 | 67 | maui-habits.md |
 | 家长话术 | 67 | parent-scripts.md |
-| 小庆祝句 | 55+ | celebration-copy.md（种子绑定 → `ca_*`） |
+| 激励 + 小庆祝句 | 55+ | celebration-copy.md（`incentive_text`→tip「激励」；`small_celebration`→记后；→ `ca_*`） |
 | 小庆祝动作 | **28** | celebration-actions.md（真源） |
 | 大庆祝里程碑 | **12** | habit-board-milestones.md（无十五次；含二百次） |
 
@@ -80,7 +80,7 @@
 - 微步骤：只刷一排座牙
 - 毛伊：洗完脸立即刷牙
 - 话术：这次我们只刷一排座牙吧？
-- 小庆祝：牙齿保卫战，击掌！ → `ca_high_five`「击掌」· seed_env=standing
+- 激励：牙齿保卫战！ · 小庆祝：牙齿保卫战，击掌！ → `ca_high_five`「击掌」· seed_env=standing
 
 #### 2. `wash_face` · 洗脸
 
@@ -124,7 +124,7 @@
 - 微步骤：只把身体躺平
 - 毛伊：刷完牙就上床
 - 话术：到点了，先上床。
-- 小庆祝：上床充电开始 → `ca_pillow_bump`「碰枕头」· seed_env=quiet_bed
+- 激励：上床充电开始 · 小庆祝：上床充电开始 → `ca_pillow_bump`「碰枕头」· seed_env=quiet_bed
 
 #### 8. `no_phone_bed` · 睡前不玩手机
 
@@ -154,7 +154,7 @@
 - 微步骤：只读本页第一段
 - 毛伊：吃完零食读一下
 - 话术：读一下本页第一段吧。
-- 小庆祝：又一页！ → `ca_desk_tap`「敲敲桌子」· `img-ca-desk-tap` · seed_env=seated
+- 激励：又一页！ · 小庆祝：又一页！ → `ca_desk_tap`「敲敲桌子」· `img-ca-desk-tap` · seed_env=seated
 
 #### 12. `read_note` · 记读书笔记
 

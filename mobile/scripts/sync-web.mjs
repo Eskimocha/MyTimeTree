@@ -14,7 +14,7 @@ const www = path.join(root, "mobile/www");
 const localSrc = path.join(root, "mobile/www-src/local");
 const sqlJsDist = path.join(root, "mobile/node_modules/sql.js/dist");
 /** Bust WKWebView caches for injected local scripts + app.js (was stuck on p5h1 / local-p2). */
-const LOCAL_ASSET_V = "20261016i";
+const LOCAL_ASSET_V = "20261016j";
 const iosPublic = path.join(root, "mobile/ios/App/App/public");
 
 function rmrf(dir) {
@@ -247,7 +247,7 @@ function assertBuildTree(base, tag) {
   assertMarker(base, "app.js", /habit-swipe-actions/, `${tag} habit-swipe-actions`);
   assertMarker(base, "app.js", /改奖励/, `${tag} 改奖励`);
   assertMarker(base, "app.js", /HABIT_IMAGE_ALIASES/, `${tag} HABIT_IMAGE_ALIASES`);
-  assertMarker(base, "app.js", /20261016i/, `${tag} HABIT_MEDIA_V 20261016i`);
+  assertMarker(base, "app.js", /20261016j/, `${tag} HABIT_MEDIA_V 20261016j`);
   assertMarker(base, "local/habit-seed.js", /躺卧踩单车/, `${tag} 躺卧踩单车`);
   assertMarker(base, "local/habit-seed.js", /img-ca-whisper-ok-v2/, `${tag} whisper-ok-v2`);
   assertMarker(base, "local/habit-seed.js", /img-ca-toe-bike-v2/, `${tag} toe-bike-v2`);
@@ -258,6 +258,22 @@ function assertBuildTree(base, tag) {
     /stretch_bed[\s\S]{0,400}ca_toe_wiggle/,
     `${tag} stretch_bed→toe_wiggle`
   );
+  assertMarker(base, "local/habit-seed.js", /牙齿保卫战！/, `${tag} brush incentive`);
+  assertMarker(
+    base,
+    "local/habits.js",
+    /row\.incentive_text \|\| small/,
+    `${tag} incentive fallback chain`
+  );
+  assertMarker(base, "local/habits.js", /禁止全员同一默认句/, `${tag} no universal incentive`);
+  {
+    const habitsJs = fs.readFileSync(path.join(base, "local/habits.js"), "utf8");
+    if (habitsJs.includes("被看见真好")) {
+      console.error(`[sync-web] ${tag} stale universal incentive 被看见真好 still in habits.js`);
+      process.exit(1);
+    }
+    console.log(`[sync-web] ok ${tag} no 被看见真好 fallback`);
+  }
   assertMarker(base, "app.js", /icon-tip-star/, `${tag} tip star`);
   assertMarker(base, "app.js", /renderHabitMilestones/, `${tag} renderHabitMilestones`);
   for (const rel of [

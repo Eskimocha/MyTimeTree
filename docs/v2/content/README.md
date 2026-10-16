@@ -11,7 +11,7 @@
 | `habit-templates.md` | 可打卡**种子**习惯 | `slug` | `title`, `category`, `default_minutes`, `active`, `sort_default`, `notes` | 设置清单默认项；主屏 chip |
 | `micro-steps.md` | **建议**微步骤（不可打卡） | `id` | `habit_slug`, `sort`, `step_text`, `active` | 记前，chip 旁「怎样更容易做」（默认可折叠）；家长之后可在 App 自定义，不回写本表 |
 | `parent-scripts.md` | 家长预录话术 | `id` | `habit_slug`, `category`, `script_text`, `active` | 记前，chip 旁一行；匹配优先级：`habit_slug` → `category` → 空（通用） |
-| `celebration-copy.md` | 小庆祝句 + 动作引用 | `id` | `habit_slug`, `category`, `habit_env`, `small_celebration`, `offline_hint_id`(`ca_*`), `image_key`, `active` | 记后小庆祝；`offline_hint_id` → 动作库 |
+| `celebration-copy.md` | 激励 + 小庆祝句 + 动作引用 | `id` | `habit_slug`, `category`, `habit_env`, `incentive_text`, `small_celebration`, `offline_hint_id`(`ca_*`), `image_key`, `active` | tip「激励」←`incentive_text`；记后小庆祝←`small_celebration`；`offline_hint_id` → 动作库 |
 | `celebration-actions.md` | **≥24** 线下动作库（主） | `id`(`ca_*`) | `title`, `body`, `env_tags`, `image_key`, `active` | 小庆祝 hint + 图 |
 | `habit-board-milestones.md` | **12** 大庆祝里程碑 | `id`(`bm_*`) | `level`, `title`, `body`, `trigger_rule`, `image_key`, `repeatable` | board overlay + 分析页 12 格 |
 | `offline-celebration-hints.md` | 旧 `och_*` 动作（兼容） | `id` | `title`, `body`, `image_key`, `categories`, `active` | 被 `celebration-actions` 合并进 seed |

@@ -170,13 +170,14 @@ const microSteps = parseMdTable(
 
 const celebrationCopy = parseMdTable(
   path.join(contentDir, "celebration-copy.md"),
-  ["id", "small_celebration", "offline_hint_id"]
+  ["id", "incentive_text", "small_celebration", "offline_hint_id"]
 ).map((r) => ({
   id: r.id,
   habit_slug: r.habit_slug || "",
   category: r.category || "",
   habit_env: r.habit_env || "",
-  incentive_text: r.incentive_text || "",
+  // Tip「激励」优先 incentive_text；空则用小庆祝句，避免全员硬编码默认
+  incentive_text: r.incentive_text || r.small_celebration || "",
   small_celebration: r.small_celebration || "",
   offline_hint_id: r.offline_hint_id || "",
   image_key: r.image_key || "",
