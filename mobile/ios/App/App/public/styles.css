@@ -948,7 +948,7 @@ html, body {
 }
 
 /* html2canvas: cloned nodes restart CSS animations at keyframe 0 (often opacity:0 → gray veil).
-   Also flatten translucent/backdrop surfaces while capturing. */
+   Kill backdrop-filter (bakes as milky blur) but do NOT overwrite forest card / tree paints. */
 html.share-capture *,
 html.share-capture *::before,
 html.share-capture *::after {
@@ -961,14 +961,33 @@ html.share-capture .tab-panel,
 html.share-capture .panel,
 html.share-capture .tree-art,
 html.share-capture .float-orn,
-html.share-capture .brand-mark {
+html.share-capture .brand-mark,
+html.share-capture .hero-tree,
+html.share-capture .tree-scene {
   opacity: 1 !important;
   transform: none !important;
+}
+html.share-capture .tree-art,
+html.share-capture .float-orn {
   filter: none !important;
 }
-html.share-capture .panel,
-html.share-capture .tab-panel {
+/* Home tab: stay clear so hero-tree gradient + tree PNG show through (no frosted white plate). */
+html.share-capture #tab-home.tab-panel {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+/* Other panels: opaque stand-in for rgba(surface)+blur — not used on home forest card. */
+html.share-capture .panel:not(.hero-tree),
+html.share-capture .tab-panel:not(#tab-home) {
   background: #f7fcf8 !important;
+}
+html.share-capture .hero-tree {
+  /* keep designed sky→grass gradient; only drop soft blur on cloud blobs */
+  filter: none !important;
+}
+html.share-capture .hero-tree::before,
+html.share-capture .hero-tree::after {
+  filter: none !important;
 }
 html.share-capture .account-shell select,
 html.share-capture .account-icon-btn,
@@ -977,8 +996,29 @@ html.share-capture .ornament-counters li,
 html.share-capture .tab.active {
   background: #ffffff !important;
 }
+html.share-capture .habit-strip {
+  background: #f3faf6 !important;
+}
 html.share-capture body {
-  background: #eef8f1 !important;
+  background:
+    radial-gradient(120% 80% at 10% -10%, #fff6d6 0%, transparent 45%),
+    linear-gradient(165deg, #d8eefc, #eef8f1 55%, #f4faf6) !important;
+}
+/* Long-capture: nested scrollers expand so html2canvas sees full home content.
+   Paint portal with page sky so transparent #tab-home does not punch a hole. */
+html.share-capture .portal {
+  background:
+    radial-gradient(120% 80% at 10% -10%, #fff6d6 0%, transparent 45%),
+    linear-gradient(165deg, #d8eefc, #eef8f1 55%, #f4faf6) !important;
+}
+html.share-capture .portal,
+html.share-capture .main,
+html.share-capture #tab-home.tab-panel {
+  overflow: visible !important;
+  height: auto !important;
+  max-height: none !important;
+  min-height: 0 !important;
+  flex: 0 0 auto !important;
 }
 
 .analytics-block h2 {

@@ -122,7 +122,7 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 - Newer Xcode (SDK 27 / Xcode 26+): App `IPHONEOS_DEPLOYMENT_TARGET` must be ≥ 15.0 (14.0 rejected). Keep CapApp-SPM `platforms: [.iOS(.v15)]` in sync; `cap sync` may rewrite Package.swift — re-check after sync.
 - Phase 3 iCloud: keep sql.js in-memory; whole-DB file via custom ICloudDb plugin (Application Support + iCloud Documents, newer-wins); JS registerPlugin('ICloudDb'); entitlements CloudDocuments + container iCloud.com.mytimetree.app
 - CapApp-SPM “Missing package product”: usually stale DerivedData / failed GitHub fetch (e.g. ion-ios-filesystem). Fix: quit Xcode → delete `~/Library/Developer/Xcode/DerivedData/App-*` → File → Packages → Reset Package Caches → Resolve Package Versions → Clean Build → Run. Or `xcodebuild -resolvePackageDependencies -project ios/App/App.xcodeproj -scheme App`
-- Share long-screenshot pale/gray: html2canvas poorly composites `backdrop-filter` + `rgba` surfaces; more critically, **cloned nodes restart CSS animations at keyframe 0** (e.g. `.tab-panel { animation: rise }` starts at `opacity:0`) → gray veil. Fix: `html.share-capture` kills animations + opaque paints before capture; strengthen `onclone` the same way. Share button missing in export is intentional.
+- Share long-screenshot pale/gray: html2canvas poorly composites `backdrop-filter` + `rgba` surfaces; more critically, **cloned nodes restart CSS animations at keyframe 0** (e.g. `.tab-panel { animation: rise }` starts at `opacity:0`) → gray veil. Fix: `html.share-capture` kills animations + backdrop-filter; keep `#tab-home` transparent (do NOT force `#f7fcf8` on home — that whitewashes the forest card); expand nested `#portal`/`.main`/`#tab-home` scrollers for long image. Share button missing in export is intentional.
 - Custom recovery question picker: JS list class must match CSS (was `question-picker-list` vs `.question-picker-menu`) — mismatch falls back to native `<ul>` bullets outside the styled panel.
 
 
@@ -130,16 +130,17 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 
 # Scratchpad
 
-## Task: 日历月份 + 月记（20261016l）
-- [X] heatmap 上方 month_label；近记→月记(当月计数)；去掉底栏里程碑 a/b
-- [X] stamp 20261016l push
-- 教训：「近记」曾是 timeline.length(≤30)，不是月计
+## Task: 主屏分享截图 = 实机 + 长图（20261016m）
+- 问题：html2canvas 烘焙 backdrop-filter → 毛玻璃白边；只截视口漏「今日好习惯」
+- 方案：仍用 html2canvas（主屏 #share-page-btn）；share-capture 杀 blur、#tab-home 透明、保留 hero-tree 渐变；expand 嵌套 scroller 拼长图
+- [X] styles.css + share.js
+- [ ] stamp 20261016m + sync-web + push PR#3
+- [ ] internal report + Kai sync
 
 ## Lessons (this task)
+- share-capture 勿把所有 `.tab-panel` 刷成 `#f7fcf8`——会盖住森林卡；主屏保持 transparent
+- JS 设 height 时须 `setProperty(..., "important")`，否则打不过 CSS `height:auto !important`
 - Content tables: `docs/v2/content/*.md` → `build-habit-content.mjs` → `habit-seed.js`；`sync-web` 必须先 build
-- 多媒体进 `portal/habit/`；路径 `/static/portal/habit/…`，sync 改写 `./habit/…`
 - Kai 错支：须在 `habit-polish-o1-o6` 上 sync（勿停在 habit-ios-replan）
-- whisper 融脸：画面只留妈+孩，禁止第三者
-- ca_toe_wiggle：id 可保留，用户文案/图改为「躺卧踩单车」
 
-## Archived: Kai 5 fixes / 左滑改奖励 / strip9 / IH0–IH9
+## Archived: 日历 20261016l / Kai 5 / whisper / toe
