@@ -1687,6 +1687,14 @@ html.share-capture #tab-home.tab-panel {
 }
 .habit-board-copy { margin: 0 0 0.45rem; font-size: 0.85rem; }
 .habit-settings-add label { font-size: 0.9rem; }
+.habit-seed-field {
+  display: grid;
+  gap: 0.35rem;
+}
+.habit-field-label {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
 /* Wide custom seed picker — long titles like「专注作业二十五分钟（10分）」stay one line */
 .habit-seed-select-native {
   position: absolute !important;
@@ -1703,7 +1711,7 @@ html.share-capture #tab-home.tab-panel {
 .habit-seed-picker {
   position: relative;
   width: 100%;
-  z-index: 5;
+  z-index: 30;
 }
 .habit-seed-picker-btn {
   border: 1px solid #c9ddd3;
@@ -1744,7 +1752,7 @@ html.share-capture #tab-home.tab-panel {
   gap: 0.2rem;
   /* JS places with position:fixed near full phone width (avoids tab overflow clip). */
   position: fixed;
-  z-index: 120;
+  z-index: 200;
   max-height: min(16rem, 50dvh);
   overflow-x: hidden;
   overflow-y: auto;

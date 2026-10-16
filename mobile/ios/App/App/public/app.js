@@ -53,7 +53,7 @@
     bird: `./ornaments/bird.png?v=${ASSET_V}`,
   };
 
-  const HABIT_MEDIA_V = "20261016q";
+  const HABIT_MEDIA_V = "20261016r";
   // Tip: bright star (icon-tip-seed path overwritten; icon-tip-star alias also shipped)
   const HABIT_TIP_ICON = `./habit/icon-tip-star.png?v=${HABIT_MEDIA_V}`;
   const HABIT_TIP_ICON_2X = `./habit/icon-tip-star@2x.png?v=${HABIT_MEDIA_V}`;
@@ -879,15 +879,20 @@
   /** Custom wide seed picker — native iOS <select> menus wrap long titles. */
   function ensureHabitSeedPicker(sel) {
     if (!sel) return null;
-    const existing = sel.nextElementSibling;
-    if (existing && existing.classList.contains("habit-seed-picker")) {
-      return existing;
+    let picker = sel.closest(".habit-seed-picker");
+    if (picker) return picker;
+    // Migrate older sibling layout (select then picker).
+    const sibling = sel.nextElementSibling;
+    if (sibling && sibling.classList.contains("habit-seed-picker")) {
+      sibling.insertBefore(sel, sibling.firstChild);
+      return sibling;
     }
+
     sel.classList.add("habit-seed-select-native");
     sel.setAttribute("aria-hidden", "true");
     sel.tabIndex = -1;
 
-    const picker = document.createElement("div");
+    picker = document.createElement("div");
     picker.className = "habit-seed-picker";
     const btn = document.createElement("button");
     btn.type = "button";
@@ -911,18 +916,29 @@
       list.style.left = `${Math.round(left)}px`;
       list.style.top = `${Math.round(top)}px`;
       list.style.width = `${Math.round(width)}px`;
+      list.style.maxWidth = `${Math.round(width)}px`;
       list.style.transform = "none";
-      list.style.zIndex = "120";
+      list.style.zIndex = "200";
+      list.style.display = "grid";
     };
     const setOpen = (open) => {
       list.hidden = !open;
       btn.setAttribute("aria-expanded", open ? "true" : "false");
-      if (open) placeList();
+      if (open) {
+        placeList();
+        console.info("[seed-picker] open", {
+          opts: sel.options.length,
+          top: list.style.top,
+          width: list.style.width,
+        });
+      }
     };
     btn.addEventListener("click", (ev) => {
+      // preventDefault: stop any leftover label/select activation from closing us.
+      ev.preventDefault();
       ev.stopPropagation();
       if (btn.disabled) return;
-      setOpen(list.hidden);
+      setOpen(!!list.hidden);
     });
     window.addEventListener(
       "resize",
@@ -933,20 +949,32 @@
     );
     if (!document.documentElement.dataset.habitSeedPickerDoc) {
       document.documentElement.dataset.habitSeedPickerDoc = "1";
-      document.addEventListener("click", (ev) => {
-        document.querySelectorAll(".habit-seed-picker").forEach((p) => {
-          if (!p.contains(ev.target)) {
+      // pointerdown capture: close on outside tap without racing the open click
+      // (label→hidden select synthetic clicks used to close the list instantly).
+      document.addEventListener(
+        "pointerdown",
+        (ev) => {
+          const t = ev.target;
+          if (!(t instanceof Node)) return;
+          document.querySelectorAll(".habit-seed-picker").forEach((p) => {
+            if (p.contains(t)) return;
+            if (t.id === "habit-template-select") return;
             const ul = p.querySelector(".habit-seed-picker-list");
             const b = p.querySelector(".habit-seed-picker-btn");
-            if (ul) ul.hidden = true;
-            if (b) b.setAttribute("aria-expanded", "false");
-          }
-        });
-      });
+            if (ul && !ul.hidden) {
+              ul.hidden = true;
+              if (b) b.setAttribute("aria-expanded", "false");
+            }
+          });
+        },
+        true
+      );
     }
 
-    picker.append(btn, list);
-    sel.insertAdjacentElement("afterend", picker);
+    // Keep select inside picker so outside-close treats it as "inside".
+    const host = sel.parentNode;
+    host.insertBefore(picker, sel);
+    picker.append(sel, btn, list);
     return picker;
   }
 

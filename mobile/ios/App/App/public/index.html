@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta name="mytimetree-mode" content="local-capacitor" />
-  <meta name="mytimetree-web-build" content="20261016q" />
+  <meta name="mytimetree-web-build" content="20261016r" />
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
   <title>MyTimeTree</title>
@@ -145,13 +145,16 @@
           <p class="muted habit-settings-lede">拖 ⋮⋮ 排序；左滑露出「微步骤」「改奖励」「移除」。主屏最多显示排序后的前 9 条。「改奖励」改的是每次兑换的分钟奖励。</p>
           <ul id="habit-settings-list" class="habit-settings-list"></ul>
           <div class="habit-settings-add stack">
-            <label>从种子启用
-              <select id="habit-template-select"></select>
-            </label>
-            <button type="button" class="btn" id="btn-habit-enable">启用种子</button>
-            <label>自定义名称<input id="habit-custom-title" type="text" lang="zh-CN" inputmode="text" enterkeyhint="done" maxlength="32" placeholder="例如：练字一行" /></label>
+            <!-- Not a <label>: wrapping native select+custom picker made iOS re-click the
+                 hidden select and immediately close the dropdown. -->
+            <div class="habit-seed-field">
+              <span class="habit-field-label" id="habit-seed-field-label">从种子习惯清单中选择</span>
+              <select id="habit-template-select" aria-labelledby="habit-seed-field-label"></select>
+            </div>
+            <button type="button" class="btn" id="btn-habit-enable">添加种子习惯</button>
+            <label>自定义习惯<input id="habit-custom-title" type="text" lang="zh-CN" inputmode="text" enterkeyhint="done" maxlength="32" placeholder="例如：练字一行" /></label>
             <label>每次分钟<input id="habit-custom-minutes" type="number" min="1" value="5" /></label>
-            <button type="button" class="btn primary" id="btn-habit-custom">添加自定义</button>
+            <button type="button" class="btn primary" id="btn-habit-custom">添加自定义习惯</button>
           </div>
           <p id="habit-settings-msg" class="msg" hidden></p>
         </section>
@@ -332,14 +335,14 @@
   </div>
 
     <script src="./local/sql-wasm.js"></script>
-  <script src="./local/db.js?v=20261016q"></script>
-  <script src="./local/habit-seed.js?v=20261016q"></script>
-  <script src="./local/store.js?v=20261016q"></script>
-  <script src="./local/habits.js?v=20261016q"></script>
-  <script src="./local/bridge.js?v=20261016q"></script>
-  <script src="./local/lock.js?v=20261016q"></script>
+  <script src="./local/db.js?v=20261016r"></script>
+  <script src="./local/habit-seed.js?v=20261016r"></script>
+  <script src="./local/store.js?v=20261016r"></script>
+  <script src="./local/habits.js?v=20261016r"></script>
+  <script src="./local/bridge.js?v=20261016r"></script>
+  <script src="./local/lock.js?v=20261016r"></script>
   <script src="./local/html2canvas.min.js"></script>
-  <script src="./local/share.js?v=20261016q"></script>
-  <script src="./app.js?v=20261016q"></script>
+  <script src="./local/share.js?v=20261016r"></script>
+  <script src="./app.js?v=20261016r"></script>
 </body>
 </html>

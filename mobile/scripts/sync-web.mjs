@@ -14,7 +14,7 @@ const www = path.join(root, "mobile/www");
 const localSrc = path.join(root, "mobile/www-src/local");
 const sqlJsDist = path.join(root, "mobile/node_modules/sql.js/dist");
 /** Bust WKWebView caches for injected local scripts + app.js (was stuck on p5h1 / local-p2). */
-const LOCAL_ASSET_V = "20261016q";
+const LOCAL_ASSET_V = "20261016r";
 const iosPublic = path.join(root, "mobile/ios/App/App/public");
 
 function rmrf(dir) {
@@ -258,6 +258,20 @@ function assertBuildTree(base, tag) {
   assertMarker(base, "styles.css", /\.habit-seed-picker-list/, `${tag} CSS seed picker list`);
   assertMarker(base, "styles.css", /white-space:\s*nowrap/, `${tag} CSS seed picker nowrap`);
   assertMarker(base, "app.js", /26 \* 16/, `${tag} seed picker max width 26rem`);
+  assertMarker(base, "index.html", /从种子习惯清单中选择/, `${tag} 从种子习惯清单中选择`);
+  assertMarker(base, "index.html", /添加种子习惯/, `${tag} 添加种子习惯`);
+  assertMarker(base, "index.html", /自定义习惯/, `${tag} 自定义习惯`);
+  assertMarker(base, "index.html", /添加自定义习惯/, `${tag} 添加自定义习惯`);
+  assertMarker(base, "index.html", /habit-seed-field/, `${tag} habit-seed-field`);
+  assertMarker(base, "app.js", /pointerdown/, `${tag} seed picker pointerdown close`);
+  {
+    const html = fs.readFileSync(path.join(base, "index.html"), "utf8");
+    if (/从种子启用|启用种子|>自定义名称<|>添加自定义</.test(html)) {
+      console.error(`[sync-web] ${tag} stale seed/custom labels still in index.html`);
+      process.exit(1);
+    }
+    console.log(`[sync-web] ok ${tag} no stale seed/custom labels`);
+  }
   assertMarker(base, "app.js", /syncAppIconBadge/, `${tag} syncAppIconBadge`);
   assertMarker(base, "app.js", /capPlugin\("Badge"\)/, `${tag} Badge plugin`);
   assertMarker(base, "styles.css", /\.tab\s*\{[\s\S]*?display:\s*inline-flex/, `${tag} CSS tab inline-flex`);

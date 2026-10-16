@@ -130,11 +130,12 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 
 # Scratchpad
 
-## Task: 主屏 tab 红点与「主屏」同行对齐（20261016q）
-- [X] `.tab-label` + badge `em` 尺寸 / flex 同行垂直居中
-- [X] stamp 20261016q sync push PR#3 + report
+## Task: 种子文案 + picker 点不开（20261016r）
+- 根因：`<label>` 包住 hidden select → 点击自定义按钮后 label 再点 select → outside-close 立刻关掉
+- [X] 文案四改；改成 `.habit-seed-field`；select 放进 picker；pointerdown 关闭
+- [ ] stamp 20261016r sync push PR#3 + report
 
-## Archived: App 图标 badge 20261016p / 种子弹框 20261016o
+## Archived: tab 对齐 20261016q / App badge 20261016p
 
 ## Lessons (this task)
 - share-capture 勿把所有 `.tab-panel` 刷成 `#f7fcf8`——会盖住森林卡；主屏保持 transparent
