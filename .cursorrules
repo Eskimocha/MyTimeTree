@@ -130,12 +130,11 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 
 # Scratchpad
 
-## Task: 主屏角标居中 + App 图标 badge（20261016p）
-- [X] tab-badge CSS 数字居中
-- [X] @capawesome/capacitor-badge ↔ badge_count / 还剩 X
-- [X] stamp 20261016p sync push PR#3 + report
+## Task: 主屏 tab 红点与「主屏」同行对齐（20261016q）
+- [X] `.tab-label` + badge `em` 尺寸 / flex 同行垂直居中
+- [ ] stamp 20261016q sync push PR#3 + report
 
-## Archived: 种子弹框 20261016o / 状态角标 20261016n
+## Archived: App 图标 badge 20261016p / 种子弹框 20261016o
 
 ## Lessons (this task)
 - share-capture 勿把所有 `.tab-panel` 刷成 `#f7fcf8`——会盖住森林卡；主屏保持 transparent
