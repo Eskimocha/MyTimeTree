@@ -48,6 +48,7 @@
       global.MyTimeTreeHabitSeed || {
         templates: [],
         scripts: [],
+        maui_habits: [],
         hints: [],
         celebration_actions: [],
         celebration_copy: [],
@@ -93,6 +94,7 @@
         s.version || "",
         (s.templates || []).length,
         (s.scripts || []).length,
+        (s.maui_habits || []).length,
         (s.hints || []).length,
         (s.celebration_actions || []).length,
         (s.celebration_copy || []).length,
@@ -152,6 +154,21 @@
                script_text=excluded.script_text,
                active=excluded.active`,
             [sc.id, sc.habit_slug || "", sc.category || "", sc.script_text, sc.active ? 1 : 0]
+          );
+        }
+        // Maui catalog: replace wholesale so retired rows leave the DB
+        db().exec(`DELETE FROM maui_habits`);
+        for (const mh of s.maui_habits || []) {
+          db().exec(
+            `INSERT INTO maui_habits (id, habit_slug, category, maui_text, active)
+             VALUES (?, ?, ?, ?, ?)`,
+            [
+              mh.id,
+              mh.habit_slug || "",
+              mh.category || "",
+              mh.maui_text,
+              mh.active ? 1 : 0,
+            ]
           );
         }
         for (const h of s.hints || []) {
@@ -227,15 +244,12 @@
             ]
           );
         }
+        // Micro defaults: replace wholesale (old multi-step seeds must leave)
+        db().exec(`DELETE FROM habit_micro_step_defaults`);
         for (const m of s.micro_steps || []) {
           db().exec(
             `INSERT INTO habit_micro_step_defaults (id, habit_slug, sort_order, step_text, active)
-             VALUES (?, ?, ?, ?, ?)
-             ON CONFLICT(id) DO UPDATE SET
-               habit_slug=excluded.habit_slug,
-               sort_order=excluded.sort_order,
-               step_text=excluded.step_text,
-               active=excluded.active`,
+             VALUES (?, ?, ?, ?, ?)`,
             [
               m.id,
               m.habit_slug || "",
@@ -269,6 +283,13 @@
           /* ignore */
         }
         throw err;
+      }
+      // After catalog refresh: rematerialize seed micros (custom kept)
+      rematerializeAllSeedMicroSteps();
+      try {
+        persist();
+      } catch {
+        /* persist may be unavailable during early boot */
       }
       return true;
     }
@@ -315,12 +336,18 @@
 
     function materializeMicroSteps(accountId, habitId, slug) {
       const existing = db().query(
-        "SELECT id FROM habit_micro_steps WHERE account_id = ? AND habit_id = ?",
+        "SELECT id FROM habit_micro_steps WHERE account_id = ? AND habit_id = ? AND archived = 0",
         [accountId, habitId]
       );
       if (existing.length) return;
       if (!slug) return;
       syncContentTables();
+      // sync may have rematerialized already; only insert if still empty
+      rematerializeSeedMicroSteps(accountId, habitId, slug);
+    }
+
+    function insertSeedMicroSteps(accountId, habitId, slug) {
+      if (!slug) return;
       const defaults = db().query(
         `SELECT * FROM habit_micro_step_defaults
          WHERE habit_slug = ? AND active = 1
@@ -341,6 +368,93 @@
             String(d.id),
             created,
           ]
+        );
+      }
+    }
+
+    /**
+     * Refresh seed-sourced micro steps from catalog; keep custom rows.
+     * Archives stale seed rows whose seed_id is no longer in defaults.
+     */
+    function rematerializeSeedMicroSteps(accountId, habitId, slug) {
+      if (!slug) return;
+      const defaults = db().query(
+        `SELECT * FROM habit_micro_step_defaults
+         WHERE habit_slug = ? AND active = 1
+         ORDER BY sort_order ASC, id ASC`,
+        [slug]
+      );
+      const defaultById = new Map(defaults.map((d) => [String(d.id), d]));
+      const seedRows = db().query(
+        `SELECT id, seed_id, step_text, sort_order FROM habit_micro_steps
+         WHERE account_id = ? AND habit_id = ? AND archived = 0 AND source = 'seed'`,
+        [accountId, habitId]
+      );
+      const customCount = db().queryOne(
+        `SELECT COUNT(*) AS c FROM habit_micro_steps
+         WHERE account_id = ? AND habit_id = ? AND archived = 0 AND source != 'seed'`,
+        [accountId, habitId]
+      );
+      // No rows yet → first materialize
+      if (!seedRows.length && Number(customCount?.c || 0) === 0) {
+        insertSeedMicroSteps(accountId, habitId, slug);
+        return;
+      }
+      const seen = new Set();
+      for (const row of seedRows) {
+        const sid = row.seed_id ? String(row.seed_id) : "";
+        const d = sid ? defaultById.get(sid) : null;
+        if (!d) {
+          db().exec("UPDATE habit_micro_steps SET archived = 1 WHERE id = ?", [
+            Number(row.id),
+          ]);
+          continue;
+        }
+        seen.add(sid);
+        if (
+          String(row.step_text) !== String(d.step_text) ||
+          Number(row.sort_order) !== Number(d.sort_order)
+        ) {
+          db().exec(
+            `UPDATE habit_micro_steps
+             SET step_text = ?, sort_order = ?
+             WHERE id = ?`,
+            [String(d.step_text), Number(d.sort_order) || 100, Number(row.id)]
+          );
+        }
+      }
+      const created = nowIso();
+      for (const d of defaults) {
+        const sid = String(d.id);
+        if (seen.has(sid)) continue;
+        db().exec(
+          `INSERT INTO habit_micro_steps (
+            account_id, habit_id, step_text, sort_order, source, seed_id, archived, created_at
+          ) VALUES (?, ?, ?, ?, 'seed', ?, 0, ?)`,
+          [
+            accountId,
+            habitId,
+            String(d.step_text),
+            Number(d.sort_order) || 100,
+            sid,
+            created,
+          ]
+        );
+      }
+    }
+
+    function rematerializeAllSeedMicroSteps() {
+      const habits = db().query(
+        `SELECT h.id AS habit_id, h.account_id AS account_id, t.slug AS slug
+         FROM habits h
+         LEFT JOIN habit_templates t ON t.id = h.template_id
+         WHERE h.archived = 0 AND t.slug IS NOT NULL`
+      );
+      for (const h of habits) {
+        rematerializeSeedMicroSteps(
+          Number(h.account_id),
+          Number(h.habit_id),
+          String(h.slug || "")
         );
       }
     }
@@ -484,6 +598,26 @@
       if (byCat) return String(byCat.script_text);
       const generic = rows.find((r) => !r.habit_slug && !r.category);
       return generic ? String(generic.script_text) : "记下来了——孩子被看见，时间也能存进树里。";
+    }
+
+    /** Catalog-only maui pick (slug → category → generic), like parent scripts. */
+    function pickMaui(habit) {
+      const slug = habit.template_slug || "";
+      const cat = habit.category || "";
+      let rows = [];
+      try {
+        rows = db().query("SELECT * FROM maui_habits WHERE active = 1");
+      } catch {
+        return "";
+      }
+      const bySlug = rows.find((r) => r.habit_slug && r.habit_slug === slug);
+      if (bySlug) return String(bySlug.maui_text);
+      const byCat = rows.find(
+        (r) => !r.habit_slug && r.category && r.category === cat
+      );
+      if (byCat) return String(byCat.maui_text);
+      const generic = rows.find((r) => !r.habit_slug && !r.category);
+      return generic ? String(generic.maui_text) : "";
     }
 
     function hintFromRow(row) {
@@ -767,6 +901,7 @@
         const slug = templateSlugForHabit(h.id);
         h.template_slug = slug;
         const micro_steps = listMicroSteps(accountId, h.id);
+        const mauiText = pickMaui(h);
         const scriptText = pickScript(h);
         const celeb = pickCelebration(h);
         return {
@@ -778,7 +913,9 @@
           log_id: log ? Number(log.id) : null,
           color: habitColor(h.id, "featured"),
           micro_steps,
+          maui_habit: mauiText ? { maui_text: mauiText } : null,
           parent_script: { script_text: scriptText },
+          // Tip expand does not show incentive; kept for complete/celebration payloads
           incentive_text: celeb.incentive_text,
           small_celebration: celeb.small_celebration,
         };

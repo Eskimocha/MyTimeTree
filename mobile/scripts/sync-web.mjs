@@ -14,7 +14,7 @@ const www = path.join(root, "mobile/www");
 const localSrc = path.join(root, "mobile/www-src/local");
 const sqlJsDist = path.join(root, "mobile/node_modules/sql.js/dist");
 /** Bust WKWebView caches for injected local scripts + app.js (was stuck on p5h1 / local-p2). */
-const LOCAL_ASSET_V = "20261016v";
+const LOCAL_ASSET_V = "20261016w";
 const iosPublic = path.join(root, "mobile/ios/App/App/public");
 
 function rmrf(dir) {
@@ -317,7 +317,16 @@ function assertBuildTree(base, tag) {
     /stretch_bed[\s\S]{0,400}ca_toe_wiggle/,
     `${tag} stretch_bed→toe_wiggle`
   );
-  assertMarker(base, "local/habit-seed.js", /牙齿保卫战！/, `${tag} brush incentive`);
+  assertMarker(base, "local/habit-seed.js", /牙齿保卫战！/, `${tag} brush celebration copy`);
+  assertMarker(base, "local/habit-seed.js", /只刷一排座牙/, `${tag} brush micro`);
+  assertMarker(base, "local/habit-seed.js", /洗完脸立即刷牙/, `${tag} brush maui`);
+  assertMarker(
+    base,
+    "local/habit-seed.js",
+    /这次我们只刷一排座牙吧？/,
+    `${tag} brush parent script`
+  );
+  assertMarker(base, "local/habit-seed.js", /"maui_habits"/, `${tag} maui_habits seed`);
   assertMarker(
     base,
     "local/habits.js",
@@ -325,6 +334,8 @@ function assertBuildTree(base, tag) {
     `${tag} incentive fallback chain`
   );
   assertMarker(base, "local/habits.js", /禁止全员同一默认句/, `${tag} no universal incentive`);
+  assertMarker(base, "local/habits.js", /function pickMaui/, `${tag} pickMaui`);
+  assertMarker(base, "local/habits.js", /rematerializeAllSeedMicroSteps/, `${tag} rematerialize micros`);
   {
     const habitsJs = fs.readFileSync(path.join(base, "local/habits.js"), "utf8");
     if (habitsJs.includes("被看见真好")) {
@@ -334,6 +345,16 @@ function assertBuildTree(base, tag) {
     console.log(`[sync-web] ok ${tag} no 被看见真好 fallback`);
   }
   assertMarker(base, "app.js", /icon-tip-star/, `${tag} tip star`);
+  assertMarker(base, "app.js", /毛伊习惯/, `${tag} tip 毛伊习惯 layer`);
+  assertMarker(base, "app.js", /无「激励」行/, `${tag} tip no 激励 row`);
+  {
+    const appJs = fs.readFileSync(path.join(base, "app.js"), "utf8");
+    if (/<strong>激励<\/strong>/.test(appJs)) {
+      console.error(`[sync-web] ${tag} tip still renders 激励 layer`);
+      process.exit(1);
+    }
+    console.log(`[sync-web] ok ${tag} tip has no 激励 layer`);
+  }
   assertMarker(base, "app.js", /renderHabitMilestones/, `${tag} renderHabitMilestones`);
   for (const rel of [
     "habit/icon-tip-star.png",

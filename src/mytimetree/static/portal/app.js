@@ -53,7 +53,7 @@
     bird: `/static/portal/ornaments/bird.png?v=${ASSET_V}`,
   };
 
-  const HABIT_MEDIA_V = "20261016v";
+  const HABIT_MEDIA_V = "20261016w";
   // Tip: bright star (icon-tip-seed path overwritten; icon-tip-star alias also shipped)
   const HABIT_TIP_ICON = `/static/portal/habit/icon-tip-star.png?v=${HABIT_MEDIA_V}`;
   const HABIT_TIP_ICON_2X = `/static/portal/habit/icon-tip-star@2x.png?v=${HABIT_MEDIA_V}`;
@@ -753,25 +753,26 @@
         const tip = document.createElement("button");
         tip.type = "button";
         tip.className = "habit-tip-btn";
-        tip.setAttribute("aria-label", `展开 ${it.title} 的微习惯与话术`);
+        tip.setAttribute("aria-label", `展开 ${it.title} 的微习惯、毛伊习惯与话术`);
         tip.setAttribute("aria-expanded", "false");
         tip.innerHTML = `<img class="habit-tip-icon" src="${HABIT_TIP_ICON}" srcset="${HABIT_TIP_ICON_2X} 2x" width="20" height="20" alt="">`;
         const panel = document.createElement("div");
         panel.className = "habit-tip-panel";
         panel.hidden = true;
         const micro = (it.micro_steps || []).map((s) => s.step_text).filter(Boolean);
+        const maui = it.maui_habit?.maui_text || "";
         const script = it.parent_script?.script_text || "";
-        const incentive = it.incentive_text || "";
+        // Tip expand: 微习惯 · 毛伊习惯 · 家长话术（无「激励」行）
         panel.innerHTML =
           `<div class="habit-tip-layer"><strong>微习惯</strong><p>${
             micro.length ? micro.join(" · ") : "可在设置里添加微步骤"
           }</p></div>` +
+          `<div class="habit-tip-layer"><strong>毛伊习惯</strong><p>${
+            maui || "洗完一件小事就做下一步"
+          }</p></div>` +
           `<div class="habit-tip-layer"><strong>家长话术</strong><p>${
             script || "记下来了——孩子被看见。"
-          }</p></div>` +
-          (incentive
-            ? `<div class="habit-tip-layer"><strong>激励</strong><p>${incentive}</p></div>`
-            : "");
+          }</p></div>`;
         tip.addEventListener("click", (e) => {
           e.stopPropagation();
           const open = panel.hidden;

@@ -1,7 +1,7 @@
 # 小庆祝文案（可编辑）
 
-> **只做庆祝**：记前「激励」短句 + 记后积极情绪一句 + 线下动作。  
-> `incentive_text` → 主屏 tip「激励」层（每习惯不同）。  
+> **只做庆祝**：记后积极情绪一句 + 线下动作（`incentive_text` 保留字段，**主屏 tip 展开不再展示「激励」行**）。  
+> Tip 展开层：微习惯 · 毛伊习惯 · 家长话术（见 `micro-steps` / `maui-habits` / `parent-scripts`）。  
 > `small_celebration` → 记后小庆祝句。  
 > `offline_hint_id` → `celebration-actions.md` 的 `id`（`ca_*`）。  
 > `habit_env`：该种子庆祝时的环境约束（须 ⊆ 动作 `env_tags`）。  

@@ -130,14 +130,18 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 
 # Scratchpad
 
-## Task: 庆祝排队（大庆→小庆）（20261016v）
-- 根因：complete 只返回一个 celebration（board 优先）吞掉小庆；且只评一个里程碑
-- [X] evaluateAllBoardMilestones + celebrations[]；UI 队列关一个再下一个
-- [X] stamp 20261016v sync push + report
-- 顺序：大庆 level ASC，最后小庆
-- Lesson: 大庆/小庆勿互斥单字段；用 celebrations[] 队列
+## Task: Tip 展开刷新 · 毛伊 + 无激励（20261016w）
+- 对照 store inventory：微习惯/毛伊/家长话术；tip **无「激励」行**
+- [X] cp store maui/micro/parent/templates
+- [X] schema v12 maui_habits；seed v5；pickMaui；rematerialize seed micros
+- [X] tip UI：微习惯 · 毛伊习惯 · 家长话术
+- [X] stamp 20261016w sync push report
+- 刷牙：微=只刷一排座牙 · 毛伊=洗完脸立即刷牙 · 话术=这次我们只刷一排座牙吧？
+- Lesson: tip 展开勿绑 incentive_text；记后小庆仍用 small_celebration
+- Lesson: micro defaults 须 wholesale replace + rematerialize seed 行，否则旧多步残留
 
-## Archived: badge 权限 20261016s / 种子文案 20261016r
+## Archived: 庆祝排队 20261016v / badge 20261016s / 种子 20261016r
+- Lesson: 大庆/小庆勿互斥单字段；用 celebrations[] 队列
 - Lesson: 自定义 select 替身勿放在关联该 select 的 `<label>` 内
 - Lesson: iOS 图标 badge 勿只 request `.badge`；要 `.alert,.badge,.sound` 才会出系统弹窗
 
@@ -146,5 +150,6 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 - JS 设 height 时须 `setProperty(..., "important")`，否则打不过 CSS `height:auto !important`
 - Content tables: `docs/v2/content/*.md` → `build-habit-content.mjs` → `habit-seed.js`；`sync-web` 必须先 build
 - Kai 错支：须在 `habit-polish-o1-o6` 上 sync（勿停在 habit-ios-replan）
+- tip 展开字段序：微习惯 · 毛伊习惯 · 家长话术（无激励）
 
 ## Archived: 日历 20261016l / Kai 5 / whisper / toe

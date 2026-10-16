@@ -13,7 +13,7 @@
 | 微步骤 | 55 | micro-steps.md |
 | 毛伊 | 67 | maui-habits.md |
 | 家长话术 | 67 | parent-scripts.md |
-| 激励 + 小庆祝句 | 55+ | celebration-copy.md（`incentive_text`→tip「激励」；`small_celebration`→记后；→ `ca_*`） |
+| 激励 + 小庆祝句 | 55+ | celebration-copy.md（`incentive_text`保留字段，tip **不展示**；`small_celebration`→记后；→ `ca_*`） |
 | 小庆祝动作 | **28** | celebration-actions.md（真源） |
 | 里程碑达成奖章 | **12** | habit-board-milestones.md（UI 标题；无十五次；含二百次） |
 

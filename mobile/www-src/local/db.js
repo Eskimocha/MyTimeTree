@@ -309,6 +309,20 @@
         )`,
       ],
     },
+    {
+      version: 12,
+      sql: [
+        `CREATE TABLE IF NOT EXISTS maui_habits (
+          id TEXT PRIMARY KEY,
+          habit_slug TEXT NOT NULL DEFAULT '',
+          category TEXT NOT NULL DEFAULT '',
+          maui_text TEXT NOT NULL,
+          active INTEGER NOT NULL DEFAULT 1
+        )`,
+        `CREATE INDEX IF NOT EXISTS idx_maui_habits_slug
+          ON maui_habits(habit_slug, category, active)`,
+      ],
+    },
   ];
 
   let lastSyncMeta = {

@@ -263,8 +263,27 @@ const tipItem = todayFull.items?.[0];
 if (!tipItem) throw new Error("today empty after complete");
 if (!Array.isArray(tipItem.micro_steps)) throw new Error("micro_steps missing on today item");
 if (!tipItem.parent_script?.script_text) throw new Error("parent_script missing on today item");
+if (!tipItem.maui_habit?.maui_text) throw new Error("maui_habit missing on today item");
+const brush = todayFull.items.find(
+  (i) => i.title === "刷牙" || (i.micro_steps || []).some((s) => /座牙/.test(s.step_text))
+);
+if (brush) {
+  const microText = (brush.micro_steps || []).map((s) => s.step_text).join(" · ");
+  if (!/只刷一排座牙/.test(microText)) {
+    throw new Error(`brush micro want 只刷一排座牙 got ${microText}`);
+  }
+  if (brush.maui_habit?.maui_text !== "洗完脸立即刷牙") {
+    throw new Error(`brush maui want 洗完脸立即刷牙 got ${brush.maui_habit?.maui_text}`);
+  }
+  if (brush.parent_script?.script_text !== "这次我们只刷一排座牙吧？") {
+    throw new Error(`brush script want 这次我们只刷一排座牙吧？ got ${brush.parent_script?.script_text}`);
+  }
+  console.log(
+    `[smoke-habits] brush tip OK micro=${microText} maui=${brush.maui_habit.maui_text} script=${brush.parent_script.script_text}`
+  );
+}
 console.log(
-  `[smoke-habits] today tip micro=${tipItem.micro_steps.length} color=${tipItem.color}`
+  `[smoke-habits] today tip micro=${tipItem.micro_steps.length} maui=${tipItem.maui_habit.maui_text} color=${tipItem.color}`
 );
 
 const msAdd = await api("/api/portal/habits/micro-steps", {
