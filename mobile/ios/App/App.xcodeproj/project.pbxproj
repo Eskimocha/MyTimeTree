@@ -20,6 +20,7 @@
 		C3D4E5F61F60718293A4B5C8 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D4E5F61F60718293A4B5C9 /* MainViewController.swift */; };
 		D4E5F6A71F60718293A4B5D1 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4E5F6A71F60718293A4B5D0 /* SceneDelegate.swift */; };
 		E1F2A3B41C5D60718293A001 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = E1F2A3B41C5D60718293A003 /* InfoPlist.strings */; };
+		F2A3B4C51D60718293A4B5E2 /* AppIconBadgePlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2A3B4C51D60718293A4B5E3 /* AppIconBadgePlugin.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -39,6 +40,7 @@
 		C3D4E5F61F60718293A4B5C9 /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 		D4E5F6A71F60718293A4B5D0 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		E1F2A3B41C5D60718293A002 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		F2A3B4C51D60718293A4B5E3 /* AppIconBadgePlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIconBadgePlugin.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,6 +81,7 @@
 				C3D4E5F61F60718293A4B5C9 /* MainViewController.swift */,
 				A1B2C3D41E5F60718293A4B6 /* SaveToPhotosPlugin.swift */,
 				B2C3D4E51F60718293A4B5C7 /* ICloudDbPlugin.swift */,
+				F2A3B4C51D60718293A4B5E3 /* AppIconBadgePlugin.swift */,
 				B2C3D4E51F60718293A4B5C8 /* App.entitlements */,
 				504EC30B1FED79650016851F /* Main.storyboard */,
 				504EC30E1FED79650016851F /* Assets.xcassets */,
@@ -180,6 +183,7 @@
 				C3D4E5F61F60718293A4B5C8 /* MainViewController.swift in Sources */,
 				A1B2C3D41E5F60718293A4B5 /* SaveToPhotosPlugin.swift in Sources */,
 				B2C3D4E51F60718293A4B5C6 /* ICloudDbPlugin.swift in Sources */,
+				F2A3B4C51D60718293A4B5E2 /* AppIconBadgePlugin.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

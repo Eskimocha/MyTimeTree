@@ -7,5 +7,6 @@ class MainViewController: CAPBridgeViewController {
         super.capacitorDidLoad()
         bridge?.registerPluginInstance(SaveToPhotosPlugin())
         bridge?.registerPluginInstance(ICloudDbPlugin())
+        bridge?.registerPluginInstance(AppIconBadgePlugin())
     }
 }

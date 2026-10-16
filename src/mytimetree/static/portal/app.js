@@ -53,7 +53,7 @@
     bird: `/static/portal/ornaments/bird.png?v=${ASSET_V}`,
   };
 
-  const HABIT_MEDIA_V = "20261016r";
+  const HABIT_MEDIA_V = "20261016s";
   // Tip: bright star (icon-tip-seed path overwritten; icon-tip-star alias also shipped)
   const HABIT_TIP_ICON = `/static/portal/habit/icon-tip-star.png?v=${HABIT_MEDIA_V}`;
   const HABIT_TIP_ICON_2X = `/static/portal/habit/icon-tip-star@2x.png?v=${HABIT_MEDIA_V}`;
@@ -585,57 +585,108 @@
     }
   }
 
-  /** iOS SpringBoard icon badge — same count as tab「主屏」/「还剩 X」. */
-  let appIconBadgeReady = null;
-  async function ensureAppIconBadgePermission() {
-    if (appIconBadgeReady != null) return appIconBadgeReady;
-    if (!isNativeApp()) {
-      appIconBadgeReady = false;
-      return false;
+  /**
+   * iOS SpringBoard icon badge — same count as tab「主屏」/「还剩 X」.
+   * Prefer local AppIconBadge (UNUserNotificationCenter + setBadgeCount + alert/badge/sound
+   * permission so the system dialog actually appears). Fall back to Capawesome Badge.
+   */
+  let appIconBadgeDenied = false;
+  let appIconBadgeAsked = false;
+
+  function resolveAppIconBadgePlugin() {
+    const primary = capPlugin("AppIconBadge");
+    if (primary && typeof primary.set === "function") {
+      return { name: "AppIconBadge", plugin: primary };
     }
-    const Badge = capPlugin("Badge");
-    if (!Badge || typeof Badge.requestPermissions !== "function") {
-      appIconBadgeReady = false;
-      console.warn("[badge] Badge plugin missing — rebuild iOS with @capawesome/capacitor-badge");
-      return false;
+    const fallback = capPlugin("Badge");
+    if (fallback && typeof fallback.set === "function") {
+      return { name: "Badge", plugin: fallback };
     }
+    return null;
+  }
+
+  async function ensureAppIconBadgePermission(forceAsk) {
+    if (!isNativeApp()) return { ok: false, reason: "not-native" };
+    if (appIconBadgeDenied && !forceAsk) {
+      return { ok: false, reason: "denied-cached" };
+    }
+    const resolved = resolveAppIconBadgePlugin();
+    if (!resolved) {
+      console.warn(
+        "[badge] no AppIconBadge/Badge plugin — Xcode Clean Build after cap sync; check MainViewController register"
+      );
+      try {
+        const keys =
+          window.Capacitor && window.Capacitor.Plugins
+            ? Object.keys(window.Capacitor.Plugins)
+            : [];
+        console.warn("[badge] Capacitor.Plugins", keys);
+      } catch {
+        /* ignore */
+      }
+      return { ok: false, reason: "missing-plugin" };
+    }
+    const { name, plugin } = resolved;
     try {
-      if (typeof Badge.isSupported === "function") {
-        const sup = await Badge.isSupported();
-        if (sup && sup.isSupported === false) {
-          appIconBadgeReady = false;
-          return false;
+      let status =
+        typeof plugin.checkPermissions === "function"
+          ? await plugin.checkPermissions()
+          : { display: "prompt" };
+      console.info("[badge] check", name, status);
+      const display = status && status.display;
+      if (display === "denied") {
+        appIconBadgeDenied = true;
+        return { ok: false, reason: "denied", status };
+      }
+      if (display !== "granted" || forceAsk) {
+        if (typeof plugin.requestPermissions === "function") {
+          appIconBadgeAsked = true;
+          status = await plugin.requestPermissions();
+          console.info("[badge] request", name, status);
         }
       }
-      let status =
-        typeof Badge.checkPermissions === "function"
-          ? await Badge.checkPermissions()
-          : null;
-      if (!status || status.display !== "granted") {
-        status = await Badge.requestPermissions();
+      const granted =
+        status &&
+        (status.display === "granted" || status.granted === true);
+      if (!granted && status && status.display === "denied") {
+        appIconBadgeDenied = true;
+        return { ok: false, reason: "denied", status };
       }
-      appIconBadgeReady = status && status.display === "granted";
-      console.info("[badge] permission", status);
-      return appIconBadgeReady;
+      // Even if still "prompt", let set() try (native set path re-asks).
+      appIconBadgeDenied = false;
+      return { ok: true, reason: granted ? "granted" : "try-set", status, name };
     } catch (e) {
-      console.warn("[badge] permission", e);
-      appIconBadgeReady = false;
-      return false;
+      console.warn("[badge] permission", name, e);
+      // Do NOT permanently cache false — Cap may not be ready on first tick.
+      return { ok: false, reason: "error", error: String((e && e.message) || e) };
     }
   }
 
   async function syncAppIconBadge(n) {
     const count = Math.max(0, Math.floor(Number(n) || 0));
-    if (!isNativeApp()) return;
-    const Badge = capPlugin("Badge");
-    if (!Badge || typeof Badge.set !== "function") return;
+    if (!isNativeApp()) {
+      console.info("[badge] skip web count=", count);
+      return;
+    }
+    const resolved = resolveAppIconBadgePlugin();
+    if (!resolved) return;
+    const { name, plugin } = resolved;
     try {
-      const ok = await ensureAppIconBadgePermission();
-      if (!ok) return;
-      await Badge.set({ count });
-      console.info("[badge] set", count);
+      // Ask when there is something to show, or once after unlock even for clear.
+      const forceAsk = count > 0 && !appIconBadgeAsked;
+      const perm = await ensureAppIconBadgePermission(forceAsk);
+      console.info("[badge] sync", { count, name, perm });
+      if (perm.reason === "denied" || perm.reason === "denied-cached") {
+        return;
+      }
+      if (count === 0 && typeof plugin.clear === "function") {
+        await plugin.clear();
+      } else {
+        await plugin.set({ count });
+      }
+      console.info("[badge] set ok", name, count);
     } catch (e) {
-      console.warn("[badge] set", e);
+      console.warn("[badge] set failed", name, e);
     }
   }
 
@@ -2296,6 +2347,8 @@
     if (App && typeof App.addListener === "function") {
       App.addListener("appStateChange", ({ isActive }) => {
         if (!isActive || !state.currentAccountId) return;
+        // Allow another permission attempt if Cap was not ready at first paint.
+        if (!appIconBadgeDenied) appIconBadgeAsked = false;
         refreshHabitsStrip().catch((err) => {
           console.warn("[badge] refresh on resume", err);
         });

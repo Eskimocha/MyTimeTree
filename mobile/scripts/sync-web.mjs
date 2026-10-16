@@ -14,7 +14,7 @@ const www = path.join(root, "mobile/www");
 const localSrc = path.join(root, "mobile/www-src/local");
 const sqlJsDist = path.join(root, "mobile/node_modules/sql.js/dist");
 /** Bust WKWebView caches for injected local scripts + app.js (was stuck on p5h1 / local-p2). */
-const LOCAL_ASSET_V = "20261016r";
+const LOCAL_ASSET_V = "20261016s";
 const iosPublic = path.join(root, "mobile/ios/App/App/public");
 
 function rmrf(dir) {
@@ -273,7 +273,9 @@ function assertBuildTree(base, tag) {
     console.log(`[sync-web] ok ${tag} no stale seed/custom labels`);
   }
   assertMarker(base, "app.js", /syncAppIconBadge/, `${tag} syncAppIconBadge`);
-  assertMarker(base, "app.js", /capPlugin\("Badge"\)/, `${tag} Badge plugin`);
+  assertMarker(base, "app.js", /capPlugin\("AppIconBadge"\)/, `${tag} AppIconBadge plugin`);
+  assertMarker(base, "app.js", /capPlugin\("Badge"\)/, `${tag} Badge fallback`);
+  assertMarker(base, "app.js", /forceAsk/, `${tag} badge forceAsk when pending`);
   assertMarker(base, "styles.css", /\.tab\s*\{[\s\S]*?display:\s*inline-flex/, `${tag} CSS tab inline-flex`);
   assertMarker(base, "styles.css", /\.tab-badge\s*\{[\s\S]*?line-height:\s*1/, `${tag} CSS tab-badge line-height`);
   assertMarker(base, "styles.css", /\.tab-label/, `${tag} CSS tab-label`);

@@ -35,6 +35,9 @@
 	<string>使用 Face ID 快速解锁 MyTimeTree，保护孩子的时间资产记录。</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>将当前页长图保存到相册，方便你用微信等方式分享孩子的时间树。</string>
+	<!-- Local notification / badge: iOS shows the system permission dialog from
+	     UNUserNotificationCenter.requestAuthorization (no dedicated usage-description key).
+	     AppIconBadgePlugin requests alert+badge+sound so the dialog appears. -->
 	<key>NSUbiquitousContainers</key>
 	<dict>
 		<key>iCloud.com.mytimetree.app</key>
