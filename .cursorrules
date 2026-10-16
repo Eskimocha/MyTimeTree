@@ -132,7 +132,7 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 
 ## Task: 主屏 tab 红点与「主屏」同行对齐（20261016q）
 - [X] `.tab-label` + badge `em` 尺寸 / flex 同行垂直居中
-- [ ] stamp 20261016q sync push PR#3 + report
+- [X] stamp 20261016q sync push PR#3 + report
 
 ## Archived: App 图标 badge 20261016p / 种子弹框 20261016o
 
