@@ -3,7 +3,7 @@
   "use strict";
   global.MyTimeTreeHabitSeed = {
   "version": 5,
-  "generated_at": "2026-10-16T11:33:32.571Z",
+  "generated_at": "2026-10-16T11:40:28.951Z",
   "templates": [
     {
       "slug": "brush_teeth",
@@ -21,7 +21,7 @@
       "default_minutes": 5,
       "active": true,
       "sort_default": 15,
-      "notes": "Kai：毛伊=对自己说：“我要美美的！”；微步骤/话术=只洗额头"
+      "notes": "Kai：毛伊=走到盥洗区停5秒；微步骤/话术=只洗额头"
     },
     {
       "slug": "wash_hands",
@@ -75,7 +75,7 @@
       "default_minutes": 5,
       "active": true,
       "sort_default": 45,
-      "notes": "Kai：毛伊=起床前先想象自己的笑脸；微步骤/话术=只把上身坐起来"
+      "notes": "Kai：毛伊=爸爸妈妈帮助捏捏脚趾或手指；微步骤/话术=只把上身坐起来"
     },
     {
       "slug": "read_one_page",
@@ -1009,7 +1009,7 @@
       "id": "mh_wash_f_1",
       "habit_slug": "wash_face",
       "category": "hygiene",
-      "maui_text": "对自己说：“我要美美的！”",
+      "maui_text": "走到盥洗区停5秒",
       "active": true
     },
     {
@@ -1051,7 +1051,7 @@
       "id": "mh_nophone_1",
       "habit_slug": "no_phone_bed",
       "category": "sleep",
-      "maui_text": "手机放下后深呼吸一次",
+      "maui_text": "刷完牙就收手机",
       "active": true
     },
     {
@@ -1065,7 +1065,7 @@
       "id": "mh_wake_1",
       "habit_slug": "morning_wake",
       "category": "sleep",
-      "maui_text": "起床前先想象自己的笑脸",
+      "maui_text": "爸爸妈妈帮助捏捏脚趾或手指",
       "active": true
     },
     {

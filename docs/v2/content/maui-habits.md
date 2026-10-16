@@ -8,15 +8,15 @@
 | id | habit_slug | category | maui_text | active |
 |----|------------|----------|-----------|--------|
 | mh_brush_1 | brush_teeth | hygiene | 洗完脸立即刷牙 | 1 |
-| mh_wash_f_1 | wash_face | hygiene | 对自己说：“我要美美的！” | 1 |
+| mh_wash_f_1 | wash_face | hygiene | 走到盥洗区停5秒 | 1 |
 | mh_wash_h_1 | wash_hands | hygiene | 搓搓手指说「准备开饭」 | 1 |
 | mh_floss_1 | floss_once | hygiene | 洗完脸就用牙线 | 1 |
 | mh_brushe_1 | brush_evening | hygiene | 洗完脸就刷牙 | 1 |
 | mh_towel_1 | tidy_bathroom | hygiene | 洗完脸就挂毛巾 | 1 |
 | mh_bed_1 | bedtime_on_time | sleep | 刷完牙就上床 | 1 |
-| mh_nophone_1 | no_phone_bed | sleep | 手机放下后深呼吸一次 | 1 |
+| mh_nophone_1 | no_phone_bed | sleep | 刷完牙就收手机 | 1 |
 | mh_lights_1 | lights_out | sleep | 轻声说「晚安世界」 | 1 |
-| mh_wake_1 | morning_wake | sleep | 起床前先想象自己的笑脸 | 1 |
+| mh_wake_1 | morning_wake | sleep | 爸爸妈妈帮助捏捏脚趾或手指 | 1 |
 | mh_read1_1 | read_one_page | reading | 喝口水或吃块饼干 | 1 |
 | mh_readnote_1 | read_note | reading | 用镇纸压住翻开的书本 | 1 |
 | mh_poem_1 | recite_poem | reading | 拍拍胸口说「我能行」 | 1 |

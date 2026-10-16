@@ -7,13 +7,13 @@
 | slug | title | category | default_minutes | active | sort_default | notes |
 |------|-------|----------|-----------------|--------|--------------|-------|
 | brush_teeth | 刷牙 | hygiene | 5 | 1 | 10 | Kai：毛伊=洗完脸立即刷牙；微步骤/话术=只刷一排座牙 |
-| wash_face | 洗脸 | hygiene | 5 | 1 | 15 | Kai：毛伊=对自己说：“我要美美的！”；微步骤/话术=只洗额头 |
+| wash_face | 洗脸 | hygiene | 5 | 1 | 15 | Kai：毛伊=走到盥洗区停5秒；微步骤/话术=只洗额头 |
 | wash_hands | 饭前洗手 | hygiene | 5 | 1 | 20 | |
 | floss_once | 用牙线一次 | hygiene | 5 | 1 | 25 | Kai：毛伊=洗完脸就用牙线；微步骤/话术=只清洁门牙缝一处 |
 | bedtime_on_time | 按时上床 | sleep | 5 | 1 | 30 | Kai：毛伊=刷完牙就上床；微步骤/话术=只把身体躺平 |
 | no_phone_bed | 睡前不玩手机 | sleep | 5 | 1 | 35 | |
 | lights_out | 准时关灯 | sleep | 5 | 1 | 40 | |
-| morning_wake | 按时起床 | sleep | 5 | 1 | 45 | Kai：毛伊=起床前先想象自己的笑脸；微步骤/话术=只把上身坐起来 |
+| morning_wake | 按时起床 | sleep | 5 | 1 | 45 | Kai：毛伊=爸爸妈妈帮助捏捏脚趾或手指；微步骤/话术=只把上身坐起来 |
 | read_one_page | 读一页书 | reading | 5 | 1 | 50 | Kai：毛伊=喝口水或吃块饼干；微步骤/话术=只读本页第一段 |
 | read_note | 记读书笔记 | reading | 10 | 1 | 55 | Kai 手改替换原「阅读十分钟」 |
 | read_ten_min | 阅读十分钟 | reading | 10 | 0 | 55 | 已由 read_note 取代 |
