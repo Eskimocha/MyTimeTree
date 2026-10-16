@@ -53,7 +53,7 @@
     bird: `/static/portal/ornaments/bird.png?v=${ASSET_V}`,
   };
 
-  const HABIT_MEDIA_V = "20261016m";
+  const HABIT_MEDIA_V = "20261016n";
   // Tip: bright star (icon-tip-seed path overwritten; icon-tip-star alias also shipped)
   const HABIT_TIP_ICON = `/static/portal/habit/icon-tip-star.png?v=${HABIT_MEDIA_V}`;
   const HABIT_TIP_ICON_2X = `/static/portal/habit/icon-tip-star@2x.png?v=${HABIT_MEDIA_V}`;
@@ -582,12 +582,22 @@
       // Keep settings sort order (API already returns first 9)
       const show = data.items || [];
       const pending = show.filter((i) => !i.done).length;
-      const limit = Number(data.strip_limit) || 9;
       strip.hidden = false;
-      // Visible probe: count/limit so Kai can confirm polish strip without Inspector
-      $("#habit-strip-meta").textContent = pending
-        ? `还剩 ${pending} · ${show.length}/${limit}`
-        : `今日已记完 · ${show.length}/${limit}`;
+      // Status: red-dot +「还剩 X」when pending;「总共 N」only (no 完成/总数 slash).
+      const remainEl = $("#habit-strip-remain");
+      const totalEl = $("#habit-strip-total");
+      if (remainEl) {
+        if (pending > 0) {
+          remainEl.textContent = `还剩 ${pending}`;
+          remainEl.classList.add("has-pending");
+        } else {
+          remainEl.textContent = "今日已记完";
+          remainEl.classList.remove("has-pending");
+        }
+      }
+      if (totalEl) {
+        totalEl.textContent = `总共 ${show.length}`;
+      }
       rail.innerHTML = "";
       for (const it of show) {
         const row = document.createElement("div");

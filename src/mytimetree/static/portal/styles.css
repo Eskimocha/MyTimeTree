@@ -1150,6 +1150,29 @@ html.share-capture #tab-home.tab-panel {
   color: var(--leaf-deep);
   font-weight: 600;
 }
+.habit-strip-meta {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+.habit-strip-remain.has-pending::before {
+  content: "";
+  display: inline-block;
+  width: 0.45em;
+  height: 0.45em;
+  margin-right: 0.35em;
+  border-radius: 50%;
+  background: var(--danger);
+  vertical-align: 0.05em;
+  box-shadow: 0 0 0 1px #fff8;
+}
+.habit-strip-meta-sep {
+  opacity: 0.75;
+}
 .habit-chip-rail {
   display: flex;
   flex-direction: column;
