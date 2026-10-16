@@ -134,8 +134,9 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 - 问题：html2canvas 烘焙 backdrop-filter → 毛玻璃白边；只截视口漏「今日好习惯」
 - 方案：仍用 html2canvas（主屏 #share-page-btn）；share-capture 杀 blur、#tab-home 透明、保留 hero-tree 渐变；expand 嵌套 scroller 拼长图
 - [X] styles.css + share.js
-- [ ] stamp 20261016m + sync-web + push PR#3
-- [ ] internal report + Kai sync
+- [X] stamp 20261016m + sync-web + push PR#3 (`99afea4`)
+- [X] internal report + Kai sync
+- 报告：`/cursor/stores/bc-8f9f8d0f-569a-4a4b-8ab8-f691902d7367/internal/habit-home-screenshot-20261016.md`
 
 ## Lessons (this task)
 - share-capture 勿把所有 `.tab-panel` 刷成 `#f7fcf8`——会盖住森林卡；主屏保持 transparent
