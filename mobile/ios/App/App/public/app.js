@@ -53,7 +53,7 @@
     bird: `./ornaments/bird.png?v=${ASSET_V}`,
   };
 
-  const HABIT_MEDIA_V = "20261016f";
+  const HABIT_MEDIA_V = "20261016g";
   // Tip: bright star (icon-tip-seed path overwritten; icon-tip-star alias also shipped)
   const HABIT_TIP_ICON = `./habit/icon-tip-star.png?v=${HABIT_MEDIA_V}`;
   const HABIT_TIP_ICON_2X = `./habit/icon-tip-star@2x.png?v=${HABIT_MEDIA_V}`;
@@ -76,7 +76,9 @@
     "img-thumbs-up": "img-ca-thumbs-up",
     "img-fist-bump": "img-ca-fist-bump",
     "img-soft-clap": "img-ca-silent-clap",
-    "img-ear-whisper": "img-ca-whisper-ok",
+    "img-ear-whisper": "img-ca-whisper-ok-v2",
+    "img-ca-whisper-ok": "img-ca-whisper-ok-v2",
+    "img-ca-toe-wiggle": "img-ca-toe-bike-v2",
     "img-heart-hands": "img-ca-quiet-heart",
     "img-blanket-tuck": "img-ca-blanket-squeeze",
     "img-cheek-pat": "img-ca-cheek-soft",

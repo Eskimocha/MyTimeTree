@@ -3,7 +3,7 @@
   "use strict";
   global.MyTimeTreeHabitSeed = {
   "version": 4,
-  "generated_at": "2026-10-16T04:26:54.834Z",
+  "generated_at": "2026-10-16T07:12:51.202Z",
   "templates": [
     {
       "slug": "brush_teeth",
@@ -1186,7 +1186,7 @@
       "id": "ca_whisper_ok",
       "title": "贴耳轻说「成功了」",
       "body": "妈妈贴近孩子耳边轻声说「成功了」（画面无爸爸）",
-      "image_key": "img-ca-whisper-ok",
+      "image_key": "img-ca-whisper-ok-v2",
       "categories": [],
       "env_tags": [
         "quiet_bed",
@@ -1234,7 +1234,7 @@
       "id": "ca_toe_wiggle",
       "title": "躺卧踩单车",
       "body": "人躺着，双腿在空中交替做踩单车动作",
-      "image_key": "img-ca-toe-wiggle",
+      "image_key": "img-ca-toe-bike-v2",
       "categories": [],
       "env_tags": [
         "quiet_bed"
@@ -1589,7 +1589,7 @@
       "id": "ca_whisper_ok",
       "title": "贴耳轻说「成功了」",
       "body": "妈妈贴近孩子耳边轻声说「成功了」（画面无爸爸）",
-      "image_key": "img-ca-whisper-ok",
+      "image_key": "img-ca-whisper-ok-v2",
       "env_tags": [
         "quiet_bed",
         "seated",
@@ -1633,7 +1633,7 @@
       "id": "ca_toe_wiggle",
       "title": "躺卧踩单车",
       "body": "人躺着，双腿在空中交替做踩单车动作",
-      "image_key": "img-ca-toe-wiggle",
+      "image_key": "img-ca-toe-bike-v2",
       "env_tags": [
         "quiet_bed"
       ],
@@ -1789,7 +1789,7 @@
       "incentive_text": "",
       "small_celebration": "屏幕放下了",
       "offline_hint_id": "ca_whisper_ok",
-      "image_key": "img-ca-whisper-ok",
+      "image_key": "img-ca-whisper-ok-v2",
       "active": true
     },
     {

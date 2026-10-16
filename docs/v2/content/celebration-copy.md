@@ -15,7 +15,7 @@
 | cc_brushe | brush_evening | hygiene | standing | 夜间清洁完成 | ca_thumbs_up | img-ca-thumbs-up | 1 |
 | cc_towel | tidy_bathroom | hygiene | standing | 浴室整齐一分 | ca_thumbs_up | img-ca-thumbs-up | 1 |
 | cc_bed | bedtime_on_time | sleep | quiet_bed | 上床充电开始 | ca_pillow_bump | img-ca-pillow-bump | 1 |
-| cc_nophone | no_phone_bed | sleep | quiet_bed | 屏幕放下了 | ca_whisper_ok | img-ca-whisper-ok | 1 |
+| cc_nophone | no_phone_bed | sleep | quiet_bed | 屏幕放下了 | ca_whisper_ok | img-ca-whisper-ok-v2 | 1 |
 | cc_lights | lights_out | sleep | quiet_bed | 关灯仪式完成 | ca_blanket_squeeze | img-ca-blanket-squeeze | 1 |
 | cc_wake | morning_wake | sleep | standing | 默念“成功了！” | ca_air_high_five | img-ca-air-high-five | 1 |
 | cc_read1 | read_one_page | reading | seated | 又一页！ | ca_desk_tap | img-ca-desk-tap | 1 |
