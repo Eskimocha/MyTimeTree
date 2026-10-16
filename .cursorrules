@@ -133,9 +133,10 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 ## Task: 种子文案 + picker 点不开（20261016r）
 - 根因：`<label>` 包住 hidden select → 点击自定义按钮后 label 再点 select → outside-close 立刻关掉
 - [X] 文案四改；改成 `.habit-seed-field`；select 放进 picker；pointerdown 关闭
-- [ ] stamp 20261016r sync push PR#3 + report
+- [X] stamp 20261016r sync push PR#3 + report
 
 ## Archived: tab 对齐 20261016q / App badge 20261016p
+- Lesson: 自定义 select 替身勿放在关联该 select 的 `<label>` 内
 
 ## Lessons (this task)
 - share-capture 勿把所有 `.tab-panel` 刷成 `#f7fcf8`——会盖住森林卡；主屏保持 transparent
