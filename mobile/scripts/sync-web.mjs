@@ -14,7 +14,7 @@ const www = path.join(root, "mobile/www");
 const localSrc = path.join(root, "mobile/www-src/local");
 const sqlJsDist = path.join(root, "mobile/node_modules/sql.js/dist");
 /** Bust WKWebView caches for injected local scripts + app.js (was stuck on p5h1 / local-p2). */
-const LOCAL_ASSET_V = "20261016k";
+const LOCAL_ASSET_V = "20261016l";
 const iosPublic = path.join(root, "mobile/ios/App/App/public");
 
 function rmrf(dir) {
@@ -247,10 +247,22 @@ function assertBuildTree(base, tag) {
   assertMarker(base, "app.js", /habit-swipe-actions/, `${tag} habit-swipe-actions`);
   assertMarker(base, "app.js", /改奖励/, `${tag} 改奖励`);
   assertMarker(base, "app.js", /HABIT_IMAGE_ALIASES/, `${tag} HABIT_IMAGE_ALIASES`);
-  assertMarker(base, "app.js", /20261016k/, `${tag} HABIT_MEDIA_V 20261016k`);
+  assertMarker(base, "app.js", /20261016l/, `${tag} HABIT_MEDIA_V 20261016l`);
   assertMarker(base, "app.js", /里程碑达成奖章/, `${tag} 里程碑达成奖章`);
   assertMarker(base, "app.js", /小庆祝一下吧/, `${tag} 小庆祝一下吧`);
   assertMarker(base, "index.html", /里程碑达成奖章/, `${tag} aria 里程碑达成奖章`);
+  assertMarker(base, "app.js", /月记 \$\{monthLogs\} 条/, `${tag} 月记 stats`);
+  assertMarker(base, "app.js", /habit-heatmap-month/, `${tag} heatmap month title`);
+  assertMarker(base, "local/habits.js", /month_label/, `${tag} month_label`);
+  assertMarker(base, "local/habits.js", /month_logs:/, `${tag} month_logs stats`);
+  {
+    const appJs = fs.readFileSync(path.join(base, "app.js"), "utf8");
+    if (/近记/.test(appJs) || /里程碑 \$\{achieved\}/.test(appJs)) {
+      console.error(`[sync-web] ${tag} stale 近记/里程碑 stats still in app.js`);
+      process.exit(1);
+    }
+    console.log(`[sync-web] ok ${tag} no 近记/里程碑 stats line`);
+  }
   assertMarker(base, "local/habit-seed.js", /躺卧踩单车/, `${tag} 躺卧踩单车`);
   assertMarker(base, "local/habit-seed.js", /img-ca-whisper-ok-v2/, `${tag} whisper-ok-v2`);
   assertMarker(base, "local/habit-seed.js", /img-ca-toe-bike-v2/, `${tag} toe-bike-v2`);

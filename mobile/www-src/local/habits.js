@@ -981,6 +981,17 @@
         ).c
       );
       const monthHeat = monthHeatmap(accountId);
+      const monthLogs = Number(
+        db().queryOne(
+          `SELECT COUNT(*) AS c FROM habit_logs
+           WHERE account_id = ? AND day_key >= ? AND day_key <= ?`,
+          [
+            accountId,
+            `${String(monthHeat.year).padStart(4, "0")}-${String(monthHeat.month).padStart(2, "0")}-01`,
+            `${String(monthHeat.year).padStart(4, "0")}-${String(monthHeat.month).padStart(2, "0")}-${String(new Date(monthHeat.year, monthHeat.month, 0).getDate()).padStart(2, "0")}`,
+          ]
+        ).c
+      );
       const boardCopyRows = db()
         .query("SELECT * FROM habit_board_copy WHERE active = 1")
         .map((r) => ({
@@ -995,6 +1006,7 @@
         board: {
           stats: {
             total_logs: timeline.length,
+            month_logs: monthLogs,
             week_logs: weekLogs,
             minutes_redeemed: timeline.reduce((s, t) => s + t.minutes, 0),
           },
@@ -1059,6 +1071,7 @@
       return {
         year: y,
         month: m,
+        month_label: `${y}年${m}月`,
         weeks,
         legend,
       };

@@ -53,7 +53,7 @@
     bird: `/static/portal/ornaments/bird.png?v=${ASSET_V}`,
   };
 
-  const HABIT_MEDIA_V = "20261016k";
+  const HABIT_MEDIA_V = "20261016l";
   // Tip: bright star (icon-tip-seed path overwritten; icon-tip-star alias also shipped)
   const HABIT_TIP_ICON = `/static/portal/habit/icon-tip-star.png?v=${HABIT_MEDIA_V}`;
   const HABIT_TIP_ICON_2X = `/static/portal/habit/icon-tip-star@2x.png?v=${HABIT_MEDIA_V}`;
@@ -1189,11 +1189,9 @@
       renderHabitMilestones(data.milestones || []);
       const stats = $("#habit-board-stats");
       if (stats) {
-        const achieved = (data.milestones || []).filter((m) => m.achieved).length;
-        const totalMs = (data.milestones || []).length;
-        stats.textContent =
-          `本周 ${data.board?.stats?.week_logs || 0} 记 · 近记 ${data.board?.stats?.total_logs || 0} 条 · 已兑 ${data.board?.stats?.minutes_redeemed || 0} 分` +
-          (totalMs ? ` · 里程碑 ${achieved}/${totalMs}` : "");
+        const monthLogs =
+          data.board?.stats?.month_logs ?? data.board?.stats?.total_logs ?? 0;
+        stats.textContent = `本周 ${data.board?.stats?.week_logs || 0} 记 · 月记 ${monthLogs} 条 · 已兑 ${data.board?.stats?.minutes_redeemed || 0} 分`;
       }
       const tl = $("#habit-timeline-list");
       if (tl) {
@@ -1235,6 +1233,12 @@
       root.innerHTML = `<p class="muted">暂无点阵</p>`;
       return;
     }
+    const monthTitle = document.createElement("p");
+    monthTitle.className = "habit-heatmap-month";
+    monthTitle.textContent =
+      heat.month_label ||
+      (heat.year && heat.month ? `${heat.year}年${heat.month}月` : "本月");
+    root.appendChild(monthTitle);
     // Monday-first weekday labels (matches monthHeatmap pad)
     const weekdayRow = document.createElement("div");
     weekdayRow.className = "habit-heatmap-weekdays";

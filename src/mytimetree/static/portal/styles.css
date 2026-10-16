@@ -1510,6 +1510,14 @@ html.share-capture body {
   gap: 0.3rem;
   margin: 0.55rem 0 0.65rem;
 }
+.habit-heatmap-month {
+  margin: 0 0 0.15rem;
+  font-size: 0.95rem;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+  color: var(--ink, #1f2a24);
+  text-align: left;
+}
 .habit-heatmap-weekdays,
 .habit-heatmap-week {
   display: grid;
