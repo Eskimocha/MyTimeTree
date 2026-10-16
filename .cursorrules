@@ -132,9 +132,9 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 
 ## Task: 启用种子选择弹框加宽（20261016o）
 - 原生 iOS `<select>` 菜单偏窄，长标题折行
-- [ ] 自定义 `.habit-seed-picker`（近屏宽、nowrap）
-- [ ] stamp 20261016o sync-web push PR#3
-- [ ] internal habit-picker-width-20261016o.md
+- [X] 自定义 `.habit-seed-picker`（fixed 近屏宽、nowrap）
+- [X] stamp 20261016o sync-web push PR#3 (`f7602d1`)
+- [X] internal habit-picker-width-20261016o.md
 
 ## Archived: 状态角标 20261016n / 主屏截图 20261016m
 
