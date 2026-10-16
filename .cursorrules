@@ -130,11 +130,10 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 
 # Scratchpad
 
-## Task: Kai whisper去爸 + toe→躺卧踩单车（20261016d）
-- [X] GenerateImage whisper（无爸）+ toe 双腿踩单车
-- [X] Store KEYS / celebration-actions / text-inventory
-- [X] sync-web PR#3 · stamp 20261016d · smoke:habits OK
-- [X] commit/push 2700ab8 + update PR
+## Task: E2E verify whisper/bike（Kai「没变」）
+- [X] Store 文案/图 + portal md5 一致；PR head 75af350 / stamp 20261016d
+- [X] 无缺漏，未再 push；Kai 需 polish 支 + sync-web
+- 报告: stores/.../internal/habit-verify-20261016.md
 
 ## Lessons (this task)
 - Content tables: `docs/v2/content/*.md` → `build-habit-content.mjs` → `habit-seed.js`；`sync-web` 必须先 build
