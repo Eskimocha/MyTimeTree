@@ -130,10 +130,10 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 
 # Scratchpad
 
-## Task: 里程碑达成奖章 + 小庆祝一下吧（20261016k）
-- [X] 标题改文案；board milestones DELETE+reseed 清 bm_life_15
-- [X] smoke 断言正好 12 + bm_life_200；stamp 20261016k
-- 教训：upsert 不删退役 milestone → UI 多一格
+## Task: 日历月份 + 月记（20261016l）
+- [X] heatmap 上方 month_label；近记→月记(当月计数)；去掉底栏里程碑 a/b
+- [X] stamp 20261016l push
+- 教训：「近记」曾是 timeline.length(≤30)，不是月计
 
 ## Lessons (this task)
 - Content tables: `docs/v2/content/*.md` → `build-habit-content.mjs` → `habit-seed.js`；`sync-web` 必须先 build
