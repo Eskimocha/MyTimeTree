@@ -130,12 +130,14 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 
 # Scratchpad
 
-## Task: Tip 注释 + TOP9 对比（20261016x）
-- [X] tip 标签：微习惯（可被接受的最小行为）；毛伊（可以先做毛伊习惯再正式开始）
-- [X] 设置 TOP9 `#eef8f1`+绿边 vs 非 TOP9 `#e6e9e7` 更灰
-- [X] stamp 20261016x sync push report
+## Task: Inventory sync（20261016y）
+- 真源 store text-resource-inventory；表 micro/maui/parent 曾落后于 inventory
+- [X] 落盘 docs/v2/content + seed；微6 / 话术6 / 毛伊37 / 小庆 stairs 爬楼成功
+- [X] stamp 20261016y sync push report
+- Lesson: Kai 改 inventory 后须回写 micro/maui/parent 表再 build，勿只 cp inventory
 
-## Archived: tip maui 20261016w / 庆祝排队 20261016v / badge 20261016s
+## Archived: tip notes+TOP9 20261016x / tip maui 20261016w / 庆祝 20261016v
+
 - Lesson: tip 展开勿绑 incentive_text；记后小庆仍用 small_celebration
 - Lesson: micro defaults 须 wholesale replace + rematerialize seed 行，否则旧多步残留
 - Lesson: 大庆/小庆勿互斥单字段；用 celebrations[] 队列

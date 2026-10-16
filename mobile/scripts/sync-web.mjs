@@ -14,7 +14,7 @@ const www = path.join(root, "mobile/www");
 const localSrc = path.join(root, "mobile/www-src/local");
 const sqlJsDist = path.join(root, "mobile/node_modules/sql.js/dist");
 /** Bust WKWebView caches for injected local scripts + app.js (was stuck on p5h1 / local-p2). */
-const LOCAL_ASSET_V = "20261016x";
+const LOCAL_ASSET_V = "20261016y";
 const iosPublic = path.join(root, "mobile/ios/App/App/public");
 
 function rmrf(dir) {
@@ -326,6 +326,9 @@ function assertBuildTree(base, tag) {
     /这次我们只刷一排座牙吧？/,
     `${tag} brush parent script`
   );
+  assertMarker(base, "local/habit-seed.js", /用脚拨齐鞋子/, `${tag} shoe_rack micro`);
+  assertMarker(base, "local/habit-seed.js", /喝口水或吃块饼干/, `${tag} read_one_page maui`);
+  assertMarker(base, "local/habit-seed.js", /爬楼成功/, `${tag} stairs_walk celeb`);
   assertMarker(base, "local/habit-seed.js", /"maui_habits"/, `${tag} maui_habits seed`);
   assertMarker(
     base,

@@ -7,17 +7,17 @@
 | slug | title | category | default_minutes | active | sort_default | notes |
 |------|-------|----------|-----------------|--------|--------------|-------|
 | brush_teeth | 刷牙 | hygiene | 5 | 1 | 10 | Kai：毛伊=洗完脸立即刷牙；微步骤/话术=只刷一排座牙 |
-| wash_face | 洗脸 | hygiene | 5 | 1 | 15 | Kai：毛伊=对自己说「我要美美的」 |
+| wash_face | 洗脸 | hygiene | 5 | 1 | 15 | Kai：毛伊=对自己说：“我要美美的！”；微步骤/话术=只洗额头 |
 | wash_hands | 饭前洗手 | hygiene | 5 | 1 | 20 | |
-| floss_once | 用牙线一次 | hygiene | 5 | 1 | 25 | Kai：毛伊=洗完脸就用牙线 |
-| bedtime_on_time | 按时上床 | sleep | 5 | 1 | 30 | Kai：毛伊=刷完牙就上床；话术=到点了，先上床 |
+| floss_once | 用牙线一次 | hygiene | 5 | 1 | 25 | Kai：毛伊=洗完脸就用牙线；微步骤/话术=只清洁门牙缝一处 |
+| bedtime_on_time | 按时上床 | sleep | 5 | 1 | 30 | Kai：毛伊=刷完牙就上床；微步骤/话术=只把身体躺平 |
 | no_phone_bed | 睡前不玩手机 | sleep | 5 | 1 | 35 | |
 | lights_out | 准时关灯 | sleep | 5 | 1 | 40 | |
-| morning_wake | 按时起床 | sleep | 5 | 1 | 45 | Kai：毛伊=起床前先想象自己的笑脸 |
-| read_one_page | 读一页书 | reading | 5 | 1 | 50 | Kai：毛伊=吃完零食读一下 |
+| morning_wake | 按时起床 | sleep | 5 | 1 | 45 | Kai：毛伊=起床前先想象自己的笑脸；微步骤/话术=只把上身坐起来 |
+| read_one_page | 读一页书 | reading | 5 | 1 | 50 | Kai：毛伊=喝口水或吃块饼干；微步骤/话术=只读本页第一段 |
 | read_note | 记读书笔记 | reading | 10 | 1 | 55 | Kai 手改替换原「阅读十分钟」 |
 | read_ten_min | 阅读十分钟 | reading | 10 | 0 | 55 | 已由 read_note 取代 |
-| recite_poem | 背一句古诗 | reading | 5 | 1 | 60 | Kai：毛伊=拍拍胸口说「我能行」 |
+| recite_poem | 背一句古诗 | reading | 5 | 1 | 60 | Kai：毛伊=拍拍胸口说「我能行」；微步骤/话术=只背出诗题 |
 | vocab_five | 记单词 | reading | 5 | 1 | 65 | Kai 简称；毛伊=吃完零食记一下 |
 | make_bed | 叠被子 | chores | 5 | 1 | 70 | |
 | tidy_desk | 书桌归位 | chores | 5 | 1 | 75 | 微步骤=归位单件 |
@@ -53,7 +53,7 @@
 | call_grandma | 给长辈打电话问好 | kindness | 5 | 1 | 225 | |
 | nature_look | 观察一片叶子/天空 | calm | 5 | 1 | 230 | |
 | pushup_or_squat | 做五个深蹲/俯卧撑 | movement | 5 | 1 | 235 | |
-| brush_evening | 晚上刷牙 | hygiene | 5 | 1 | 240 | Kai：毛伊=洗完脸就刷牙 |
+| brush_evening | 晚上刷牙 | hygiene | 5 | 1 | 240 | Kai：毛伊=洗完脸就刷牙；微步骤/话术=只刷门牙 |
 | vitamin | 按时吃药/维生素 | health | 5 | 1 | 245 | 仅提醒；文案禁疗效 |
 | plan_tomorrow | 写下明天一件事 | study | 5 | 1 | 250 | |
 | smile_photo | 拍一张微笑照片存纪念 | kindness | 5 | 0 | 999 | 可选种子 |

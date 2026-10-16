@@ -42,7 +42,7 @@
 | cc_game | family_game | kindness | standing | 亲子一局完成 | 亲子一局完成 | ca_double_high_five | img-ca-double-high-five | 1 |
 | cc_out | outdoor_ten | movement | outdoor | 户外十分钟 | 户外十分钟 | ca_outdoor_spin | img-ca-outdoor-spin | 1 |
 | cc_stretch | stretch | movement | standing | 伸展完成 | 伸展完成 | ca_spin_clap | img-ca-spin-clap | 1 |
-| cc_stairs | stairs_walk | movement | standing | 一层楼梯达成 | 一层楼梯达成 | ca_jump_once | img-ca-jump-once | 1 |
+| cc_stairs | stairs_walk | movement | standing | 一层楼梯达成 | 爬楼成功 | ca_jump_once | img-ca-jump-once | 1 |
 | cc_squat | pushup_or_squat | movement | standing | 五个动作完成 | 五个动作完成 | ca_victory_dance | img-ca-victory-dance | 1 |
 | cc_stretchb | stretch_bed | movement | quiet_bed | 起床懒腰完成 | 起床懒腰完成 | ca_toe_wiggle | img-ca-toe-bike-v2 | 1 |
 | cc_water | drink_water | health | any | 咕咚一杯完成 | 咕咚一杯完成 | ca_high_five | img-ca-high-five | 1 |

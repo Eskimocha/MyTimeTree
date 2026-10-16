@@ -3,7 +3,7 @@
   "use strict";
   global.MyTimeTreeHabitSeed = {
   "version": 5,
-  "generated_at": "2026-10-16T10:27:35.523Z",
+  "generated_at": "2026-10-16T11:33:32.571Z",
   "templates": [
     {
       "slug": "brush_teeth",
@@ -21,7 +21,7 @@
       "default_minutes": 5,
       "active": true,
       "sort_default": 15,
-      "notes": "Kai：毛伊=对自己说「我要美美的」"
+      "notes": "Kai：毛伊=对自己说：“我要美美的！”；微步骤/话术=只洗额头"
     },
     {
       "slug": "wash_hands",
@@ -39,7 +39,7 @@
       "default_minutes": 5,
       "active": true,
       "sort_default": 25,
-      "notes": "Kai：毛伊=洗完脸就用牙线"
+      "notes": "Kai：毛伊=洗完脸就用牙线；微步骤/话术=只清洁门牙缝一处"
     },
     {
       "slug": "bedtime_on_time",
@@ -48,7 +48,7 @@
       "default_minutes": 5,
       "active": true,
       "sort_default": 30,
-      "notes": "Kai：毛伊=刷完牙就上床；话术=到点了，先上床"
+      "notes": "Kai：毛伊=刷完牙就上床；微步骤/话术=只把身体躺平"
     },
     {
       "slug": "no_phone_bed",
@@ -75,7 +75,7 @@
       "default_minutes": 5,
       "active": true,
       "sort_default": 45,
-      "notes": "Kai：毛伊=起床前先想象自己的笑脸"
+      "notes": "Kai：毛伊=起床前先想象自己的笑脸；微步骤/话术=只把上身坐起来"
     },
     {
       "slug": "read_one_page",
@@ -84,7 +84,7 @@
       "default_minutes": 5,
       "active": true,
       "sort_default": 50,
-      "notes": "Kai：毛伊=吃完零食读一下"
+      "notes": "Kai：毛伊=喝口水或吃块饼干；微步骤/话术=只读本页第一段"
     },
     {
       "slug": "read_note",
@@ -111,7 +111,7 @@
       "default_minutes": 5,
       "active": true,
       "sort_default": 60,
-      "notes": "Kai：毛伊=拍拍胸口说「我能行」"
+      "notes": "Kai：毛伊=拍拍胸口说「我能行」；微步骤/话术=只背出诗题"
     },
     {
       "slug": "vocab_five",
@@ -435,7 +435,7 @@
       "default_minutes": 5,
       "active": true,
       "sort_default": 240,
-      "notes": "Kai：毛伊=洗完脸就刷牙"
+      "notes": "Kai：毛伊=洗完脸就刷牙；微步骤/话术=只刷门牙"
     },
     {
       "slug": "vitamin",
@@ -671,7 +671,7 @@
       "id": "ps_shoe",
       "habit_slug": "shoe_rack",
       "category": "chores",
-      "script_text": "先摆好左脚那只。",
+      "script_text": "先用脚拨齐鞋子。",
       "active": true
     },
     {
@@ -748,7 +748,7 @@
       "id": "ps_stairs",
       "habit_slug": "stairs_walk",
       "category": "movement",
-      "script_text": "先走完半层楼梯。",
+      "script_text": "先走一层再坐电梯。",
       "active": true
     },
     {
@@ -783,21 +783,21 @@
       "id": "ps_snack",
       "habit_slug": "no_snack_rush",
       "category": "health",
-      "script_text": "先停下脚步这一下。",
+      "script_text": "先停下脚步等5秒。",
       "active": true
     },
     {
       "id": "ps_vit",
       "habit_slug": "vitamin",
       "category": "health",
-      "script_text": "该吃今天的份了，咽下就好。",
+      "script_text": "吃这1种就好。",
       "active": true
     },
     {
       "id": "ps_lunch",
       "habit_slug": "lunch_finish",
       "category": "health",
-      "script_text": "再吃三口就好。",
+      "script_text": "看看几天剩的有没有比昨天少？",
       "active": true
     },
     {
@@ -825,7 +825,7 @@
       "id": "ps_mistake",
       "habit_slug": "review_mistakes",
       "category": "study",
-      "script_text": "先订正错题的第一步。",
+      "script_text": "我们看看能不能先搞定一题？",
       "active": true
     },
     {
@@ -1072,14 +1072,14 @@
       "id": "mh_read1_1",
       "habit_slug": "read_one_page",
       "category": "reading",
-      "maui_text": "吃完零食读一下",
+      "maui_text": "喝口水或吃块饼干",
       "active": true
     },
     {
       "id": "mh_readnote_1",
       "habit_slug": "read_note",
       "category": "reading",
-      "maui_text": "读完书就写",
+      "maui_text": "用镇纸压住翻开的书本",
       "active": true
     },
     {
@@ -1093,21 +1093,21 @@
       "id": "mh_vocab_1",
       "habit_slug": "vocab_five",
       "category": "reading",
-      "maui_text": "吃完零食记一下",
+      "maui_text": "喝口水或吃块饼干",
       "active": true
     },
     {
       "id": "mh_story_1",
       "habit_slug": "listen_story",
       "category": "reading",
-      "maui_text": "上床后就开始听",
+      "maui_text": "抱一个枕头",
       "active": true
     },
     {
       "id": "mh_makebed_1",
       "habit_slug": "make_bed",
       "category": "chores",
-      "maui_text": "起床就叠被子",
+      "maui_text": "回望一眼床铺",
       "active": true
     },
     {
@@ -1128,35 +1128,35 @@
       "id": "mh_trash_1",
       "habit_slug": "trash_out",
       "category": "chores",
-      "maui_text": "出门前就扎袋",
+      "maui_text": "回望一眼垃圾桶",
       "active": true
     },
     {
       "id": "mh_plant_1",
       "habit_slug": "water_plant",
       "category": "chores",
-      "maui_text": "路过花盆就浇一点点",
+      "maui_text": "说：「花草宝宝我来了」",
       "active": true
     },
     {
       "id": "mh_table_1",
       "habit_slug": "set_table",
       "category": "chores",
-      "maui_text": "开饭铃响就摆自己的碗",
+      "maui_text": "说：「吃饭了！」",
       "active": true
     },
     {
       "id": "mh_shoe_1",
       "habit_slug": "shoe_rack",
       "category": "chores",
-      "maui_text": "进门就摆好左脚那只",
+      "maui_text": "打开鞋柜检查空位",
       "active": true
     },
     {
       "id": "mh_hamper_1",
       "habit_slug": "clothes_hamper",
       "category": "chores",
-      "maui_text": "脱掉就塞进脏衣篮",
+      "maui_text": "做个投篮动作",
       "active": true
     },
     {
@@ -1191,14 +1191,14 @@
       "id": "mh_pet_1",
       "habit_slug": "feed_pet",
       "category": "kindness",
-      "maui_text": "看到食盆就倒一小勺",
+      "maui_text": "回望一眼食盆",
       "active": true
     },
     {
       "id": "mh_call_1",
       "habit_slug": "call_grandma",
       "category": "kindness",
-      "maui_text": "拨号前说「想你了」",
+      "maui_text": "拨号前默念「我们一起有过美好的时光」",
       "active": true
     },
     {
@@ -1212,175 +1212,175 @@
       "id": "mh_out_1",
       "habit_slug": "outdoor_ten",
       "category": "movement",
-      "maui_text": "换上鞋就出门走两分钟",
+      "maui_text": "说「Let's Go」",
       "active": true
     },
     {
       "id": "mh_stretch_1",
       "habit_slug": "stretch",
       "category": "movement",
-      "maui_text": "站起来就伸一次手臂",
+      "maui_text": "先深呼吸",
       "active": true
     },
     {
       "id": "mh_stairs_1",
       "habit_slug": "stairs_walk",
       "category": "movement",
-      "maui_text": "到楼梯口就走半层",
+      "maui_text": "先跺跺脚",
       "active": true
     },
     {
       "id": "mh_squat_1",
       "habit_slug": "pushup_or_squat",
       "category": "movement",
-      "maui_text": "开始前说「先做一个」",
+      "maui_text": "上完厕所（毛伊习惯）立即做深蹲/俯卧撑",
       "active": true
     },
     {
       "id": "mh_stretchb_1",
       "habit_slug": "stretch_bed",
       "category": "movement",
-      "maui_text": "坐起时说「今天会很棒」",
+      "maui_text": "先搓搓脸",
       "active": true
     },
     {
       "id": "mh_water_1",
       "habit_slug": "drink_water",
       "category": "health",
-      "maui_text": "看到杯子就喝两口",
+      "maui_text": "检查杯子是否有水",
       "active": true
     },
     {
       "id": "mh_fruit_1",
       "habit_slug": "fruit_one",
       "category": "health",
-      "maui_text": "洗完水果就咬一口",
+      "maui_text": "检查水果是否变质",
       "active": true
     },
     {
       "id": "mh_snack_1",
       "habit_slug": "no_snack_rush",
       "category": "health",
-      "maui_text": "停下时说「不着急」",
+      "maui_text": "说「我是健康的」",
       "active": true
     },
     {
       "id": "mh_vit_1",
       "habit_slug": "vitamin",
       "category": "health",
-      "maui_text": "拿起今日份时点头一下",
+      "maui_text": "早上出门前喝口水（规律吃维生素时间）",
       "active": true
     },
     {
       "id": "mh_lunch_1",
       "habit_slug": "lunch_finish",
       "category": "health",
-      "maui_text": "坐下吃饭时说「慢慢吃」",
+      "maui_text": "说「今天我们光盘吧」",
       "active": true
     },
     {
       "id": "mh_hw_1",
       "habit_slug": "homework_start",
       "category": "study",
-      "maui_text": "打开本子就写题号",
+      "maui_text": "回家第一件事——把作业本拿出来",
       "active": true
     },
     {
       "id": "mh_hwfocus_1",
       "habit_slug": "homework_focus",
       "category": "study",
-      "maui_text": "计时响起就专注五分钟",
+      "maui_text": "拨计时器",
       "active": true
     },
     {
       "id": "mh_bag_1",
       "habit_slug": "bag_pack",
       "category": "study",
-      "maui_text": "拉开拉链就放进一本书",
+      "maui_text": "说「准备睡觉了」（规律收书包时间点）",
       "active": true
     },
     {
       "id": "mh_mistake_1",
       "habit_slug": "review_mistakes",
       "category": "study",
-      "maui_text": "翻到错题就订正第一步",
+      "maui_text": "问「还有什么没做？」",
       "active": true
     },
     {
       "id": "mh_plan_1",
       "habit_slug": "plan_tomorrow",
       "category": "study",
-      "maui_text": "落笔前说「一件就够」",
+      "maui_text": "问「还有什么没做？」",
       "active": true
     },
     {
       "id": "mh_math_1",
       "habit_slug": "math_drill",
       "category": "study",
-      "maui_text": "写下第一题号时微笑",
+      "maui_text": "问「还有什么没做？」",
       "active": true
     },
     {
       "id": "mh_piano_1",
       "habit_slug": "practice_instrument",
       "category": "arts",
-      "maui_text": "触键前说「一小会」",
+      "maui_text": "听到新闻联播声音响起（可以不看）",
       "active": true
     },
     {
       "id": "mh_draw_1",
       "habit_slug": "draw_one",
       "category": "arts",
-      "maui_text": "落笔前说「先画一条线」",
+      "maui_text": "吃完下午茶/零食（作为时间锚点）",
       "active": true
     },
     {
       "id": "mh_sing_1",
       "habit_slug": "sing_one",
       "category": "arts",
-      "maui_text": "开口前清嗓一下",
+      "maui_text": "吃完下午茶/零食（作为时间锚点）",
       "active": true
     },
     {
       "id": "mh_journal_1",
       "habit_slug": "journal_line",
       "category": "arts",
-      "maui_text": "打开本子说「留一句」",
+      "maui_text": "喝完睡前牛奶",
       "active": true
     },
     {
       "id": "mh_screen_1",
       "habit_slug": "screen_limit",
       "category": "screen",
-      "maui_text": "看时间时说「到点就停」",
+      "maui_text": "设置计时器",
       "active": true
     },
     {
       "id": "mh_oneep_1",
       "habit_slug": "one_show_only",
       "category": "screen",
-      "maui_text": "开播前说「只看一集」",
+      "maui_text": "设置计时器",
       "active": true
     },
     {
       "id": "mh_breath_1",
       "habit_slug": "deep_breath",
       "category": "calm",
-      "maui_text": "肩膀一沉就做一次呼吸",
+      "maui_text": "喝完睡前牛奶",
       "active": true
     },
     {
       "id": "mh_quiet_1",
       "habit_slug": "quiet_five",
       "category": "calm",
-      "maui_text": "坐下时轻声说「安静一下」",
+      "maui_text": "吃完下午茶/零食",
       "active": true
     },
     {
       "id": "mh_nature_1",
       "habit_slug": "nature_look",
       "category": "calm",
-      "maui_text": "望向窗外就看一片叶子",
+      "maui_text": "写完一篇作业",
       "active": true
     },
     {
@@ -2549,7 +2549,7 @@
       "category": "movement",
       "habit_env": "standing",
       "incentive_text": "一层楼梯达成",
-      "small_celebration": "一层楼梯达成",
+      "small_celebration": "爬楼成功",
       "offline_hint_id": "ca_jump_once",
       "image_key": "img-ca-jump-once",
       "active": true
@@ -3226,7 +3226,7 @@
       "id": "ms_shoe_1",
       "habit_slug": "shoe_rack",
       "sort": 10,
-      "step_text": "只摆好左脚那只",
+      "step_text": "用脚拨齐鞋子",
       "active": true
     },
     {
@@ -3303,7 +3303,7 @@
       "id": "ms_stairs_1",
       "habit_slug": "stairs_walk",
       "sort": 10,
-      "step_text": "只走完半层",
+      "step_text": "只走一层再坐电梯",
       "active": true
     },
     {
@@ -3338,21 +3338,21 @@
       "id": "ms_snack_1",
       "habit_slug": "no_snack_rush",
       "sort": 10,
-      "step_text": "只停下脚步这一下",
+      "step_text": "暂停走路5秒",
       "active": true
     },
     {
       "id": "ms_vit_1",
       "habit_slug": "vitamin",
       "sort": 10,
-      "step_text": "只咽下今日份",
+      "step_text": "只吃1种（如果有多种的话）",
       "active": true
     },
     {
       "id": "ms_lunch_1",
       "habit_slug": "lunch_finish",
       "sort": 10,
-      "step_text": "只再吃三口",
+      "step_text": "比昨天多吃一口",
       "active": true
     },
     {
@@ -3380,7 +3380,7 @@
       "id": "ms_mistake_1",
       "habit_slug": "review_mistakes",
       "sort": 10,
-      "step_text": "只订正错题的第一步",
+      "step_text": "只订正第一题",
       "active": true
     },
     {
