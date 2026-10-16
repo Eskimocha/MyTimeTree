@@ -130,10 +130,10 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 
 # Scratchpad
 
-## Task: 庆祝/tip 媒体齐套镜像
-- [X] tip+28 ca+12 bm 镜像 portal/ios；别名改为旧→新
-- [X] sync-web 20261015g；resolve-probe 41 keys OK
-- [X] push 9cba8b6 PR#3
+## Task: Kai 5 项修正（whisper/toe/desk/tip星/里程碑200）
+- [X] 文案 + GenerateImage 重画 + store KEYS/inventory
+- [X] sync PR#3 · web-build 20261016a
+- [ ] commit/push
 
 ## Archived: 左滑改奖励 / 色阶点阵 / strip9 / Kai pull
 
