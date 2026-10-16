@@ -130,13 +130,13 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 
 # Scratchpad
 
-## Task: 今日好习惯状态角标（20261016n）
-- [X] 「还剩 X」左侧红点（pending>0）；记完去掉
-- [X] `8/9` → `总共 N`（空格跟「还剩 X」）
-- [X] stamp 20261016n sync-web push PR#3 (`dff7751`)
-- [X] internal habit-status-badges-20261016n.md
+## Task: 启用种子选择弹框加宽（20261016o）
+- 原生 iOS `<select>` 菜单偏窄，长标题折行
+- [ ] 自定义 `.habit-seed-picker`（近屏宽、nowrap）
+- [ ] stamp 20261016o sync-web push PR#3
+- [ ] internal habit-picker-width-20261016o.md
 
-## Archived: 主屏截图 20261016m
+## Archived: 状态角标 20261016n / 主屏截图 20261016m
 
 ## Lessons (this task)
 - share-capture 勿把所有 `.tab-panel` 刷成 `#f7fcf8`——会盖住森林卡；主屏保持 transparent

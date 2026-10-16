@@ -14,7 +14,7 @@ const www = path.join(root, "mobile/www");
 const localSrc = path.join(root, "mobile/www-src/local");
 const sqlJsDist = path.join(root, "mobile/node_modules/sql.js/dist");
 /** Bust WKWebView caches for injected local scripts + app.js (was stuck on p5h1 / local-p2). */
-const LOCAL_ASSET_V = "20261016n";
+const LOCAL_ASSET_V = "20261016o";
 const iosPublic = path.join(root, "mobile/ios/App/App/public");
 
 function rmrf(dir) {
@@ -253,6 +253,11 @@ function assertBuildTree(base, tag) {
   assertMarker(base, "styles.css", /\.habit-strip-remain\.has-pending::before/, `${tag} CSS remain red-dot`);
   assertMarker(base, "index.html", /habit-strip-remain/, `${tag} habit-strip-remain`);
   assertMarker(base, "index.html", /habit-strip-total/, `${tag} habit-strip-total`);
+  assertMarker(base, "app.js", /syncHabitSeedPicker/, `${tag} syncHabitSeedPicker`);
+  assertMarker(base, "app.js", /habit-seed-picker/, `${tag} habit-seed-picker class`);
+  assertMarker(base, "styles.css", /\.habit-seed-picker-list/, `${tag} CSS seed picker list`);
+  assertMarker(base, "styles.css", /white-space:\s*nowrap/, `${tag} CSS seed picker nowrap`);
+  assertMarker(base, "app.js", /26 \* 16/, `${tag} seed picker max width 26rem`);
   {
     const appJs = fs.readFileSync(path.join(base, "app.js"), "utf8");
     if (/\$\{show\.length\}\/\$\{limit\}/.test(appJs) || /还剩 \$\{pending\} ·/.test(appJs)) {

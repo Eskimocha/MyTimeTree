@@ -53,7 +53,7 @@
     bird: `/static/portal/ornaments/bird.png?v=${ASSET_V}`,
   };
 
-  const HABIT_MEDIA_V = "20261016n";
+  const HABIT_MEDIA_V = "20261016o";
   // Tip: bright star (icon-tip-seed path overwritten; icon-tip-star alias also shipped)
   const HABIT_TIP_ICON = `/static/portal/habit/icon-tip-star.png?v=${HABIT_MEDIA_V}`;
   const HABIT_TIP_ICON_2X = `/static/portal/habit/icon-tip-star@2x.png?v=${HABIT_MEDIA_V}`;
@@ -793,6 +793,131 @@
     }
   }
 
+  /** Custom wide seed picker — native iOS <select> menus wrap long titles. */
+  function ensureHabitSeedPicker(sel) {
+    if (!sel) return null;
+    const existing = sel.nextElementSibling;
+    if (existing && existing.classList.contains("habit-seed-picker")) {
+      return existing;
+    }
+    sel.classList.add("habit-seed-select-native");
+    sel.setAttribute("aria-hidden", "true");
+    sel.tabIndex = -1;
+
+    const picker = document.createElement("div");
+    picker.className = "habit-seed-picker";
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "habit-seed-picker-btn";
+    btn.setAttribute("aria-haspopup", "listbox");
+    btn.setAttribute("aria-expanded", "false");
+    const list = document.createElement("ul");
+    list.className = "habit-seed-picker-list";
+    list.setAttribute("role", "listbox");
+    list.hidden = true;
+
+    const placeList = () => {
+      const rect = btn.getBoundingClientRect();
+      const gutter = 12;
+      // Nearly full phone width (≤26rem) so「专注作业二十五分钟（10分）」fits one line.
+      const width = Math.min(window.innerWidth - gutter * 2, 26 * 16);
+      let left = rect.left + rect.width / 2 - width / 2;
+      left = Math.max(gutter, Math.min(left, window.innerWidth - gutter - width));
+      const top = Math.min(rect.bottom + 6, window.innerHeight - gutter - 80);
+      list.style.position = "fixed";
+      list.style.left = `${Math.round(left)}px`;
+      list.style.top = `${Math.round(top)}px`;
+      list.style.width = `${Math.round(width)}px`;
+      list.style.transform = "none";
+      list.style.zIndex = "120";
+    };
+    const setOpen = (open) => {
+      list.hidden = !open;
+      btn.setAttribute("aria-expanded", open ? "true" : "false");
+      if (open) placeList();
+    };
+    btn.addEventListener("click", (ev) => {
+      ev.stopPropagation();
+      if (btn.disabled) return;
+      setOpen(list.hidden);
+    });
+    window.addEventListener(
+      "resize",
+      () => {
+        if (!list.hidden) placeList();
+      },
+      { passive: true }
+    );
+    if (!document.documentElement.dataset.habitSeedPickerDoc) {
+      document.documentElement.dataset.habitSeedPickerDoc = "1";
+      document.addEventListener("click", (ev) => {
+        document.querySelectorAll(".habit-seed-picker").forEach((p) => {
+          if (!p.contains(ev.target)) {
+            const ul = p.querySelector(".habit-seed-picker-list");
+            const b = p.querySelector(".habit-seed-picker-btn");
+            if (ul) ul.hidden = true;
+            if (b) b.setAttribute("aria-expanded", "false");
+          }
+        });
+      });
+    }
+
+    picker.append(btn, list);
+    sel.insertAdjacentElement("afterend", picker);
+    return picker;
+  }
+
+  function syncHabitSeedPicker(sel) {
+    const picker = ensureHabitSeedPicker(sel);
+    if (!picker) return;
+    const btn = picker.querySelector(".habit-seed-picker-btn");
+    const list = picker.querySelector(".habit-seed-picker-list");
+    if (!btn || !list) return;
+    list.innerHTML = "";
+    list.hidden = true;
+    btn.setAttribute("aria-expanded", "false");
+    const opts = [...sel.options];
+    if (!opts.length) {
+      btn.textContent = "暂无可用种子";
+      btn.disabled = true;
+      return;
+    }
+    btn.disabled = false;
+    if (!opts.some((o) => o.value === sel.value)) {
+      sel.selectedIndex = 0;
+    }
+    const selected =
+      opts.find((o) => o.value === sel.value) || opts[0];
+    btn.textContent = selected.textContent;
+    for (const opt of opts) {
+      const li = document.createElement("li");
+      const b = document.createElement("button");
+      b.type = "button";
+      b.setAttribute("role", "option");
+      b.textContent = opt.textContent;
+      b.setAttribute(
+        "aria-selected",
+        opt.value === sel.value ? "true" : "false"
+      );
+      b.addEventListener("click", (ev) => {
+        ev.stopPropagation();
+        sel.value = opt.value;
+        btn.textContent = opt.textContent;
+        list.hidden = true;
+        btn.setAttribute("aria-expanded", "false");
+        list.querySelectorAll("button").forEach((x) => {
+          x.setAttribute(
+            "aria-selected",
+            x === b ? "true" : "false"
+          );
+        });
+        sel.dispatchEvent(new Event("change", { bubbles: true }));
+      });
+      li.appendChild(b);
+      list.appendChild(li);
+    }
+  }
+
   async function refreshHabitSettings() {
     const list = $("#habit-settings-list");
     const sel = $("#habit-template-select");
@@ -901,6 +1026,7 @@
           opt.textContent = `${t.title}（${t.default_minutes}分）`;
           sel.appendChild(opt);
         }
+        syncHabitSeedPicker(sel);
       }
     } catch (err) {
       console.warn("habit settings", err);
@@ -1831,7 +1957,7 @@
       return Boolean(
         el &&
           el.closest(
-            "input, textarea, select, button, a, label, .question-picker, .keypad-modal, .account-modal, .sync-actions, .habit-drag-handle, .habit-settings-row, .habit-settings-front, .habit-overlay, .habit-board-mask"
+            "input, textarea, select, button, a, label, .question-picker, .habit-seed-picker, .keypad-modal, .account-modal, .sync-actions, .habit-drag-handle, .habit-settings-row, .habit-settings-front, .habit-overlay, .habit-board-mask"
           )
       );
     }

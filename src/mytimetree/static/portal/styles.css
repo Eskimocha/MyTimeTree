@@ -1669,6 +1669,100 @@ html.share-capture #tab-home.tab-panel {
 }
 .habit-board-copy { margin: 0 0 0.45rem; font-size: 0.85rem; }
 .habit-settings-add label { font-size: 0.9rem; }
+/* Wide custom seed picker — long titles like「专注作业二十五分钟（10分）」stay one line */
+.habit-seed-select-native {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0);
+}
+.habit-seed-picker {
+  position: relative;
+  width: 100%;
+  z-index: 5;
+}
+.habit-seed-picker-btn {
+  border: 1px solid #c9ddd3;
+  border-radius: 12px;
+  padding: 0.7rem 2.4rem 0.7rem 0.8rem;
+  min-height: 2.75rem;
+  font: inherit;
+  font-size: 16px;
+  line-height: 1.35;
+  text-align: left;
+  width: 100%;
+  color: var(--ink);
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%231a6b48' d='M1.4 1.6 6 6.2l4.6-4.6 1.1 1.1L6 8.4.3 2.7z'/%3E%3C/svg%3E")
+    no-repeat right 0.9rem center / 12px 8px;
+  box-sizing: border-box;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.habit-seed-picker-btn:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+.habit-seed-picker-btn:focus {
+  outline: 2px solid #2f9e6b55;
+  border-color: #2f9e6b;
+}
+.habit-seed-picker-list {
+  list-style: none;
+  margin: 0;
+  padding: 0.45rem;
+  border: 1px solid #c9ddd3;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 10px 28px #1a3d3218;
+  display: grid;
+  gap: 0.2rem;
+  /* JS places with position:fixed near full phone width (avoids tab overflow clip). */
+  position: fixed;
+  z-index: 120;
+  max-height: min(16rem, 50dvh);
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  box-sizing: border-box;
+}
+.habit-seed-picker-list[hidden] {
+  display: none !important;
+}
+.habit-seed-picker-list li {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.habit-seed-picker-list button {
+  border: 0;
+  background: transparent;
+  text-align: left;
+  padding: 0.8rem 0.85rem;
+  min-height: 2.75rem;
+  border-radius: 10px;
+  font: inherit;
+  font-size: 16px;
+  line-height: 1.35;
+  color: var(--ink);
+  width: 100%;
+  box-sizing: border-box;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+.habit-seed-picker-list button[aria-selected="true"],
+.habit-seed-picker-list button:active {
+  background: #dff3e8;
+}
 .btn.compact {
   padding: 0.35rem 0.55rem;
   font-size: 0.78rem;
