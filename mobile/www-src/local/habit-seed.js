@@ -3,7 +3,7 @@
   "use strict";
   global.MyTimeTreeHabitSeed = {
   "version": 4,
-  "generated_at": "2026-10-16T02:59:38.228Z",
+  "generated_at": "2026-10-16T03:40:35.734Z",
   "templates": [
     {
       "slug": "brush_teeth",
@@ -1185,7 +1185,7 @@
     {
       "id": "ca_whisper_ok",
       "title": "贴耳轻说「成功了」",
-      "body": "贴近耳边轻声说「成功了」",
+      "body": "妈妈贴近孩子耳边轻声说「成功了」（画面无爸爸）",
       "image_key": "img-ca-whisper-ok",
       "categories": [],
       "env_tags": [
@@ -1232,8 +1232,8 @@
     },
     {
       "id": "ca_toe_wiggle",
-      "title": "躺着抬起脚敲敲床",
-      "body": "人躺着，抬起脚，用脚敲敲床面（五根脚趾清晰）",
+      "title": "躺卧踩单车",
+      "body": "人躺着，双腿在空中交替做踩单车动作",
       "image_key": "img-ca-toe-wiggle",
       "categories": [],
       "env_tags": [
@@ -1588,7 +1588,7 @@
     {
       "id": "ca_whisper_ok",
       "title": "贴耳轻说「成功了」",
-      "body": "贴近耳边轻声说「成功了」",
+      "body": "妈妈贴近孩子耳边轻声说「成功了」（画面无爸爸）",
       "image_key": "img-ca-whisper-ok",
       "env_tags": [
         "quiet_bed",
@@ -1631,8 +1631,8 @@
     },
     {
       "id": "ca_toe_wiggle",
-      "title": "躺着抬起脚敲敲床",
-      "body": "人躺着，抬起脚，用脚敲敲床面（五根脚趾清晰）",
+      "title": "躺卧踩单车",
+      "body": "人躺着，双腿在空中交替做踩单车动作",
       "image_key": "img-ca-toe-wiggle",
       "env_tags": [
         "quiet_bed"

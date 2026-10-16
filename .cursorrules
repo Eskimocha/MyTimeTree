@@ -130,19 +130,17 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 
 # Scratchpad
 
-## Task: Kai 5 项修正（whisper/toe/desk/tip星/里程碑200）
-- [X] 文案 + GenerateImage 重画 + store KEYS/inventory
-- [X] sync PR#3 · web-build 20261016a
-- [ ] commit/push
-
-## Archived: 左滑改奖励 / 色阶点阵 / strip9 / Kai pull
+## Task: Kai whisper去爸 + toe→躺卧踩单车（20261016d）
+- [X] GenerateImage whisper（无爸）+ toe 双腿踩单车
+- [X] Store KEYS / celebration-actions / text-inventory
+- [X] sync-web PR#3 · stamp 20261016d · smoke:habits OK
+- [ ] commit/push + update PR
 
 ## Lessons (this task)
 - Content tables: `docs/v2/content/*.md` → `build-habit-content.mjs` → `habit-seed.js`；`sync-web` 必须先 build
-- Ledger API returns `items` not `entries`
-- deleteAccount 必须显式清 habit_* / earned_credits / celebration_events
-- 多媒体进 `portal/habit/`（勿只写 ios/public）；路径用 `/static/portal/habit/…`，sync 改写为 `./habit/…`
-- tip/小庆祝文案源：`celebration-copy`（incentive + small_celebration + offline_hint_id），不再用 emotion-copy
-- Kai 错支：停在 `habit-ios-replan` 上 pull polish ≠ 工作在 polish；须 `checkout -B … origin/habit-polish…` + `reset --hard` + sync
+- 多媒体进 `portal/habit/`；路径 `/static/portal/habit/…`，sync 改写 `./habit/…`
+- Kai 错支：须在 `habit-polish-o1-o6` 上 sync（勿停在 habit-ios-replan）
+- whisper 融脸：画面只留妈+孩，禁止第三者
+- ca_toe_wiggle：id 可保留，用户文案/图改为「躺卧踩单车」
 
-## Archived: strip9/swipe / App旧UI / Kai pull / IH0–IH9
+## Archived: Kai 5 fixes / 左滑改奖励 / strip9 / IH0–IH9

@@ -35,11 +35,11 @@
 | ca_chair_shimmy | 坐着晃肩 | 坐着左右晃晃肩膀两下 | seated | img-ca-chair-shimmy | 1 |
 | ca_pencil_twirl | 笔转庆祝 | 笔或手指转一小圈，说「收工」 | seated | img-ca-pencil-twirl | 1 |
 | ca_silent_clap | 无声鼓掌 | 双手轻轻合两下，不出大声 | quiet_bed,seated,any | img-ca-silent-clap | 1 |
-| ca_whisper_ok | 贴耳轻说「成功了」 | 贴近耳边轻声说「成功了」 | quiet_bed,seated,any | img-ca-whisper-ok | 1 |
+| ca_whisper_ok | 贴耳轻说「成功了」 | 妈妈贴近孩子耳边轻声说「成功了」（画面无爸爸） | quiet_bed,seated,any | img-ca-whisper-ok | 1 |
 | ca_quiet_heart | 胸口比心 | 双手在胸口比心，停一秒 | quiet_bed,seated,any | img-ca-quiet-heart | 1 |
 | ca_pillow_bump | 碰枕头 | 轻轻碰一下枕头，宣布充电完成 | quiet_bed | img-ca-pillow-bump | 1 |
 | ca_blanket_squeeze | 抱抱被子 | 把被子搂紧一下再放松 | quiet_bed | img-ca-blanket-squeeze | 1 |
-| ca_toe_wiggle | 躺着抬起脚敲敲床 | 人躺着，抬起脚，用脚敲敲床面（五根脚趾清晰） | quiet_bed | img-ca-toe-wiggle | 1 |
+| ca_toe_wiggle | 躺卧踩单车 | 人躺着，双腿在空中交替做踩单车动作 | quiet_bed | img-ca-toe-wiggle | 1 |
 | ca_bed_shoulder | 床上轻碰肩 | 躺/坐在床上轻轻碰一下肩 | quiet_bed | img-ca-bed-shoulder | 1 |
 | ca_outdoor_spin | 户外转一圈 | 在户外原地转一小圈 | outdoor | img-ca-outdoor-spin | 1 |
 | ca_nature_point | 指一下风景 | 指一下树或天空，说「看见了」 | outdoor,any | img-ca-nature-point | 1 |
