@@ -132,7 +132,7 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 
 ## Task: AppIconBadgePlugin Swift override（20261016t）
 - [X] checkPermissions / requestPermissions → `@objc public override`
-- [ ] stamp 20261016t sync push + report
+- [X] stamp 20261016t sync push + report
 - Lesson: CAPPlugin 权限方法必须 `public override`（与 Capawesome Badge 一致）
 
 ## Archived: badge 权限 20261016s / 种子文案 20261016r
