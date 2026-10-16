@@ -133,8 +133,9 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 ## Task: 庆祝排队（大庆→小庆）（20261016v）
 - 根因：complete 只返回一个 celebration（board 优先）吞掉小庆；且只评一个里程碑
 - [X] evaluateAllBoardMilestones + celebrations[]；UI 队列关一个再下一个
-- [ ] stamp 20261016v sync push + report
+- [X] stamp 20261016v sync push + report
 - 顺序：大庆 level ASC，最后小庆
+- Lesson: 大庆/小庆勿互斥单字段；用 celebrations[] 队列
 
 ## Archived: badge 权限 20261016s / 种子文案 20261016r
 - Lesson: 自定义 select 替身勿放在关联该 select 的 `<label>` 内
