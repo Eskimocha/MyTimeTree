@@ -134,7 +134,7 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 - [X] GenerateImage whisper（无爸）+ toe 双腿踩单车
 - [X] Store KEYS / celebration-actions / text-inventory
 - [X] sync-web PR#3 · stamp 20261016d · smoke:habits OK
-- [ ] commit/push + update PR
+- [X] commit/push 2700ab8 + update PR
 
 ## Lessons (this task)
 - Content tables: `docs/v2/content/*.md` → `build-habit-content.mjs` → `habit-seed.js`；`sync-web` 必须先 build
