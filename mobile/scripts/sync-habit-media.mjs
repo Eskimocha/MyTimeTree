@@ -84,7 +84,8 @@ const expectedSmall = [
 const expectedBoard = Array.from({ length: 12 }, (_, i) =>
   `img-bm-${String(i + 1).padStart(2, "0")}`
 );
-const tipOk = keys.has("icon-tip-seed");
+const tipOk = keys.has("icon-tip-seed") || keys.has("icon-tip-star");
+const tipStarOk = keys.has("icon-tip-star");
 const smallHave = expectedSmall.filter((k) => keys.has(k)).length;
 const boardHave = expectedBoard.filter((k) => keys.has(k)).length;
 const smallMissing = expectedSmall.filter((k) => !keys.has(k));
@@ -94,7 +95,7 @@ console.log(
   `[sync-habit-media] ${copied} png → ${path.relative(root, dest)} (from ${src})`
 );
 console.log(
-  `[sync-habit-media] tip=${tipOk ? "ok" : "missing"} small=${smallHave}/28 board=${boardHave}/12 keys=${keys.size}`
+  `[sync-habit-media] tip=${tipOk ? "ok" : "missing"} tip-star=${tipStarOk ? "ok" : "missing"} small=${smallHave}/28 board=${boardHave}/12 keys=${keys.size}`
 );
 if (!tipOk || smallHave < 28 || boardHave < 12) {
   console.warn(

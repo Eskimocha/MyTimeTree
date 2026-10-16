@@ -3,7 +3,7 @@
   "use strict";
   global.MyTimeTreeHabitSeed = {
   "version": 4,
-  "generated_at": "2026-10-15T10:14:26.377Z",
+  "generated_at": "2026-10-16T02:59:38.228Z",
   "templates": [
     {
       "slug": "brush_teeth",
@@ -1138,8 +1138,8 @@
     },
     {
       "id": "ca_desk_tap",
-      "title": "桌面轻敲",
-      "body": "在桌上轻敲两下当小鼓点",
+      "title": "敲敲桌子",
+      "body": "用手指关节在桌面轻叩两下",
       "image_key": "img-ca-desk-tap",
       "categories": [],
       "env_tags": [
@@ -1184,7 +1184,7 @@
     },
     {
       "id": "ca_whisper_ok",
-      "title": "轻声说成功",
+      "title": "贴耳轻说「成功了」",
       "body": "贴近耳边轻声说「成功了」",
       "image_key": "img-ca-whisper-ok",
       "categories": [],
@@ -1232,8 +1232,8 @@
     },
     {
       "id": "ca_toe_wiggle",
-      "title": "脚趾动一动",
-      "body": "被子里动动脚趾当小庆祝",
+      "title": "躺着抬起脚敲敲床",
+      "body": "人躺着，抬起脚，用脚敲敲床面（五根脚趾清晰）",
       "image_key": "img-ca-toe-wiggle",
       "categories": [],
       "env_tags": [
@@ -1545,8 +1545,8 @@
     },
     {
       "id": "ca_desk_tap",
-      "title": "桌面轻敲",
-      "body": "在桌上轻敲两下当小鼓点",
+      "title": "敲敲桌子",
+      "body": "用手指关节在桌面轻叩两下",
       "image_key": "img-ca-desk-tap",
       "env_tags": [
         "seated"
@@ -1587,7 +1587,7 @@
     },
     {
       "id": "ca_whisper_ok",
-      "title": "轻声说成功",
+      "title": "贴耳轻说「成功了」",
       "body": "贴近耳边轻声说「成功了」",
       "image_key": "img-ca-whisper-ok",
       "env_tags": [
@@ -1631,8 +1631,8 @@
     },
     {
       "id": "ca_toe_wiggle",
-      "title": "脚趾动一动",
-      "body": "被子里动动脚趾当小庆祝",
+      "title": "躺着抬起脚敲敲床",
+      "body": "人躺着，抬起脚，用脚敲敲床面（五根脚趾清晰）",
       "image_key": "img-ca-toe-wiggle",
       "env_tags": [
         "quiet_bed"
@@ -2478,17 +2478,6 @@
     },
     {
       "level": 3,
-      "id": "bm_life_15",
-      "title": "十五次",
-      "body": "十五次被看见，时间开始存进树里。",
-      "trigger_rule": "lifetime_logs >= 15",
-      "repeatable": false,
-      "offline_action_id": "ca_fridge_star",
-      "image_key": "img-bm-03",
-      "active": true
-    },
-    {
-      "level": 4,
       "id": "bm_life_30",
       "title": "三十次",
       "body": "三十次！像攒了一小篮星星。",
@@ -2499,7 +2488,7 @@
       "active": true
     },
     {
-      "level": 5,
+      "level": 4,
       "id": "bm_streak_3",
       "title": "连续三天",
       "body": "连续三天都有记录，节奏出现了。",
@@ -2510,7 +2499,7 @@
       "active": true
     },
     {
-      "level": 6,
+      "level": 5,
       "id": "bm_week_5",
       "title": "本周满五",
       "body": "这一周记下五次——小庆祝升级！",
@@ -2521,7 +2510,7 @@
       "active": true
     },
     {
-      "level": 7,
+      "level": 6,
       "id": "bm_life_60",
       "title": "六十次",
       "body": "六十次好习惯，树冠更密了一点。",
@@ -2532,7 +2521,7 @@
       "active": true
     },
     {
-      "level": 8,
+      "level": 7,
       "id": "bm_streak_7",
       "title": "连续七天",
       "body": "一整周每天都有记，太稳了。",
@@ -2543,7 +2532,7 @@
       "active": true
     },
     {
-      "level": 9,
+      "level": 8,
       "id": "bm_week_cats_3",
       "title": "本周三色",
       "body": "本周至少三个不同类别的好习惯都记下了。",
@@ -2554,7 +2543,7 @@
       "active": true
     },
     {
-      "level": 10,
+      "level": 9,
       "id": "bm_life_100",
       "title": "一百次",
       "body": "一百次被看见——总表闪了一下。",
@@ -2562,6 +2551,17 @@
       "repeatable": false,
       "offline_action_id": "ca_double_high_five",
       "image_key": "img-bm-10",
+      "active": true
+    },
+    {
+      "level": 10,
+      "id": "bm_life_200",
+      "title": "二百次",
+      "body": "二百次！习惯树已经长成一片小森林的气势。",
+      "trigger_rule": "lifetime_logs >= 200",
+      "repeatable": false,
+      "offline_action_id": "ca_fridge_star",
+      "image_key": "img-bm-03",
       "active": true
     },
     {

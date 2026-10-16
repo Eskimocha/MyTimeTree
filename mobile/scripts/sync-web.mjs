@@ -14,7 +14,7 @@ const www = path.join(root, "mobile/www");
 const localSrc = path.join(root, "mobile/www-src/local");
 const sqlJsDist = path.join(root, "mobile/node_modules/sql.js/dist");
 /** Bust WKWebView caches for injected local scripts + app.js (was stuck on p5h1 / local-p2). */
-const LOCAL_ASSET_V = "20261015g";
+const LOCAL_ASSET_V = "20261016a";
 const iosPublic = path.join(root, "mobile/ios/App/App/public");
 
 function rmrf(dir) {
@@ -247,14 +247,19 @@ function assertBuildTree(base, tag) {
   assertMarker(base, "app.js", /habit-swipe-actions/, `${tag} habit-swipe-actions`);
   assertMarker(base, "app.js", /改奖励/, `${tag} 改奖励`);
   assertMarker(base, "app.js", /HABIT_IMAGE_ALIASES/, `${tag} HABIT_IMAGE_ALIASES`);
-  assertMarker(base, "app.js", /20261015g/, `${tag} HABIT_MEDIA_V 20261015g`);
+  assertMarker(base, "app.js", /20261016a/, `${tag} HABIT_MEDIA_V 20261016a`);
+  assertMarker(base, "app.js", /icon-tip-star/, `${tag} tip star`);
   assertMarker(base, "app.js", /renderHabitMilestones/, `${tag} renderHabitMilestones`);
   for (const rel of [
+    "habit/icon-tip-star.png",
+    "habit/icon-tip-star@2x.png",
     "habit/icon-tip-seed.png",
-    "habit/icon-tip-seed@2x.png",
     "habit/img-ca-high-five.png",
     "habit/img-ca-whisper-ok.png",
+    "habit/img-ca-toe-wiggle.png",
+    "habit/img-ca-desk-tap.png",
     "habit/img-bm-01.png",
+    "habit/img-bm-03.png",
     "habit/img-bm-12.png",
   ]) {
     const p = path.join(base, rel);
