@@ -14,7 +14,7 @@ const www = path.join(root, "mobile/www");
 const localSrc = path.join(root, "mobile/www-src/local");
 const sqlJsDist = path.join(root, "mobile/node_modules/sql.js/dist");
 /** Bust WKWebView caches for injected local scripts + app.js (was stuck on p5h1 / local-p2). */
-const LOCAL_ASSET_V = "20261016e";
+const LOCAL_ASSET_V = "20261016f";
 const iosPublic = path.join(root, "mobile/ios/App/App/public");
 
 function rmrf(dir) {
@@ -247,7 +247,7 @@ function assertBuildTree(base, tag) {
   assertMarker(base, "app.js", /habit-swipe-actions/, `${tag} habit-swipe-actions`);
   assertMarker(base, "app.js", /改奖励/, `${tag} 改奖励`);
   assertMarker(base, "app.js", /HABIT_IMAGE_ALIASES/, `${tag} HABIT_IMAGE_ALIASES`);
-  assertMarker(base, "app.js", /20261016e/, `${tag} HABIT_MEDIA_V 20261016e`);
+  assertMarker(base, "app.js", /20261016f/, `${tag} HABIT_MEDIA_V 20261016f`);
   assertMarker(base, "local/habit-seed.js", /躺卧踩单车/, `${tag} 躺卧踩单车`);
   assertMarker(base, "app.js", /icon-tip-star/, `${tag} tip star`);
   assertMarker(base, "app.js", /renderHabitMilestones/, `${tag} renderHabitMilestones`);
