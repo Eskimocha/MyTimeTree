@@ -1178,12 +1178,11 @@
   async function refreshHabitReview() {
     try {
       const data = await api("/api/portal/habits/overview");
+      // Design notes (legend_intro / month_summary) stay in content tables only — never UI lede
       const copyEl = $("#habit-board-copy");
       if (copyEl) {
-        const intro =
-          (data.board_copy || []).find((c) => c.slot === "legend_intro") ||
-          (data.board_copy || []).find((c) => c.slot === "month_summary");
-        copyEl.textContent = intro ? intro.copy_text : "";
+        copyEl.textContent = "";
+        copyEl.hidden = true;
       }
       renderHabitHeatmap(data.month_heatmap || data);
       renderHabitMilestones(data.milestones || []);

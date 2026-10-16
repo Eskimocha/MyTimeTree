@@ -3,7 +3,7 @@
   "use strict";
   global.MyTimeTreeHabitSeed = {
   "version": 4,
-  "generated_at": "2026-10-16T08:31:59.415Z",
+  "generated_at": "2026-10-16T08:32:33.034Z",
   "templates": [
     {
       "slug": "brush_teeth",
@@ -3385,13 +3385,13 @@
       "id": "hbc_legend",
       "slot": "legend_intro",
       "copy_text": "每天大方块里的小色块 = 当天记过的好习惯（颜色固定到习惯）。",
-      "active": true
+      "active": false
     },
     {
       "id": "hbc_month",
       "slot": "month_summary",
       "copy_text": "本月点阵：一眼看到哪些天有记录、都记了哪些习惯。",
-      "active": true
+      "active": false
     },
     {
       "id": "hbc_empty",

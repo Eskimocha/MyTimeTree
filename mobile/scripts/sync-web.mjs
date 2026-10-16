@@ -253,6 +253,8 @@ function assertBuildTree(base, tag) {
   assertMarker(base, "index.html", /里程碑达成奖章/, `${tag} aria 里程碑达成奖章`);
   assertMarker(base, "app.js", /月记 \$\{monthLogs\} 条/, `${tag} 月记 stats`);
   assertMarker(base, "app.js", /habit-heatmap-month/, `${tag} heatmap month title`);
+  assertMarker(base, "app.js", /never UI lede/, `${tag} board-copy never UI lede`);
+  assertMarker(base, "index.html", /habit-board-copy"[^>]*hidden/, `${tag} board-copy hidden`);
   assertMarker(base, "local/habits.js", /month_label/, `${tag} month_label`);
   assertMarker(base, "local/habits.js", /month_logs:/, `${tag} month_logs stats`);
   {
