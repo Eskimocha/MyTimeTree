@@ -133,8 +133,8 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 ## Task: 今日好习惯状态角标（20261016n）
 - [X] 「还剩 X」左侧红点（pending>0）；记完去掉
 - [X] `8/9` → `总共 N`（空格跟「还剩 X」）
-- [ ] stamp 20261016n sync-web push PR#3
-- [ ] internal habit-status-badges-20261016n.md
+- [X] stamp 20261016n sync-web push PR#3 (`dff7751`)
+- [X] internal habit-status-badges-20261016n.md
 
 ## Archived: 主屏截图 20261016m
 
