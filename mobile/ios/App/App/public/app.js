@@ -53,7 +53,7 @@
     bird: `./ornaments/bird.png?v=${ASSET_V}`,
   };
 
-  const HABIT_MEDIA_V = "20261016w";
+  const HABIT_MEDIA_V = "20261016x";
   // Tip: bright star (icon-tip-seed path overwritten; icon-tip-star alias also shipped)
   const HABIT_TIP_ICON = `./habit/icon-tip-star.png?v=${HABIT_MEDIA_V}`;
   const HABIT_TIP_ICON_2X = `./habit/icon-tip-star@2x.png?v=${HABIT_MEDIA_V}`;
@@ -764,10 +764,10 @@
         const script = it.parent_script?.script_text || "";
         // Tip expand: 微习惯 · 毛伊习惯 · 家长话术（无「激励」行）
         panel.innerHTML =
-          `<div class="habit-tip-layer"><strong>微习惯</strong><p>${
+          `<div class="habit-tip-layer"><strong>微习惯 <span class="habit-tip-note">（可被接受的最小行为）</span></strong><p>${
             micro.length ? micro.join(" · ") : "可在设置里添加微步骤"
           }</p></div>` +
-          `<div class="habit-tip-layer"><strong>毛伊习惯</strong><p>${
+          `<div class="habit-tip-layer"><strong>毛伊习惯 <span class="habit-tip-note">（可以先做毛伊习惯再正式开始）</span></strong><p>${
             maui || "洗完一件小事就做下一步"
           }</p></div>` +
           `<div class="habit-tip-layer"><strong>家长话术</strong><p>${

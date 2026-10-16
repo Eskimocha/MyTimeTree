@@ -14,7 +14,7 @@ const www = path.join(root, "mobile/www");
 const localSrc = path.join(root, "mobile/www-src/local");
 const sqlJsDist = path.join(root, "mobile/node_modules/sql.js/dist");
 /** Bust WKWebView caches for injected local scripts + app.js (was stuck on p5h1 / local-p2). */
-const LOCAL_ASSET_V = "20261016w";
+const LOCAL_ASSET_V = "20261016x";
 const iosPublic = path.join(root, "mobile/ios/App/App/public");
 
 function rmrf(dir) {
@@ -346,6 +346,13 @@ function assertBuildTree(base, tag) {
   }
   assertMarker(base, "app.js", /icon-tip-star/, `${tag} tip star`);
   assertMarker(base, "app.js", /毛伊习惯/, `${tag} tip 毛伊习惯 layer`);
+  assertMarker(base, "app.js", /可被接受的最小行为/, `${tag} tip micro note`);
+  assertMarker(
+    base,
+    "app.js",
+    /可以先做毛伊习惯再正式开始/,
+    `${tag} tip maui note`
+  );
   assertMarker(base, "app.js", /无「激励」行/, `${tag} tip no 激励 row`);
   {
     const appJs = fs.readFileSync(path.join(base, "app.js"), "utf8");
@@ -355,6 +362,20 @@ function assertBuildTree(base, tag) {
     }
     console.log(`[sync-web] ok ${tag} tip has no 激励 layer`);
   }
+  assertMarker(base, "styles.css", /\.habit-tip-note/, `${tag} CSS tip note`);
+  assertMarker(
+    base,
+    "styles.css",
+    /\.habit-settings-row\.on-home-strip/,
+    `${tag} CSS TOP9 strip row`
+  );
+  assertMarker(
+    base,
+    "styles.css",
+    /\.habit-settings-row\.off-home-strip \.habit-settings-front/,
+    `${tag} CSS non-TOP9 muted front`
+  );
+  assertMarker(base, "styles.css", /#e6e9e7/, `${tag} non-TOP9 gray bg`);
   assertMarker(base, "app.js", /renderHabitMilestones/, `${tag} renderHabitMilestones`);
   for (const rel of [
     "habit/icon-tip-star.png",
