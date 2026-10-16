@@ -53,7 +53,7 @@
     bird: `./ornaments/bird.png?v=${ASSET_V}`,
   };
 
-  const HABIT_MEDIA_V = "20261016o";
+  const HABIT_MEDIA_V = "20261016p";
   // Tip: bright star (icon-tip-seed path overwritten; icon-tip-star alias also shipped)
   const HABIT_TIP_ICON = `./habit/icon-tip-star.png?v=${HABIT_MEDIA_V}`;
   const HABIT_TIP_ICON_2X = `./habit/icon-tip-star@2x.png?v=${HABIT_MEDIA_V}`;
@@ -560,16 +560,99 @@
     }
   }
 
-  function setHomeHabitBadge(n) {
-    const badge = $("#habit-home-badge");
-    if (!badge) return;
-    if (n > 0) {
-      badge.hidden = false;
-      badge.textContent = String(n);
-    } else {
-      badge.hidden = true;
-      badge.textContent = "";
+  function capPlugin(name) {
+    try {
+      const Cap = window.Capacitor;
+      if (!Cap) return null;
+      if (typeof Cap.registerPlugin === "function") {
+        return Cap.registerPlugin(name);
+      }
+      return (Cap.Plugins && Cap.Plugins[name]) || null;
+    } catch {
+      return null;
     }
+  }
+
+  function isNativeApp() {
+    try {
+      return Boolean(
+        window.Capacitor &&
+          window.Capacitor.isNativePlatform &&
+          window.Capacitor.isNativePlatform()
+      );
+    } catch {
+      return false;
+    }
+  }
+
+  /** iOS SpringBoard icon badge — same count as tab「主屏」/「还剩 X」. */
+  let appIconBadgeReady = null;
+  async function ensureAppIconBadgePermission() {
+    if (appIconBadgeReady != null) return appIconBadgeReady;
+    if (!isNativeApp()) {
+      appIconBadgeReady = false;
+      return false;
+    }
+    const Badge = capPlugin("Badge");
+    if (!Badge || typeof Badge.requestPermissions !== "function") {
+      appIconBadgeReady = false;
+      console.warn("[badge] Badge plugin missing — rebuild iOS with @capawesome/capacitor-badge");
+      return false;
+    }
+    try {
+      if (typeof Badge.isSupported === "function") {
+        const sup = await Badge.isSupported();
+        if (sup && sup.isSupported === false) {
+          appIconBadgeReady = false;
+          return false;
+        }
+      }
+      let status =
+        typeof Badge.checkPermissions === "function"
+          ? await Badge.checkPermissions()
+          : null;
+      if (!status || status.display !== "granted") {
+        status = await Badge.requestPermissions();
+      }
+      appIconBadgeReady = status && status.display === "granted";
+      console.info("[badge] permission", status);
+      return appIconBadgeReady;
+    } catch (e) {
+      console.warn("[badge] permission", e);
+      appIconBadgeReady = false;
+      return false;
+    }
+  }
+
+  async function syncAppIconBadge(n) {
+    const count = Math.max(0, Math.floor(Number(n) || 0));
+    if (!isNativeApp()) return;
+    const Badge = capPlugin("Badge");
+    if (!Badge || typeof Badge.set !== "function") return;
+    try {
+      const ok = await ensureAppIconBadgePermission();
+      if (!ok) return;
+      await Badge.set({ count });
+      console.info("[badge] set", count);
+    } catch (e) {
+      console.warn("[badge] set", e);
+    }
+  }
+
+  function setHomeHabitBadge(n) {
+    const count = Math.max(0, Math.floor(Number(n) || 0));
+    const badge = $("#habit-home-badge");
+    if (badge) {
+      if (count > 0) {
+        badge.hidden = false;
+        badge.textContent = String(count);
+      } else {
+        badge.hidden = true;
+        badge.textContent = "";
+      }
+    }
+    // Fire-and-forget: keep SpringBoard badge aligned with pending habits.
+    syncAppIconBadge(count);
   }
 
   async function refreshHabitsStrip() {
@@ -2178,6 +2261,21 @@
       e.preventDefault();
     });
   });
+
+  // Resume: refresh strip + icon badge (pending count may have changed overnight).
+  try {
+    const App = capPlugin("App");
+    if (App && typeof App.addListener === "function") {
+      App.addListener("appStateChange", ({ isActive }) => {
+        if (!isActive || !state.currentAccountId) return;
+        refreshHabitsStrip().catch((err) => {
+          console.warn("[badge] refresh on resume", err);
+        });
+      });
+    }
+  } catch (err) {
+    console.warn("[badge] App resume wire failed", err);
+  }
 
   bootstrap().catch((err) => {
     const msg = err && err.message ? err.message : String(err || "unknown");

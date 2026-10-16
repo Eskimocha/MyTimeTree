@@ -16,6 +16,10 @@
 			"launchShowDuration": 300,
 			"backgroundColor": "#eef8f1",
 			"showSpinner": false
+		},
+		"Badge": {
+			"persist": true,
+			"autoClear": false
 		}
 	},
 	"packageClassList": [
@@ -23,6 +27,7 @@
 		"FilesystemPlugin",
 		"SharePlugin",
 		"SplashScreenPlugin",
+		"BadgePlugin",
 		"NativeBiometricPlugin"
 	]
 }

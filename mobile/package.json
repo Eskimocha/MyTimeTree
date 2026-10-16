@@ -28,6 +28,7 @@
     "@capacitor/ios": "^7.4.3",
     "@capacitor/share": "^7.0.4",
     "@capacitor/splash-screen": "^7.0.2",
+    "@capawesome/capacitor-badge": "^7.0.1",
     "@capgo/capacitor-native-biometric": "^7.6.0",
     "html2canvas": "^1.4.1",
     "sql.js": "^1.12.0"

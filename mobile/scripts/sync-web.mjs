@@ -14,7 +14,7 @@ const www = path.join(root, "mobile/www");
 const localSrc = path.join(root, "mobile/www-src/local");
 const sqlJsDist = path.join(root, "mobile/node_modules/sql.js/dist");
 /** Bust WKWebView caches for injected local scripts + app.js (was stuck on p5h1 / local-p2). */
-const LOCAL_ASSET_V = "20261016o";
+const LOCAL_ASSET_V = "20261016p";
 const iosPublic = path.join(root, "mobile/ios/App/App/public");
 
 function rmrf(dir) {
@@ -258,6 +258,10 @@ function assertBuildTree(base, tag) {
   assertMarker(base, "styles.css", /\.habit-seed-picker-list/, `${tag} CSS seed picker list`);
   assertMarker(base, "styles.css", /white-space:\s*nowrap/, `${tag} CSS seed picker nowrap`);
   assertMarker(base, "app.js", /26 \* 16/, `${tag} seed picker max width 26rem`);
+  assertMarker(base, "app.js", /syncAppIconBadge/, `${tag} syncAppIconBadge`);
+  assertMarker(base, "app.js", /capPlugin\("Badge"\)/, `${tag} Badge plugin`);
+  assertMarker(base, "styles.css", /\.tab\s*\{[\s\S]*?display:\s*inline-flex/, `${tag} CSS tab inline-flex`);
+  assertMarker(base, "styles.css", /\.tab-badge\s*\{[\s\S]*?line-height:\s*1/, `${tag} CSS tab-badge line-height`);
   {
     const appJs = fs.readFileSync(path.join(base, "app.js"), "utf8");
     if (/\$\{show\.length\}\/\$\{limit\}/.test(appJs) || /还剩 \$\{pending\} ·/.test(appJs)) {

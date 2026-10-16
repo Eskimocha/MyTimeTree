@@ -494,6 +494,11 @@ html, body {
   font: inherit;
   color: var(--muted);
   border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+  line-height: 1.2;
 }
 .tab.active {
   background: #fff;
@@ -1120,16 +1125,23 @@ html.share-capture #tab-home.tab-panel {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 1.15rem;
-  height: 1.15rem;
-  margin-left: 0.25rem;
-  padding: 0 0.3rem;
+  box-sizing: border-box;
+  min-width: 1.2rem;
+  height: 1.2rem;
+  margin: 0;
+  padding: 0 0.28rem;
   border-radius: 999px;
   background: var(--danger);
   color: #fff;
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  letter-spacing: 0;
+  text-align: center;
   vertical-align: middle;
+  /* Kill inherited tab line-height so the digit sits optically centered */
+  flex: 0 0 auto;
 }
 .tab-badge[hidden] { display: none !important; }
 

@@ -130,13 +130,12 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 
 # Scratchpad
 
-## Task: 启用种子选择弹框加宽（20261016o）
-- 原生 iOS `<select>` 菜单偏窄，长标题折行
-- [X] 自定义 `.habit-seed-picker`（fixed 近屏宽、nowrap）
-- [X] stamp 20261016o sync-web push PR#3 (`f7602d1`)
-- [X] internal habit-picker-width-20261016o.md
+## Task: 主屏角标居中 + App 图标 badge（20261016p）
+- [ ] tab-badge CSS 数字居中
+- [ ] @capawesome/capacitor-badge ↔ badge_count / 还剩 X
+- [ ] stamp 20261016p sync push PR#3 + report
 
-## Archived: 状态角标 20261016n / 主屏截图 20261016m
+## Archived: 种子弹框 20261016o / 状态角标 20261016n
 
 ## Lessons (this task)
 - share-capture 勿把所有 `.tab-panel` 刷成 `#f7fcf8`——会盖住森林卡；主屏保持 transparent
