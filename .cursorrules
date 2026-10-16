@@ -130,11 +130,11 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 
 # Scratchpad
 
-## Task: 核实 AppIconBadgePlugin public override（20261016u）
-- 仓库仅一份 `mobile/ios/App/App/AppIconBadgePlugin.swift`；remote 自 20261016t 已是 public override
-- Kai 截图仍是旧文件 → 本地未 reset 到 tip
-- [X] stamp 20261016u + 文件头 marker 方便核对
-- Lesson: CAPPlugin 权限方法必须 `public override`；Kai 须 `reset --hard` 到 tip
+## Task: 庆祝排队（大庆→小庆）（20261016v）
+- 根因：complete 只返回一个 celebration（board 优先）吞掉小庆；且只评一个里程碑
+- [X] evaluateAllBoardMilestones + celebrations[]；UI 队列关一个再下一个
+- [ ] stamp 20261016v sync push + report
+- 顺序：大庆 level ASC，最后小庆
 
 ## Archived: badge 权限 20261016s / 种子文案 20261016r
 - Lesson: 自定义 select 替身勿放在关联该 select 的 `<label>` 内

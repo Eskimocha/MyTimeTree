@@ -53,7 +53,7 @@
     bird: `/static/portal/ornaments/bird.png?v=${ASSET_V}`,
   };
 
-  const HABIT_MEDIA_V = "20261016u";
+  const HABIT_MEDIA_V = "20261016v";
   // Tip: bright star (icon-tip-seed path overwritten; icon-tip-star alias also shipped)
   const HABIT_TIP_ICON = `/static/portal/habit/icon-tip-star.png?v=${HABIT_MEDIA_V}`;
   const HABIT_TIP_ICON_2X = `/static/portal/habit/icon-tip-star@2x.png?v=${HABIT_MEDIA_V}`;
@@ -803,33 +803,43 @@
     }
   }
 
-  function showHabitCelebration(res) {
-    const board = res.celebration && res.celebration.kind === "board";
-    if (board) {
-      const mask = $("#habit-board-mask");
-      if (!mask) return;
-      const celeb = res.celebration;
-      $("#habit-board-mask-title").textContent =
-        celeb.title || "大庆祝！习惯里程碑";
-      $("#habit-board-mask-body").textContent =
-        celeb.body ||
-        (res.minutes_credited
-          ? `本记已存入 ${res.minutes_credited} 分 · 坚持很棒`
-          : "坚持很棒");
-      const levelEl = $("#habit-board-mask-level");
-      if (levelEl) {
-        levelEl.textContent = celeb.level ? `里程碑 L${celeb.level}` : "";
-        levelEl.hidden = !celeb.level;
-      }
-      bindHabitHintArt($("#habit-board-art"), celeb.image_key);
-      mask.hidden = false;
-      return;
-    }
+  /** Queue: board milestones (level ASC) then one small — dismiss advances. */
+  const celebrationQueue = [];
+  let celebrationBusy = false;
+
+  function hideAllCelebrationModals() {
+    const mask = $("#habit-board-mask");
     const overlay = $("#habit-celeb-overlay");
-    if (!overlay) return;
+    if (mask) mask.hidden = true;
+    if (overlay) overlay.hidden = true;
+  }
+
+  function showBoardCelebrationItem(celeb, minutesCredited) {
+    const mask = $("#habit-board-mask");
+    if (!mask) return false;
+    $("#habit-board-mask-title").textContent =
+      celeb.title || "大庆祝！习惯里程碑";
+    $("#habit-board-mask-body").textContent =
+      celeb.body ||
+      (minutesCredited
+        ? `本记已存入 ${minutesCredited} 分 · 坚持很棒`
+        : "坚持很棒");
+    const levelEl = $("#habit-board-mask-level");
+    if (levelEl) {
+      levelEl.textContent = celeb.level ? `里程碑 L${celeb.level}` : "";
+      levelEl.hidden = !celeb.level;
+    }
+    bindHabitHintArt($("#habit-board-art"), celeb.image_key);
+    mask.hidden = false;
+    return true;
+  }
+
+  function showSmallCelebrationItem(item) {
+    const overlay = $("#habit-celeb-overlay");
+    if (!overlay) return false;
     const line =
-      res.small_celebration ||
-      res.incentive_text ||
+      item.small_celebration ||
+      item.incentive_text ||
       "做到了！";
     const mark = $("#habit-celeb-mark");
     if (mark) {
@@ -838,16 +848,16 @@
       mark.srcset = `${HABIT_CELEB_MARK_2X} 2x`;
     }
     $("#habit-celeb-title").textContent = "小庆祝一下吧";
-    $("#habit-celeb-credit").textContent = res.minutes_credited
-      ? `已自动入账 ${res.minutes_credited} 分`
+    const minutes = item.minutes_credited;
+    $("#habit-celeb-credit").textContent = minutes
+      ? `已自动入账 ${minutes} 分`
       : "";
     const incEl = $("#habit-celeb-incentive");
     if (incEl) incEl.textContent = line;
-    const hint = res.offline_hint;
+    const hint = item.offline_hint;
     const hintEl = $("#habit-celeb-hint");
     const hintArt = $("#habit-hint-art");
-    const artKey =
-      (hint && hint.image_key) || res.image_key || "";
+    const artKey = (hint && hint.image_key) || item.image_key || "";
     if (hint && hint.title) {
       hintEl.hidden = false;
       $("#habit-hint-title").textContent = hint.title;
@@ -866,6 +876,76 @@
       }
     }
     overlay.hidden = false;
+    return true;
+  }
+
+  function pumpCelebrationQueue() {
+    if (celebrationBusy) return;
+    const next = celebrationQueue.shift();
+    if (!next) {
+      console.info("[celeb] queue empty");
+      return;
+    }
+    celebrationBusy = true;
+    hideAllCelebrationModals();
+    const kind = next.kind || "small";
+    console.info("[celeb] show", kind, next.milestone_id || next.log_id || "", "left=", celebrationQueue.length);
+    let ok = false;
+    if (kind === "board") {
+      ok = showBoardCelebrationItem(next, next.minutes_credited);
+    } else {
+      ok = showSmallCelebrationItem(next);
+    }
+    if (!ok) {
+      celebrationBusy = false;
+      pumpCelebrationQueue();
+    }
+  }
+
+  function dismissCelebrationAndAdvance() {
+    hideAllCelebrationModals();
+    celebrationBusy = false;
+    pumpCelebrationQueue();
+  }
+
+  function buildCelebrationQueueFromResponse(res) {
+    if (Array.isArray(res.celebrations) && res.celebrations.length) {
+      return res.celebrations.map((c) => ({
+        ...c,
+        minutes_credited:
+          c.minutes_credited != null ? c.minutes_credited : res.minutes_credited,
+      }));
+    }
+    // Legacy: single celebration field swallowed small when board won.
+    const items = [];
+    if (res.celebration && res.celebration.kind === "board") {
+      items.push({
+        ...res.celebration,
+        minutes_credited: res.minutes_credited,
+      });
+    }
+    items.push({
+      kind: "small",
+      minutes_credited: res.minutes_credited,
+      incentive_text: res.incentive_text,
+      small_celebration: res.small_celebration,
+      image_key: res.image_key,
+      offline_hint: res.offline_hint,
+      parent_script: res.parent_script,
+    });
+    return items;
+  }
+
+  function showHabitCelebration(res) {
+    const items = buildCelebrationQueueFromResponse(res);
+    for (const item of items) celebrationQueue.push(item);
+    console.info(
+      "[celeb] enqueue",
+      items.map((i) => i.kind + (i.level != null ? ` L${i.level}` : "")).join(" → "),
+      "q=",
+      celebrationQueue.length
+    );
+    pumpCelebrationQueue();
   }
 
   function renderHabitMilestones(list) {
@@ -2284,13 +2364,11 @@
 
   document.querySelectorAll("[data-habit-dismiss]").forEach((el) => {
     el.addEventListener("click", () => {
-      const overlay = $("#habit-celeb-overlay");
-      if (overlay) overlay.hidden = true;
+      dismissCelebrationAndAdvance();
     });
   });
   $("#habit-board-mask-ok")?.addEventListener("click", () => {
-    const mask = $("#habit-board-mask");
-    if (mask) mask.hidden = true;
+    dismissCelebrationAndAdvance();
   });
   document.querySelectorAll("[data-micro-dismiss]").forEach((el) => {
     el.addEventListener("click", () => closeMicroModal());

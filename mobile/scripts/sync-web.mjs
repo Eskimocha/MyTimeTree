@@ -14,7 +14,7 @@ const www = path.join(root, "mobile/www");
 const localSrc = path.join(root, "mobile/www-src/local");
 const sqlJsDist = path.join(root, "mobile/node_modules/sql.js/dist");
 /** Bust WKWebView caches for injected local scripts + app.js (was stuck on p5h1 / local-p2). */
-const LOCAL_ASSET_V = "20261016u";
+const LOCAL_ASSET_V = "20261016v";
 const iosPublic = path.join(root, "mobile/ios/App/App/public");
 
 function rmrf(dir) {
@@ -362,7 +362,18 @@ function assertBuildTree(base, tag) {
   assertMarker(base, "index.html", /最近好习惯记录/, `${tag} 最近好习惯记录`);
   assertMarker(base, "index.html", /habit-milestones/, `${tag} habit-milestones`);
   assertMarker(base, "index.html", /改奖励/, `${tag} lede 改奖励`);
-  assertMarker(base, "local/habits.js", /evaluateBoardMilestone/, `${tag} evaluateBoardMilestone`);
+  assertMarker(base, "local/habits.js", /evaluateAllBoardMilestones/, `${tag} evaluateAllBoardMilestones`);
+  assertMarker(base, "local/habits.js", /celebrations/, `${tag} celebrations array`);
+  assertMarker(base, "app.js", /pumpCelebrationQueue/, `${tag} pumpCelebrationQueue`);
+  assertMarker(base, "app.js", /dismissCelebrationAndAdvance/, `${tag} dismissCelebrationAndAdvance`);
+  {
+    const habitsJs = fs.readFileSync(path.join(base, "local/habits.js"), "utf8");
+    if (/function evaluateBoardMilestone\b/.test(habitsJs)) {
+      console.error(`[sync-web] ${tag} stale evaluateBoardMilestone still in habits.js`);
+      process.exit(1);
+    }
+    console.log(`[sync-web] ok ${tag} no single-milestone evaluateBoardMilestone`);
+  }
   assertMarker(base, "local/habit-seed.js", /board_milestones/, `${tag} board_milestones seed`);
   assertMarker(base, "index.html", new RegExp(`habits\\.js\\?v=${esc}`), `${tag} habits.js?v=${LOCAL_ASSET_V}`);
   assertMarker(

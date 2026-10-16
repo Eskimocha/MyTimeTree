@@ -670,12 +670,16 @@
       return "";
     }
 
-    /** First unmet milestone that now qualifies (max one board celeb per complete). */
-    function evaluateBoardMilestone(accountId, day) {
+    /**
+     * All unmet milestones that now qualify (level ASC).
+     * One complete can unlock several bm_* — UI queues them then small celeb.
+     */
+    function evaluateAllBoardMilestones(accountId, day) {
       const rows = db().query(
         `SELECT * FROM habit_board_milestones
          WHERE active = 1 ORDER BY level ASC, id ASC`
       );
+      const unlocked = [];
       for (const ms of rows) {
         const trigger = parseTriggerRule(ms.trigger_rule);
         if (!trigger) continue;
@@ -701,7 +705,7 @@
             achievedAt,
           ]
         );
-        return {
+        unlocked.push({
           kind: "board",
           milestone_id: String(ms.id),
           level: Number(ms.level) || 0,
@@ -710,9 +714,9 @@
           image_key: String(ms.image_key || ""),
           offline_action_id: String(ms.offline_action_id || ""),
           trigger_rule: String(ms.trigger_rule || ""),
-        };
+        });
       }
-      return null;
+      return unlocked;
     }
 
     function listMilestonesProgress(accountId) {
@@ -879,9 +883,9 @@
         ]
       );
 
-      // Board: evaluate 12 milestones (at most one overlay per complete)
-      const boardCelebration = evaluateBoardMilestone(accountId, day);
-      if (boardCelebration) {
+      // Board: unlock every newly met milestone (UI shows them in queue, then small).
+      const boardCelebrations = evaluateAllBoardMilestones(accountId, day);
+      for (const boardCelebration of boardCelebrations) {
         db().exec(
           `INSERT INTO celebration_events (account_id, kind, day_key, habit_log_id, payload_json, created_at)
            VALUES (?, 'board', ?, ?, ?, ?)`,
@@ -894,6 +898,21 @@
           ]
         );
       }
+
+      const imageKey = celeb.image_key || (hint && hint.image_key) || "";
+      const smallItem = {
+        kind: "small",
+        habit_id: habitId,
+        log_id: logId,
+        minutes_credited: minutes,
+        incentive_text: celeb.incentive_text,
+        small_celebration: celeb.small_celebration,
+        image_key: imageKey,
+        offline_hint: hint,
+        parent_script: { script_text: scriptText },
+      };
+      // Order: big celebrations by level ASC, then one small celebration.
+      const celebrations = [...boardCelebrations, smallItem];
 
       persist();
       return {
@@ -912,8 +931,10 @@
         minutes_credited: minutes,
         incentive_text: celeb.incentive_text,
         small_celebration: celeb.small_celebration,
-        image_key: celeb.image_key || (hint && hint.image_key) || "",
-        celebration: boardCelebration || celebration,
+        image_key: imageKey,
+        // Legacy single field: first board if any, else small (compat).
+        celebration: boardCelebrations[0] || celebration,
+        celebrations,
         parent_script: { script_text: scriptText },
         offline_hint: hint,
         badge_count: badgeCount(accountId),

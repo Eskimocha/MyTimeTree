@@ -127,7 +127,7 @@ const done = await api("/api/portal/habits/complete", {
   body: JSON.stringify({ habit_id: first.habit_id }),
 });
 console.log(
-  `[smoke-habits] complete minutes=${done.minutes_credited} celeb=${done.celebration?.kind}`
+  `[smoke-habits] complete minutes=${done.minutes_credited} celeb=${done.celebration?.kind} queue=${(done.celebrations || []).map((c) => c.kind).join("→") || "-"}`
 );
 if (done.minutes_credited <= 0) throw new Error("minutes_credited expected");
 if (!done.parent_script?.script_text) throw new Error("parent_script missing");
