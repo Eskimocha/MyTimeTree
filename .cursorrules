@@ -131,8 +131,8 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 # Scratchpad
 
 ## Task: 定制弹窗微习惯/话术单行 (20261018h)
-- [ ] 微习惯、家长话术改为单行 input；毛伊已是单行
-- [ ] stamp 20261018h；sync；push PR #3
+- [X] 微习惯、家长话术改为单行 input；毛伊已是单行
+- [X] stamp 20261018h；sync；push PR #3
 
 ## Archived: copy trim 20261018g / customize UI 20261018f
 
