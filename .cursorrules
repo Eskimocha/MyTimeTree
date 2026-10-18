@@ -130,12 +130,15 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 
 # Scratchpad
 
-## Task: Maui #2/#8/#10（20261016z）
-- [X] wash_face→走到盥洗区停5秒；no_phone_bed→刷完牙就收手机；morning_wake→爸爸妈妈帮助捏捏脚趾或手指
-- [X] stamp 20261016z sync push report
+## Task: 种子下拉又无法弹出（20261017a）
+- 根因：tab-panel backdrop-filter 困住 position:fixed + overflow 裁切（非 label 竞态复发）
+- [X] list portal → document.body；outside-close 认 portaled list；settings 去 backdrop-filter
+- [X] stamp 20261017a sync push report
+- Lesson: iOS/WK 上 fixed 菜单勿放在 backdrop-filter/transform 祖先内，应 body portal
 
-## Archived: inventory 20261016y / tip notes 20261016x / tip maui 20261016w
+## Archived: maui 2/8/10 20261016z / inventory 20261016y / tip notes 20261016x
 - Lesson: Kai 改 inventory 后须回写 micro/maui/parent 表再 build，勿只 cp inventory
+- Lesson: 自定义 select 替身勿放在关联该 select 的 `<label>` 内
 
 
 - Lesson: tip 展开勿绑 incentive_text；记后小庆仍用 small_celebration
