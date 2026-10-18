@@ -131,9 +131,9 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 # Scratchpad
 
 ## Task: 自定义毛伊/微习惯 + 左滑「定制」(20261018f)
-- [ ] db: habits.maui_override / script_override + migrate v13
-- [ ] addCustom 存毛伊/微习惯；定制弹窗改微/毛伊/话术
-- [ ] stamp 20261018f；sync；push PR #3；写报告
+- [X] db: habits.maui_override / script_override + migrate v13
+- [X] addCustom 存毛伊/微习惯；定制弹窗改微/毛伊/话术
+- [X] stamp 20261018f；sync；push PR #3；写报告
 
 ## Archived: swipe half 20261018e / seed category 20261018d
 
