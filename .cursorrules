@@ -131,8 +131,8 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 # Scratchpad
 
 ## Task: 种子下拉按种类排序 + 前缀（20261018d）
-- [ ] picker 选项：按 category 排序；标签 `种类 · 习惯名（N分）`
-- [ ] stamp 20261018d；sync；push PR #3；写 internal 报告
+- [X] picker 选项：按 category 排序；标签 `种类 · 习惯名（N分）`
+- [X] stamp 20261018d；sync；push PR #3；写 internal 报告
 
 ## Archived: 改奖励 keypad 20261018c / seed width 20261018b
 
