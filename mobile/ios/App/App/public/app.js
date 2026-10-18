@@ -53,7 +53,7 @@
     bird: `./ornaments/bird.png?v=${ASSET_V}`,
   };
 
-  const HABIT_MEDIA_V = "20261018h";
+  const HABIT_MEDIA_V = "20261018i";
   // Tip: bright star (icon-tip-seed path overwritten; icon-tip-star alias also shipped)
   const HABIT_TIP_ICON = `./habit/icon-tip-star.png?v=${HABIT_MEDIA_V}`;
   const HABIT_TIP_ICON_2X = `./habit/icon-tip-star@2x.png?v=${HABIT_MEDIA_V}`;
@@ -1304,7 +1304,7 @@
           "habit-settings-row" + (onStrip ? " on-home-strip" : " off-home-strip");
         row.dataset.habitId = String(h.id);
 
-        // Swipe actions (hidden until left-swipe): 定制 / 改奖励 / 移除
+        // Swipe actions (hidden until left-swipe): 定制 / 奖励 / 移除
         const swipe = document.createElement("div");
         swipe.className = "habit-swipe-actions";
         swipe.setAttribute("aria-hidden", "true");
@@ -1326,12 +1326,12 @@
         const rewardBtn = document.createElement("button");
         rewardBtn.type = "button";
         rewardBtn.className = "habit-swipe-action habit-swipe-reward";
-        rewardBtn.textContent = "改奖励";
+        rewardBtn.textContent = "奖励";
         rewardBtn.setAttribute("aria-label", `修改 ${h.title} 的兑换分钟奖励`);
         rewardBtn.addEventListener("click", async (e) => {
           e.stopPropagation();
           closeAllHabitSwipes(list);
-          // Same calculator keypad as 支出/借用/存入 (not window.prompt).
+          // Same calculator keypad as 支出/借用/存入 (not a text prompt).
           const n = await openKeypad({
             title: `${h.title} · 每次奖励几分钟？`,
             hint: `当前 ${h.minutes_per_completion} 分，可直接点「输入」或改数后再输入`,

@@ -255,8 +255,8 @@ function assertBuildTree(base, tag) {
   );
   {
     const appJs = fs.readFileSync(path.join(base, "app.js"), "utf8");
-    if (/habit-swipe-reward[\s\S]{0,500}window\.prompt/.test(appJs)) {
-      console.error(`[sync-web] ${tag} 奖励 swipe still uses window.prompt`);
+    if (/habit-swipe-reward[\s\S]{0,500}window\.prompt\s*\(/.test(appJs)) {
+      console.error(`[sync-web] ${tag} 奖励 swipe still uses window.prompt()`);
       process.exit(1);
     }
     console.log(`[sync-web] ok ${tag} 奖励 uses keypad not prompt`);

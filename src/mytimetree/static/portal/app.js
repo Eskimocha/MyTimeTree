@@ -1331,7 +1331,7 @@
         rewardBtn.addEventListener("click", async (e) => {
           e.stopPropagation();
           closeAllHabitSwipes(list);
-          // Same calculator keypad as 支出/借用/存入 (not window.prompt).
+          // Same calculator keypad as 支出/借用/存入 (not a text prompt).
           const n = await openKeypad({
             title: `${h.title} · 每次奖励几分钟？`,
             hint: `当前 ${h.minutes_per_completion} 分，可直接点「输入」或改数后再输入`,
