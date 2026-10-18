@@ -130,11 +130,12 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 
 # Scratchpad
 
-## Task: 改奖励计算器键盘（20261018c）
-- [X] 改奖励 window.prompt → openKeypad（同支出/借用/存入）
-- [X] stamp 20261018c sync push
+## Task: 种子下拉按种类排序 + 前缀（20261018d）
+- [ ] picker 选项：按 category 排序；标签 `种类 · 习惯名（N分）`
+- [ ] stamp 20261018d；sync；push PR #3；写 internal 报告
 
-## Archived: seed width 20261018b / blackscreen 20261018a / seed portal 20261017a
+## Archived: 改奖励 keypad 20261018c / seed width 20261018b
+
 - Lesson: “Could not attach to pid … handshake … 6.0 seconds” 优先当调试器问题，勿先怪 Scene/Badge
 - Lesson: iOS/WK 上 fixed 菜单勿放在 backdrop-filter/transform 祖先内，应 body portal
 - Lesson: Kai 改 inventory 后须回写 micro/maui/parent 表再 build，勿只 cp inventory

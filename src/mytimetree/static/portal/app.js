@@ -53,12 +53,76 @@
     bird: `/static/portal/ornaments/bird.png?v=${ASSET_V}`,
   };
 
-  const HABIT_MEDIA_V = "20261018c";
+  const HABIT_MEDIA_V = "20261018d";
   // Tip: bright star (icon-tip-seed path overwritten; icon-tip-star alias also shipped)
   const HABIT_TIP_ICON = `/static/portal/habit/icon-tip-star.png?v=${HABIT_MEDIA_V}`;
   const HABIT_TIP_ICON_2X = `/static/portal/habit/icon-tip-star@2x.png?v=${HABIT_MEDIA_V}`;
   const HABIT_CELEB_MARK = `/static/portal/habit/mark-celeb-small.png?v=${HABIT_MEDIA_V}`;
   const HABIT_CELEB_MARK_2X = `/static/portal/habit/mark-celeb-small@2x.png?v=${HABIT_MEDIA_V}`;
+
+  /** Same labels as habits.js calendar categories (seed picker prefix). */
+  const HABIT_CATEGORY_LABELS = {
+    hygiene: "卫生",
+    sleep: "睡眠",
+    reading: "阅读",
+    chores: "家务",
+    kindness: "友善",
+    movement: "运动",
+    health: "健康",
+    study: "学习",
+    arts: "艺术",
+    screen: "屏幕",
+    calm: "平静",
+    custom: "自定义",
+  };
+  /** Inventory section order for seed dropdown grouping. */
+  const HABIT_CATEGORY_ORDER = [
+    "hygiene",
+    "sleep",
+    "reading",
+    "chores",
+    "kindness",
+    "movement",
+    "health",
+    "study",
+    "arts",
+    "screen",
+    "calm",
+    "custom",
+  ];
+
+  function habitCategoryLabel(cat) {
+    const key = String(cat || "").trim();
+    if (!key) return "其他";
+    return HABIT_CATEGORY_LABELS[key] || key;
+  }
+
+  function habitCategoryRank(cat) {
+    const key = String(cat || "").trim();
+    const i = HABIT_CATEGORY_ORDER.indexOf(key);
+    return i >= 0 ? i : HABIT_CATEGORY_ORDER.length;
+  }
+
+  /** Seed option text: `睡眠 · 按时上床（5分）`. */
+  function formatHabitSeedOptionLabel(t) {
+    const title = String(t.title || "").trim() || "未命名";
+    const mins = Number(t.default_minutes) || 0;
+    const cat = habitCategoryLabel(t.category);
+    return `${cat} · ${title}（${mins}分）`;
+  }
+
+  function compareHabitSeedTemplates(a, b) {
+    const ra = habitCategoryRank(a.category);
+    const rb = habitCategoryRank(b.category);
+    if (ra !== rb) return ra - rb;
+    const la = habitCategoryLabel(a.category);
+    const lb = habitCategoryLabel(b.category);
+    if (la !== lb) return la.localeCompare(lb, "zh");
+    const sa = Number(a.sort_default);
+    const sb = Number(b.sort_default);
+    if (Number.isFinite(sa) && Number.isFinite(sb) && sa !== sb) return sa - sb;
+    return String(a.title || "").localeCompare(String(b.title || ""), "zh");
+  }
 
   /**
    * Canonical file stems = content image_key (img-ca-*, img-bm-*).
@@ -1333,11 +1397,15 @@
             .map((h) => h.template_id)
         );
         sel.innerHTML = "";
-        for (const t of data.templates || []) {
-          if (enabledSlugs.has(t.id)) continue;
+        const available = (data.templates || [])
+          .filter((t) => !enabledSlugs.has(t.id))
+          .slice()
+          .sort(compareHabitSeedTemplates);
+        for (const t of available) {
           const opt = document.createElement("option");
           opt.value = String(t.id);
-          opt.textContent = `${t.title}（${t.default_minutes}分）`;
+          opt.dataset.category = String(t.category || "");
+          opt.textContent = formatHabitSeedOptionLabel(t);
           sel.appendChild(opt);
         }
         syncHabitSeedPicker(sel);

@@ -14,7 +14,7 @@ const www = path.join(root, "mobile/www");
 const localSrc = path.join(root, "mobile/www-src/local");
 const sqlJsDist = path.join(root, "mobile/node_modules/sql.js/dist");
 /** Bust WKWebView caches for injected local scripts + app.js (was stuck on p5h1 / local-p2). */
-const LOCAL_ASSET_V = "20261018c";
+const LOCAL_ASSET_V = "20261018d";
 const iosPublic = path.join(root, "mobile/ios/App/App/public");
 
 function rmrf(dir) {
@@ -273,6 +273,10 @@ function assertBuildTree(base, tag) {
   assertMarker(base, "index.html", /habit-strip-total/, `${tag} habit-strip-total`);
   assertMarker(base, "app.js", /syncHabitSeedPicker/, `${tag} syncHabitSeedPicker`);
   assertMarker(base, "app.js", /habit-seed-picker/, `${tag} habit-seed-picker class`);
+  assertMarker(base, "app.js", /HABIT_CATEGORY_LABELS/, `${tag} HABIT_CATEGORY_LABELS`);
+  assertMarker(base, "app.js", /formatHabitSeedOptionLabel/, `${tag} formatHabitSeedOptionLabel`);
+  assertMarker(base, "app.js", /compareHabitSeedTemplates/, `${tag} compareHabitSeedTemplates`);
+  assertMarker(base, "app.js", /\$\{cat\} · \$\{title\}/, `${tag} seed label 种类 · 名`);
   assertMarker(base, "styles.css", /\.habit-seed-picker-list/, `${tag} CSS seed picker list`);
   assertMarker(base, "styles.css", /white-space:\s*nowrap/, `${tag} CSS seed picker nowrap`);
   assertMarker(
