@@ -1774,14 +1774,22 @@ html.share-capture #tab-home.tab-panel {
   box-shadow: 0 10px 28px #1a3d3218;
   display: grid;
   gap: 0.2rem;
-  /* JS places with position:fixed near full phone width (avoids tab overflow clip). */
+  /* JS portals to document.body + position:fixed (tab-panel backdrop-filter
+     would otherwise trap fixed coords / clip the menu). */
   position: fixed;
-  z-index: 200;
+  z-index: 400;
   max-height: min(16rem, 50dvh);
   overflow-x: hidden;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   box-sizing: border-box;
+  pointer-events: auto;
+}
+/* Settings tab: solid surface so seed menu isn't trapped by backdrop-filter. */
+#tab-settings.tab-panel {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  background: #ffffff;
 }
 .habit-seed-picker-list[hidden] {
   display: none !important;

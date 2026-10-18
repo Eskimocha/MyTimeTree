@@ -14,7 +14,7 @@ const www = path.join(root, "mobile/www");
 const localSrc = path.join(root, "mobile/www-src/local");
 const sqlJsDist = path.join(root, "mobile/node_modules/sql.js/dist");
 /** Bust WKWebView caches for injected local scripts + app.js (was stuck on p5h1 / local-p2). */
-const LOCAL_ASSET_V = "20261016z";
+const LOCAL_ASSET_V = "20261017a";
 const iosPublic = path.join(root, "mobile/ios/App/App/public");
 
 function rmrf(dir) {
@@ -264,6 +264,10 @@ function assertBuildTree(base, tag) {
   assertMarker(base, "index.html", /添加自定义习惯/, `${tag} 添加自定义习惯`);
   assertMarker(base, "index.html", /habit-seed-field/, `${tag} habit-seed-field`);
   assertMarker(base, "app.js", /pointerdown/, `${tag} seed picker pointerdown close`);
+  assertMarker(base, "app.js", /document\.body\.appendChild\(list\)/, `${tag} seed list body portal`);
+  assertMarker(base, "app.js", /habitSeedPickerList/, `${tag} habitSeedPickerList`);
+  assertMarker(base, "app.js", /ul\.contains\(t\)/, `${tag} outside-close allows portaled list`);
+  assertMarker(base, "styles.css", /#tab-settings\.tab-panel/, `${tag} settings no backdrop-filter`);
   {
     const html = fs.readFileSync(path.join(base, "index.html"), "utf8");
     if (/从种子启用|启用种子|>自定义名称<|>添加自定义</.test(html)) {
@@ -271,6 +275,19 @@ function assertBuildTree(base, tag) {
       process.exit(1);
     }
     console.log(`[sync-web] ok ${tag} no stale seed/custom labels`);
+  }
+  {
+    const html = fs.readFileSync(path.join(base, "index.html"), "utf8");
+    // Seed control must be in .habit-seed-field (not a wrapping <label>).
+    if (!/habit-seed-field[\s\S]{0,240}id="habit-template-select"/.test(html)) {
+      console.error(`[sync-web] ${tag} habit-template-select missing inside habit-seed-field`);
+      process.exit(1);
+    }
+    if (/<label[^>]*>\s*从种子/.test(html)) {
+      console.error(`[sync-web] ${tag} seed field still uses wrapping <label>`);
+      process.exit(1);
+    }
+    console.log(`[sync-web] ok ${tag} seed select not inside label`);
   }
   assertMarker(base, "app.js", /syncAppIconBadge/, `${tag} syncAppIconBadge`);
   assertMarker(base, "app.js", /capPlugin\("AppIconBadge"\)/, `${tag} AppIconBadge plugin`);

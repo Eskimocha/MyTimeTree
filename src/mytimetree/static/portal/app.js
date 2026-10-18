@@ -53,7 +53,7 @@
     bird: `/static/portal/ornaments/bird.png?v=${ASSET_V}`,
   };
 
-  const HABIT_MEDIA_V = "20261016z";
+  const HABIT_MEDIA_V = "20261017a";
   // Tip: bright star (icon-tip-seed path overwritten; icon-tip-star alias also shipped)
   const HABIT_TIP_ICON = `/static/portal/habit/icon-tip-star.png?v=${HABIT_MEDIA_V}`;
   const HABIT_TIP_ICON_2X = `/static/portal/habit/icon-tip-star@2x.png?v=${HABIT_MEDIA_V}`;
@@ -1008,6 +1008,31 @@
     }
   }
 
+  /** Resolve seed list even when portaled to document.body. */
+  function habitSeedPickerList(picker) {
+    if (!picker) return null;
+    if (picker._habitSeedList instanceof HTMLElement) return picker._habitSeedList;
+    const id = picker.dataset.seedPickerId;
+    if (id) {
+      const portaled = document.querySelector(
+        `.habit-seed-picker-list[data-seed-picker-id="${id}"]`
+      );
+      if (portaled) return portaled;
+    }
+    return picker.querySelector(".habit-seed-picker-list");
+  }
+
+  function closeHabitSeedPicker(picker) {
+    if (!picker) return;
+    const list = habitSeedPickerList(picker);
+    const btn = picker.querySelector(".habit-seed-picker-btn");
+    if (list) {
+      list.hidden = true;
+      list.style.display = "";
+    }
+    if (btn) btn.setAttribute("aria-expanded", "false");
+  }
+
   /** Custom wide seed picker — native iOS <select> menus wrap long titles. */
   function ensureHabitSeedPicker(sel) {
     if (!sel) return null;
@@ -1026,6 +1051,8 @@
 
     picker = document.createElement("div");
     picker.className = "habit-seed-picker";
+    const pickerId = `seed-picker-${Math.random().toString(36).slice(2, 9)}`;
+    picker.dataset.seedPickerId = pickerId;
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "habit-seed-picker-btn";
@@ -1034,37 +1061,61 @@
     const list = document.createElement("ul");
     list.className = "habit-seed-picker-list";
     list.setAttribute("role", "listbox");
+    list.dataset.seedPickerId = pickerId;
     list.hidden = true;
+    picker._habitSeedList = list;
 
     const placeList = () => {
+      // Portal to <body>: .tab-panel backdrop-filter creates a fixed containing
+      // block + overflow:auto clips the menu — looks like "won't open" on iOS.
+      if (list.parentNode !== document.body) {
+        document.body.appendChild(list);
+      }
       const rect = btn.getBoundingClientRect();
       const gutter = 12;
       // Nearly full phone width (≤26rem) so「专注作业二十五分钟（10分）」fits one line.
       const width = Math.min(window.innerWidth - gutter * 2, 26 * 16);
       let left = rect.left + rect.width / 2 - width / 2;
       left = Math.max(gutter, Math.min(left, window.innerWidth - gutter - width));
-      const top = Math.min(rect.bottom + 6, window.innerHeight - gutter - 80);
+      const spaceBelow = window.innerHeight - rect.bottom - gutter;
+      const preferBelow = spaceBelow >= 120 || spaceBelow >= rect.top - gutter;
       list.style.position = "fixed";
       list.style.left = `${Math.round(left)}px`;
-      list.style.top = `${Math.round(top)}px`;
       list.style.width = `${Math.round(width)}px`;
       list.style.maxWidth = `${Math.round(width)}px`;
       list.style.transform = "none";
-      list.style.zIndex = "200";
+      list.style.zIndex = "400";
       list.style.display = "grid";
+      if (preferBelow) {
+        list.style.top = `${Math.round(rect.bottom + 6)}px`;
+      } else {
+        // Tentative top; correct after layout using real list height.
+        list.style.top = `${Math.round(gutter)}px`;
+        requestAnimationFrame(() => {
+          const h = list.offsetHeight || 200;
+          list.style.top = `${Math.round(Math.max(gutter, rect.top - h - 6))}px`;
+        });
+      }
     };
     const setOpen = (open) => {
-      list.hidden = !open;
-      btn.setAttribute("aria-expanded", open ? "true" : "false");
       if (open) {
+        list.hidden = false;
+        btn.setAttribute("aria-expanded", "true");
         placeList();
         console.info("[seed-picker] open", {
           opts: sel.options.length,
           top: list.style.top,
           width: list.style.width,
+          portaled: list.parentNode === document.body,
         });
+      } else {
+        closeHabitSeedPicker(picker);
       }
     };
+    btn.addEventListener("pointerdown", (ev) => {
+      // Capture-phase doc closer runs first; mark this gesture as "inside".
+      ev.stopPropagation();
+    });
     btn.addEventListener("click", (ev) => {
       // preventDefault: stop any leftover label/select activation from closing us.
       ev.preventDefault();
@@ -1079,31 +1130,36 @@
       },
       { passive: true }
     );
+    window.addEventListener(
+      "scroll",
+      () => {
+        if (!list.hidden) placeList();
+      },
+      { passive: true, capture: true }
+    );
     if (!document.documentElement.dataset.habitSeedPickerDoc) {
       document.documentElement.dataset.habitSeedPickerDoc = "1";
       // pointerdown capture: close on outside tap without racing the open click
       // (label→hidden select synthetic clicks used to close the list instantly).
+      // List may live on document.body (portaled) — check list.contains too.
       document.addEventListener(
         "pointerdown",
         (ev) => {
           const t = ev.target;
           if (!(t instanceof Node)) return;
           document.querySelectorAll(".habit-seed-picker").forEach((p) => {
+            const ul = habitSeedPickerList(p);
             if (p.contains(t)) return;
+            if (ul && ul.contains(t)) return;
             if (t.id === "habit-template-select") return;
-            const ul = p.querySelector(".habit-seed-picker-list");
-            const b = p.querySelector(".habit-seed-picker-btn");
-            if (ul && !ul.hidden) {
-              ul.hidden = true;
-              if (b) b.setAttribute("aria-expanded", "false");
-            }
+            if (ul && !ul.hidden) closeHabitSeedPicker(p);
           });
         },
         true
       );
     }
 
-    // Keep select inside picker so outside-close treats it as "inside".
+    // Keep select inside picker so label-less field still owns the control.
     const host = sel.parentNode;
     host.insertBefore(picker, sel);
     picker.append(sel, btn, list);
@@ -1114,11 +1170,10 @@
     const picker = ensureHabitSeedPicker(sel);
     if (!picker) return;
     const btn = picker.querySelector(".habit-seed-picker-btn");
-    const list = picker.querySelector(".habit-seed-picker-list");
+    const list = habitSeedPickerList(picker);
     if (!btn || !list) return;
     list.innerHTML = "";
-    list.hidden = true;
-    btn.setAttribute("aria-expanded", "false");
+    closeHabitSeedPicker(picker);
     const opts = [...sel.options];
     if (!opts.length) {
       btn.textContent = "暂无可用种子";
@@ -1142,12 +1197,16 @@
         "aria-selected",
         opt.value === sel.value ? "true" : "false"
       );
+      b.addEventListener("pointerdown", (ev) => {
+        // Keep portaled list from being treated as outside on the same gesture.
+        ev.stopPropagation();
+      });
       b.addEventListener("click", (ev) => {
+        ev.preventDefault();
         ev.stopPropagation();
         sel.value = opt.value;
         btn.textContent = opt.textContent;
-        list.hidden = true;
-        btn.setAttribute("aria-expanded", "false");
+        closeHabitSeedPicker(picker);
         list.querySelectorAll("button").forEach((x) => {
           x.setAttribute(
             "aria-selected",
