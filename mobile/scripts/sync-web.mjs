@@ -14,7 +14,7 @@ const www = path.join(root, "mobile/www");
 const localSrc = path.join(root, "mobile/www-src/local");
 const sqlJsDist = path.join(root, "mobile/node_modules/sql.js/dist");
 /** Bust WKWebView caches for injected local scripts + app.js (was stuck on p5h1 / local-p2). */
-const LOCAL_ASSET_V = "20261018d";
+const LOCAL_ASSET_V = "20261018e";
 const iosPublic = path.join(root, "mobile/ios/App/App/public");
 
 function rmrf(dir) {
@@ -486,6 +486,18 @@ function assertBuildTree(base, tag) {
   assertMarker(base, "app.js", /habit-settings-swatch/, `${tag} habit-settings-swatch`);
   assertMarker(base, "app.js", /habit-heatmap-weekdays/, `${tag} habit-heatmap-weekdays`);
   assertMarker(base, "styles.css", /\.habit-swipe-actions/, `${tag} CSS .habit-swipe-actions`);
+  assertMarker(
+    base,
+    "styles.css",
+    /\.habit-swipe-actions\s*\{[\s\S]*?max-width:\s*50%/,
+    `${tag} swipe actions max-width 50%`
+  );
+  assertMarker(
+    base,
+    "app.js",
+    /rowW \* 0\.5|clientWidth \* 0\.5/,
+    `${tag} swipe reveal half row`
+  );
   assertMarker(base, "styles.css", /\.habit-milestones-grid/, `${tag} CSS milestones`);
   assertMarker(base, "styles.css", /\.habit-heatmap-date/, `${tag} CSS .habit-heatmap-date`);
   assertMarker(base, "index.html", /最近好习惯记录/, `${tag} 最近好习惯记录`);

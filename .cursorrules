@@ -130,11 +130,11 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 
 # Scratchpad
 
-## Task: 种子下拉按种类排序 + 前缀（20261018d）
-- [X] picker 选项：按 category 排序；标签 `种类 · 习惯名（N分）`
-- [X] stamp 20261018d；sync；push PR #3；写 internal 报告
+## Task: 左滑三按钮总宽 ≤ 半栏（20261018e）
+- [ ] `.habit-swipe-actions` 总宽 ≤ 行宽一半；按钮 flex 均分
+- [ ] stamp 20261018e；sync；push PR #3；写报告
 
-## Archived: 改奖励 keypad 20261018c / seed width 20261018b
+## Archived: seed category 20261018d / 改奖励 keypad 20261018c
 
 - Lesson: “Could not attach to pid … handshake … 6.0 seconds” 优先当调试器问题，勿先怪 Scene/Badge
 - Lesson: iOS/WK 上 fixed 菜单勿放在 backdrop-filter/transform 祖先内，应 body portal

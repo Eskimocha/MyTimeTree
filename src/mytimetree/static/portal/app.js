@@ -53,7 +53,7 @@
     bird: `/static/portal/ornaments/bird.png?v=${ASSET_V}`,
   };
 
-  const HABIT_MEDIA_V = "20261018d";
+  const HABIT_MEDIA_V = "20261018e";
   // Tip: bright star (icon-tip-seed path overwritten; icon-tip-star alias also shipped)
   const HABIT_TIP_ICON = `/static/portal/habit/icon-tip-star.png?v=${HABIT_MEDIA_V}`;
   const HABIT_TIP_ICON_2X = `/static/portal/habit/icon-tip-star@2x.png?v=${HABIT_MEDIA_V}`;
@@ -1428,9 +1428,17 @@
   }
 
   function habitSwipeRevealWidth(row) {
-    const panel = row && row.querySelector(".habit-swipe-actions");
-    const w = panel ? panel.offsetWidth : 0;
-    return w > 0 ? w : 216;
+    if (!row) return 120;
+    const rowW = row.clientWidth || row.offsetWidth || 0;
+    const half = rowW > 0 ? rowW * 0.5 : 0;
+    const panel = row.querySelector(".habit-swipe-actions");
+    const panelW = panel ? panel.offsetWidth : 0;
+    // Cap reveal at half the settings row (matches CSS width: 50%).
+    if (half > 0) {
+      if (panelW > 0) return Math.min(panelW, half);
+      return half;
+    }
+    return panelW > 0 ? panelW : 120;
   }
 
   function wireHabitSwipeDelete(list) {
