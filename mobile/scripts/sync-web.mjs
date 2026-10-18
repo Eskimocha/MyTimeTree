@@ -14,7 +14,7 @@ const www = path.join(root, "mobile/www");
 const localSrc = path.join(root, "mobile/www-src/local");
 const sqlJsDist = path.join(root, "mobile/node_modules/sql.js/dist");
 /** Bust WKWebView caches for injected local scripts + app.js (was stuck on p5h1 / local-p2). */
-const LOCAL_ASSET_V = "20261018e";
+const LOCAL_ASSET_V = "20261018f";
 const iosPublic = path.join(root, "mobile/ios/App/App/public");
 
 function rmrf(dir) {
@@ -503,6 +503,16 @@ function assertBuildTree(base, tag) {
   assertMarker(base, "index.html", /最近好习惯记录/, `${tag} 最近好习惯记录`);
   assertMarker(base, "index.html", /habit-milestones/, `${tag} habit-milestones`);
   assertMarker(base, "index.html", /改奖励/, `${tag} lede 改奖励`);
+  assertMarker(base, "index.html", /「定制」/, `${tag} lede 定制`);
+  assertMarker(base, "index.html", /habit-custom-maui/, `${tag} custom maui input`);
+  assertMarker(base, "index.html", /habit-custom-micro/, `${tag} custom micro input`);
+  assertMarker(base, "index.html", /habit-customize-modal/, `${tag} customize modal`);
+  assertMarker(base, "app.js", /editHabitCustomize/, `${tag} editHabitCustomize`);
+  assertMarker(base, "app.js", /textContent = "定制"/, `${tag} swipe 定制 label`);
+  assertMarker(base, "local/habits.js", /maui_override/, `${tag} maui_override`);
+  assertMarker(base, "local/habits.js", /saveCustomize/, `${tag} saveCustomize`);
+  assertMarker(base, "local/habits.js", /\/api\/portal\/habits\/customize/, `${tag} customize API`);
+  assertMarker(base, "local/db.js", /maui_override/, `${tag} db maui_override`);
   assertMarker(base, "local/habits.js", /evaluateAllBoardMilestones/, `${tag} evaluateAllBoardMilestones`);
   assertMarker(base, "local/habits.js", /celebrations/, `${tag} celebrations array`);
   assertMarker(base, "app.js", /pumpCelebrationQueue/, `${tag} pumpCelebrationQueue`);

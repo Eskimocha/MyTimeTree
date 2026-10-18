@@ -53,7 +53,7 @@
     bird: `/static/portal/ornaments/bird.png?v=${ASSET_V}`,
   };
 
-  const HABIT_MEDIA_V = "20261018e";
+  const HABIT_MEDIA_V = "20261018f";
   // Tip: bright star (icon-tip-seed path overwritten; icon-tip-star alias also shipped)
   const HABIT_TIP_ICON = `/static/portal/habit/icon-tip-star.png?v=${HABIT_MEDIA_V}`;
   const HABIT_TIP_ICON_2X = `/static/portal/habit/icon-tip-star@2x.png?v=${HABIT_MEDIA_V}`;
@@ -1304,7 +1304,7 @@
           "habit-settings-row" + (onStrip ? " on-home-strip" : " off-home-strip");
         row.dataset.habitId = String(h.id);
 
-        // Swipe actions (hidden until left-swipe): 微步骤 / 改奖励 / 移除
+        // Swipe actions (hidden until left-swipe): 定制 / 改奖励 / 移除
         const swipe = document.createElement("div");
         swipe.className = "habit-swipe-actions";
         swipe.setAttribute("aria-hidden", "true");
@@ -1312,12 +1312,15 @@
         const microBtn = document.createElement("button");
         microBtn.type = "button";
         microBtn.className = "habit-swipe-action habit-swipe-micro";
-        microBtn.textContent = "微步骤";
-        microBtn.setAttribute("aria-label", `编辑 ${h.title} 的微步骤`);
+        microBtn.textContent = "定制";
+        microBtn.setAttribute(
+          "aria-label",
+          `定制 ${h.title} 的微习惯、毛伊习惯与家长话术`
+        );
         microBtn.addEventListener("click", async (e) => {
           e.stopPropagation();
           closeAllHabitSwipes(list);
-          await editMicroStepsForHabit(h);
+          await editHabitCustomize(h);
         });
 
         const rewardBtn = document.createElement("button");
@@ -1642,59 +1645,64 @@
     );
   }
 
-  let microEditHabit = null;
+  let customizeEditHabit = null;
 
-  function closeMicroModal() {
-    const modal = $("#habit-micro-modal");
+  function closeCustomizeModal() {
+    const modal = $("#habit-customize-modal");
     if (modal) modal.hidden = true;
-    microEditHabit = null;
+    customizeEditHabit = null;
   }
 
-  async function editMicroStepsForHabit(h) {
-    const modal = $("#habit-micro-modal");
-    const title = $("#habit-micro-title");
-    const ta = $("#habit-micro-text");
-    if (!modal || !ta) {
-      flash($("#habit-settings-msg"), "微步骤编辑不可用");
+  async function editHabitCustomize(h) {
+    const modal = $("#habit-customize-modal");
+    const title = $("#habit-customize-title");
+    const microTa = $("#habit-customize-micro");
+    const mauiIn = $("#habit-customize-maui");
+    const scriptTa = $("#habit-customize-script");
+    if (!modal || !microTa || !mauiIn || !scriptTa) {
+      flash($("#habit-settings-msg"), "定制编辑不可用");
       return;
     }
     try {
       const data = await api(
-        `/api/portal/habits/micro-steps?habit_id=${h.id}`
+        `/api/portal/habits/customize?habit_id=${h.id}`
       );
-      microEditHabit = { id: h.id, title: h.title, steps: data.steps || [] };
-      if (title) title.textContent = `${h.title} · 微步骤`;
-      ta.value = (data.steps || []).map((s) => s.step_text).join("\n");
+      customizeEditHabit = { id: h.id, title: h.title };
+      if (title) title.textContent = `${h.title} · 定制`;
+      microTa.value = (data.micro_steps || [])
+        .map((s) => s.step_text)
+        .join("\n");
+      mauiIn.value = data.maui_text || "";
+      scriptTa.value = data.parent_script || "";
       modal.hidden = false;
-      ta.focus();
+      microTa.focus();
     } catch (err) {
       flash($("#habit-settings-msg"), err.message || String(err));
     }
   }
 
-  async function saveMicroStepsFromModal() {
-    if (!microEditHabit) return;
-    const ta = $("#habit-micro-text");
-    const next = String(ta?.value || "")
+  async function saveHabitCustomizeFromModal() {
+    if (!customizeEditHabit) return;
+    const microTa = $("#habit-customize-micro");
+    const mauiIn = $("#habit-customize-maui");
+    const scriptTa = $("#habit-customize-script");
+    const micro_steps = String(microTa?.value || "")
       .split(/\r?\n/)
       .map((s) => s.trim())
       .filter(Boolean)
       .slice(0, 12);
     try {
-      for (const s of microEditHabit.steps || []) {
-        await api("/api/portal/habits/micro-steps/archive", {
-          method: "POST",
-          body: JSON.stringify({ step_id: s.id }),
-        });
-      }
-      for (const text of next) {
-        await api("/api/portal/habits/micro-steps", {
-          method: "POST",
-          body: JSON.stringify({ habit_id: microEditHabit.id, step_text: text }),
-        });
-      }
-      closeMicroModal();
-      flash($("#habit-settings-msg"), "微步骤已更新");
+      await api("/api/portal/habits/customize", {
+        method: "POST",
+        body: JSON.stringify({
+          habit_id: customizeEditHabit.id,
+          maui_text: String(mauiIn?.value || "").trim(),
+          parent_script: String(scriptTa?.value || "").trim(),
+          micro_steps,
+        }),
+      });
+      closeCustomizeModal();
+      flash($("#habit-settings-msg"), "定制已保存");
       await refreshHabitsStrip();
     } catch (err) {
       flash($("#habit-settings-msg"), err.message || String(err));
@@ -2360,8 +2368,8 @@
       if (account && !account.hidden) return false;
       const lock = $("#app-lock");
       if (lock && !lock.hidden) return false;
-      const micro = $("#habit-micro-modal");
-      if (micro && !micro.hidden) return false;
+      const customize = $("#habit-customize-modal");
+      if (customize && !customize.hidden) return false;
       const celeb = $("#habit-celeb-overlay");
       if (celeb && !celeb.hidden) return false;
       const board = $("#habit-board-mask");
@@ -2518,11 +2526,11 @@
   $("#habit-board-mask-ok")?.addEventListener("click", () => {
     dismissCelebrationAndAdvance();
   });
-  document.querySelectorAll("[data-micro-dismiss]").forEach((el) => {
-    el.addEventListener("click", () => closeMicroModal());
+  document.querySelectorAll("[data-customize-dismiss]").forEach((el) => {
+    el.addEventListener("click", () => closeCustomizeModal());
   });
-  $("#habit-micro-save")?.addEventListener("click", () => {
-    saveMicroStepsFromModal();
+  $("#habit-customize-save")?.addEventListener("click", () => {
+    saveHabitCustomizeFromModal();
   });
 
   $("#btn-habit-enable")?.addEventListener("click", async () => {
@@ -2544,12 +2552,16 @@
   $("#btn-habit-custom")?.addEventListener("click", async () => {
     const title = ($("#habit-custom-title")?.value || "").trim();
     const minutes = Number($("#habit-custom-minutes")?.value || 5);
+    const maui_text = ($("#habit-custom-maui")?.value || "").trim();
+    const micro_text = ($("#habit-custom-micro")?.value || "").trim();
     try {
       await api("/api/portal/habits/custom", {
         method: "POST",
-        body: JSON.stringify({ title, minutes }),
+        body: JSON.stringify({ title, minutes, maui_text, micro_text }),
       });
       if ($("#habit-custom-title")) $("#habit-custom-title").value = "";
+      if ($("#habit-custom-maui")) $("#habit-custom-maui").value = "";
+      if ($("#habit-custom-micro")) $("#habit-custom-micro").value = "";
       flash($("#habit-settings-msg"), "已添加自定义习惯");
       await refreshHabitSettings();
       await refreshHabitsStrip();

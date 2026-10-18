@@ -558,6 +558,8 @@
           category: String(r.category || ""),
           sort_order: Number(r.sort_order),
           archived: Number(r.archived) === 1,
+          maui_override: String(r.maui_override || ""),
+          script_override: String(r.script_override || ""),
           minutes_per_completion: Number(r.minutes_per_completion || 5),
           rule_id: r.rule_id == null ? null : Number(r.rule_id),
           rule_active: r.rule_active == null ? true : Number(r.rule_active) === 1,
@@ -587,6 +589,8 @@
     }
 
     function pickScript(habit) {
+      const ov = String(habit.script_override || "").trim();
+      if (ov) return ov;
       const slug = habit.template_slug || "";
       const cat = habit.category || "";
       const rows = db().query(
@@ -600,8 +604,10 @@
       return generic ? String(generic.script_text) : "记下来了——孩子被看见，时间也能存进树里。";
     }
 
-    /** Catalog-only maui pick (slug → category → generic), like parent scripts. */
+    /** Override → catalog (slug → category → generic). */
     function pickMaui(habit) {
+      const ov = String(habit.maui_override || "").trim();
+      if (ov) return ov;
       const slug = habit.template_slug || "";
       const cat = habit.category || "";
       let rows = [];
@@ -618,6 +624,104 @@
       if (byCat) return String(byCat.maui_text);
       const generic = rows.find((r) => !r.habit_slug && !r.category);
       return generic ? String(generic.maui_text) : "";
+    }
+
+    function loadHabitRow(accountId, habitId) {
+      const r = db().queryOne(
+        `SELECT h.*, r.minutes_per_completion, r.id AS rule_id
+         FROM habits h
+         LEFT JOIN exchange_rules r ON r.habit_id = h.id
+         WHERE h.id = ? AND h.account_id = ?`,
+        [habitId, accountId]
+      );
+      if (!r) return null;
+      return {
+        id: Number(r.id),
+        account_id: Number(r.account_id),
+        template_id: r.template_id == null ? null : Number(r.template_id),
+        title: String(r.title),
+        category: String(r.category || ""),
+        archived: Number(r.archived) === 1,
+        maui_override: String(r.maui_override || ""),
+        script_override: String(r.script_override || ""),
+        minutes_per_completion: Number(r.minutes_per_completion || 5),
+        rule_id: r.rule_id == null ? null : Number(r.rule_id),
+        template_slug: templateSlugForHabit(Number(r.id)),
+      };
+    }
+
+    function replaceMicroSteps(accountId, habitId, lines) {
+      const texts = (Array.isArray(lines) ? lines : [])
+        .map((s) => String(s || "").trim())
+        .filter(Boolean)
+        .slice(0, 12);
+      for (const t of texts) {
+        ensure(t.length <= 64, "validation", "微习惯每行不超过 64 字");
+      }
+      const existing = db().query(
+        `SELECT id FROM habit_micro_steps
+         WHERE account_id = ? AND habit_id = ? AND archived = 0`,
+        [accountId, habitId]
+      );
+      for (const row of existing) {
+        db().exec("UPDATE habit_micro_steps SET archived = 1 WHERE id = ?", [
+          Number(row.id),
+        ]);
+      }
+      const created = nowIso();
+      let order = 10;
+      for (const text of texts) {
+        db().exec(
+          `INSERT INTO habit_micro_steps (
+            account_id, habit_id, step_text, sort_order, source, seed_id, archived, created_at
+          ) VALUES (?, ?, ?, ?, 'custom', NULL, 0, ?)`,
+          [accountId, habitId, text, order, created]
+        );
+        order += 10;
+      }
+    }
+
+    function getCustomize(accountId, habitId) {
+      const h = loadHabitRow(accountId, habitId);
+      ensure(h && !h.archived, "not_found", "习惯不存在");
+      const steps = listMicroSteps(accountId, habitId);
+      return {
+        habit_id: habitId,
+        title: h.title,
+        category: h.category,
+        micro_steps: steps,
+        maui_text: pickMaui(h),
+        parent_script: pickScript(h),
+        maui_override: String(h.maui_override || ""),
+        script_override: String(h.script_override || ""),
+      };
+    }
+
+    function saveCustomize(accountId, habitId, body) {
+      const h = loadHabitRow(accountId, habitId);
+      ensure(h, "not_found", "习惯不存在");
+      const maui = String(body.maui_text ?? body.maui_override ?? "").trim();
+      const script = String(
+        body.parent_script ?? body.script_text ?? body.script_override ?? ""
+      ).trim();
+      ensure(maui.length <= 120, "validation", "毛伊习惯不超过 120 字");
+      ensure(script.length <= 160, "validation", "家长话术不超过 160 字");
+      db().exec(
+        `UPDATE habits SET maui_override = ?, script_override = ? WHERE id = ? AND account_id = ?`,
+        [maui, script, habitId, accountId]
+      );
+      let lines = body.micro_steps;
+      if (typeof body.micro_text === "string") {
+        lines = String(body.micro_text)
+          .split(/\r?\n/)
+          .map((s) => s.trim())
+          .filter(Boolean);
+      }
+      if (lines != null) {
+        replaceMicroSteps(accountId, habitId, lines);
+      }
+      persist();
+      return getCustomize(accountId, habitId);
     }
 
     function hintFromRow(row) {
@@ -900,6 +1004,7 @@
         const log = byHabit.get(h.id);
         const slug = templateSlugForHabit(h.id);
         h.template_slug = slug;
+        // listHabits already includes maui_override / script_override
         const micro_steps = listMicroSteps(accountId, h.id);
         const mauiText = pickMaui(h);
         const scriptText = pickScript(h);
@@ -1268,19 +1373,49 @@
       return { habit_id: id };
     }
 
-    function addCustom(accountId, title, minutes, category) {
+    function addCustom(accountId, title, minutes, category, extras = {}) {
       const name = String(title || "").trim();
       ensure(name.length > 0 && name.length <= 32, "validation", "标题 1–32 字");
       const mins = Math.max(1, Math.floor(Number(minutes) || 5));
+      const maui = String(extras.maui_text || extras.maui || "").trim();
+      ensure(maui.length <= 120, "validation", "毛伊习惯不超过 120 字");
+      let microLines = extras.micro_steps;
+      if (typeof extras.micro_text === "string") {
+        microLines = String(extras.micro_text)
+          .split(/\r?\n/)
+          .map((s) => s.trim())
+          .filter(Boolean);
+      } else if (typeof extras.micro === "string") {
+        microLines = String(extras.micro)
+          .split(/\r?\n/)
+          .map((s) => s.trim())
+          .filter(Boolean);
+      }
+      microLines = (Array.isArray(microLines) ? microLines : [])
+        .map((s) => String(s || "").trim())
+        .filter(Boolean)
+        .slice(0, 12);
+      for (const t of microLines) {
+        ensure(t.length <= 64, "validation", "微习惯每行不超过 64 字");
+      }
       const maxOrder = db().queryOne(
         "SELECT COALESCE(MAX(sort_order), 0) AS m FROM habits WHERE account_id = ?",
         [accountId]
       );
       const created = nowIso();
       db().exec(
-        `INSERT INTO habits (account_id, template_id, title, category, sort_order, archived, created_at)
-         VALUES (?, NULL, ?, ?, ?, 0, ?)`,
-        [accountId, name, String(category || "custom"), Number(maxOrder.m) + 10, created]
+        `INSERT INTO habits (
+          account_id, template_id, title, category, sort_order, archived, created_at,
+          maui_override, script_override
+        ) VALUES (?, NULL, ?, ?, ?, 0, ?, ?, '')`,
+        [
+          accountId,
+          name,
+          String(category || "custom"),
+          Number(maxOrder.m) + 10,
+          created,
+          maui,
+        ]
       );
       const habitId = Number(db().queryOne("SELECT last_insert_rowid() AS id").id);
       db().exec(
@@ -1289,6 +1424,9 @@
         ) VALUES (?, ?, ?, 1, 1, 1)`,
         [accountId, habitId, mins]
       );
+      if (microLines.length) {
+        replaceMicroSteps(accountId, habitId, microLines);
+      }
       persist();
       return { habit_id: habitId };
     }
@@ -1379,8 +1517,21 @@
       if (path === "/api/portal/habits/custom" && method === "POST") {
         return {
           status: 200,
-          body: addCustom(acc.id, body.title, body.minutes, body.category),
+          body: addCustom(acc.id, body.title, body.minutes, body.category, body),
         };
+      }
+      if (path === "/api/portal/habits/customize" && method === "GET") {
+        const hid = Number(sp.get("habit_id") || body.habit_id || 0);
+        ensure(hid > 0, "validation", "habit_id 无效");
+        return { status: 200, body: getCustomize(acc.id, hid) };
+      }
+      if (
+        (path === "/api/portal/habits/customize" && method === "POST") ||
+        (path === "/api/portal/habits/customize" && method === "PATCH")
+      ) {
+        const hid = Number(body.habit_id || 0);
+        ensure(hid > 0, "validation", "habit_id 无效");
+        return { status: 200, body: saveCustomize(acc.id, hid, body) };
       }
       if (path === "/api/portal/habits/archive" && method === "POST") {
         return {

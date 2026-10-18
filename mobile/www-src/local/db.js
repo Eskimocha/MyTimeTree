@@ -323,6 +323,14 @@
           ON maui_habits(habit_slug, category, active)`,
       ],
     },
+    {
+      version: 13,
+      sql: [
+        // Per-habit overrides (custom add + 定制 modal); empty = use catalog pick
+        `ALTER TABLE habits ADD COLUMN maui_override TEXT NOT NULL DEFAULT ''`,
+        `ALTER TABLE habits ADD COLUMN script_override TEXT NOT NULL DEFAULT ''`,
+      ],
+    },
   ];
 
   let lastSyncMeta = {

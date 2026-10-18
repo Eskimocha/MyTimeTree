@@ -1559,9 +1559,56 @@ html.share-capture #tab-home.tab-panel {
   margin: 0 0 0.55rem;
   font-size: 0.88rem;
 }
+.habit-custom-micro {
+  width: 100%;
+  min-height: 4.5rem;
+  margin: 0.25rem 0 0;
+  border: 1px solid #c9ddd3;
+  border-radius: 12px;
+  padding: 0.65rem 0.75rem;
+  font-size: 16px;
+  font-family: inherit;
+  line-height: 1.4;
+  color: var(--ink);
+  background: #fff;
+  resize: vertical;
+  box-sizing: border-box;
+}
+.habit-customize-sheet {
+  max-height: min(88vh, 36rem);
+  overflow: auto;
+}
+.habit-customize-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  margin: 0 0 0.35rem;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--ink, #1f2a24);
+}
+.habit-customize-label small {
+  font-weight: 400;
+  font-size: 0.8rem;
+}
+.habit-customize-input {
+  width: 100%;
+  margin: 0 0 0.75rem;
+  border: 1px solid #c9ddd3;
+  border-radius: 12px;
+  padding: 0.7rem 0.85rem;
+  font-size: 16px;
+  font-family: inherit;
+  color: var(--ink);
+  background: #fff;
+  box-sizing: border-box;
+}
+.habit-customize-script {
+  min-height: 4.5rem;
+}
 .habit-micro-text {
   width: 100%;
-  min-height: 10rem;
+  min-height: 6.5rem;
   margin: 0 0 0.85rem;
   border: 1px solid #c9ddd3;
   border-radius: 12px;
