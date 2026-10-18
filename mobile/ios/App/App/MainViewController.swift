@@ -5,6 +5,7 @@ import Capacitor
 class MainViewController: CAPBridgeViewController {
     override open func capacitorDidLoad() {
         super.capacitorDidLoad()
+        // Registration only — plugins must not do UI / permission work in init.
         bridge?.registerPluginInstance(SaveToPhotosPlugin())
         bridge?.registerPluginInstance(ICloudDbPlugin())
         bridge?.registerPluginInstance(AppIconBadgePlugin())

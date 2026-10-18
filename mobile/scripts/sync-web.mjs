@@ -14,7 +14,7 @@ const www = path.join(root, "mobile/www");
 const localSrc = path.join(root, "mobile/www-src/local");
 const sqlJsDist = path.join(root, "mobile/node_modules/sql.js/dist");
 /** Bust WKWebView caches for injected local scripts + app.js (was stuck on p5h1 / local-p2). */
-const LOCAL_ASSET_V = "20261017a";
+const LOCAL_ASSET_V = "20261018a";
 const iosPublic = path.join(root, "mobile/ios/App/App/public");
 
 function rmrf(dir) {
@@ -293,6 +293,30 @@ function assertBuildTree(base, tag) {
   assertMarker(base, "app.js", /capPlugin\("AppIconBadge"\)/, `${tag} AppIconBadge plugin`);
   assertMarker(base, "app.js", /capPlugin\("Badge"\)/, `${tag} Badge fallback`);
   assertMarker(base, "app.js", /forceAsk/, `${tag} badge forceAsk when pending`);
+  assertMarker(base, "app.js", /setTimeout\(\s*\(\)\s*=>\s*\{\s*syncAppIconBadge/, `${tag} deferred badge sync`);
+  // Native Swift: applyBadge must not call requestAuthorization (cold-start sheet).
+  {
+    const swiftPath = path.join(root, "mobile/ios/App/App/AppIconBadgePlugin.swift");
+    if (fs.existsSync(swiftPath)) {
+      const swift = fs.readFileSync(swiftPath, "utf8");
+      if (/askFirst/.test(swift)) {
+        console.error(`[sync-web] ${tag} AppIconBadge still has askFirst`);
+        process.exit(1);
+      }
+      const applyIdx = swift.indexOf("private func applyBadge");
+      const applyBody = applyIdx >= 0 ? swift.slice(applyIdx) : "";
+      // Allow the "Do NOT requestAuthorization" comment; ban real calls in applyBadge.
+      if (/requestAuthorization\s*\(/.test(applyBody)) {
+        console.error(`[sync-web] ${tag} AppIconBadge applyBadge still calls requestAuthorization(`);
+        process.exit(1);
+      }
+      if (!/@objc public override func checkPermissions/.test(swift)) {
+        console.error(`[sync-web] ${tag} AppIconBadge missing public override checkPermissions`);
+        process.exit(1);
+      }
+      console.log(`[sync-web] ok ${tag} AppIconBadge applyBadge no auth ask`);
+    }
+  }
   // Native Swift override fix lives in AppIconBadgePlugin.swift (stamp probe via web-build).
   assertMarker(base, "styles.css", /\.tab\s*\{[\s\S]*?display:\s*inline-flex/, `${tag} CSS tab inline-flex`);
   assertMarker(base, "styles.css", /\.tab-badge\s*\{[\s\S]*?line-height:\s*1/, `${tag} CSS tab-badge line-height`);

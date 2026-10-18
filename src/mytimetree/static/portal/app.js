@@ -53,7 +53,7 @@
     bird: `/static/portal/ornaments/bird.png?v=${ASSET_V}`,
   };
 
-  const HABIT_MEDIA_V = "20261017a";
+  const HABIT_MEDIA_V = "20261018a";
   // Tip: bright star (icon-tip-seed path overwritten; icon-tip-star alias also shipped)
   const HABIT_TIP_ICON = `/static/portal/habit/icon-tip-star.png?v=${HABIT_MEDIA_V}`;
   const HABIT_TIP_ICON_2X = `/static/portal/habit/icon-tip-star@2x.png?v=${HABIT_MEDIA_V}`;
@@ -702,8 +702,11 @@
         badge.textContent = "";
       }
     }
-    // Fire-and-forget: keep SpringBoard badge aligned with pending habits.
-    syncAppIconBadge(count);
+    // Defer native badge/permission off the first paint — avoids racing WKWebView
+    // boot + system permission sheet (can look like a black screen on device).
+    setTimeout(() => {
+      syncAppIconBadge(count);
+    }, 400);
   }
 
   async function refreshHabitsStrip() {
