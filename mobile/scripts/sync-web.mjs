@@ -14,7 +14,7 @@ const www = path.join(root, "mobile/www");
 const localSrc = path.join(root, "mobile/www-src/local");
 const sqlJsDist = path.join(root, "mobile/node_modules/sql.js/dist");
 /** Bust WKWebView caches for injected local scripts + app.js (was stuck on p5h1 / local-p2). */
-const LOCAL_ASSET_V = "20261018a";
+const LOCAL_ASSET_V = "20261018b";
 const iosPublic = path.join(root, "mobile/ios/App/App/public");
 
 function rmrf(dir) {
@@ -257,7 +257,20 @@ function assertBuildTree(base, tag) {
   assertMarker(base, "app.js", /habit-seed-picker/, `${tag} habit-seed-picker class`);
   assertMarker(base, "styles.css", /\.habit-seed-picker-list/, `${tag} CSS seed picker list`);
   assertMarker(base, "styles.css", /white-space:\s*nowrap/, `${tag} CSS seed picker nowrap`);
-  assertMarker(base, "app.js", /26 \* 16/, `${tag} seed picker max width 26rem`);
+  assertMarker(
+    base,
+    "app.js",
+    /Match trigger bar width|rect\.width/,
+    `${tag} seed picker width = trigger`
+  );
+  {
+    const appJs = fs.readFileSync(path.join(base, "app.js"), "utf8");
+    if (/26 \* 16/.test(appJs)) {
+      console.error(`[sync-web] ${tag} stale seed picker 26rem width still in app.js`);
+      process.exit(1);
+    }
+    console.log(`[sync-web] ok ${tag} no 26rem seed list width`);
+  }
   assertMarker(base, "index.html", /从种子习惯清单中选择/, `${tag} 从种子习惯清单中选择`);
   assertMarker(base, "index.html", /添加种子习惯/, `${tag} 添加种子习惯`);
   assertMarker(base, "index.html", /自定义习惯/, `${tag} 自定义习惯`);

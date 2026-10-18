@@ -53,7 +53,7 @@
     bird: `/static/portal/ornaments/bird.png?v=${ASSET_V}`,
   };
 
-  const HABIT_MEDIA_V = "20261018a";
+  const HABIT_MEDIA_V = "20261018b";
   // Tip: bright star (icon-tip-seed path overwritten; icon-tip-star alias also shipped)
   const HABIT_TIP_ICON = `/static/portal/habit/icon-tip-star.png?v=${HABIT_MEDIA_V}`;
   const HABIT_TIP_ICON_2X = `/static/portal/habit/icon-tip-star@2x.png?v=${HABIT_MEDIA_V}`;
@@ -1076,16 +1076,17 @@
       }
       const rect = btn.getBoundingClientRect();
       const gutter = 12;
-      // Nearly full phone width (≤26rem) so「专注作业二十五分钟（10分）」fits one line.
-      const width = Math.min(window.innerWidth - gutter * 2, 26 * 16);
-      let left = rect.left + rect.width / 2 - width / 2;
-      left = Math.max(gutter, Math.min(left, window.innerWidth - gutter - width));
+      // Match trigger bar width + left (not full-viewport / 26rem wide).
+      const width = Math.max(1, rect.width);
+      const left = rect.left;
       const spaceBelow = window.innerHeight - rect.bottom - gutter;
       const preferBelow = spaceBelow >= 120 || spaceBelow >= rect.top - gutter;
       list.style.position = "fixed";
       list.style.left = `${Math.round(left)}px`;
       list.style.width = `${Math.round(width)}px`;
       list.style.maxWidth = `${Math.round(width)}px`;
+      list.style.minWidth = `${Math.round(width)}px`;
+      list.style.right = "auto";
       list.style.transform = "none";
       list.style.zIndex = "400";
       list.style.display = "grid";

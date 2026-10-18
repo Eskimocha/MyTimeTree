@@ -130,13 +130,12 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 
 # Scratchpad
 
-## Task: 真机黑屏 + debugger attach timeout（20261018a）
-- 判断：更像 LLDB handshake 超时，非 AppIconBadge 启动即崩（插件无 load 副作用）
-- [X] applyBadge 不再 requestAuthorization；JS badge sync defer 400ms
-- [X] stamp 20261018a；Kai 先：卸App / Clean+DerivedData / 关 Debug executable Run
-- Lesson: “Could not attach to pid … handshake … 6.0 seconds” 优先当调试器问题，勿先怪 Scene/Badge
+## Task: 种子下拉宽度 = 触发条（20261018b）
+- [X] placeList: width/left = trigger getBoundingClientRect；去 26rem
+- [X] stamp 20261018b sync push
 
-## Archived: seed dropdown 20261017a / maui 2/8/10 20261016z / inventory 20261016y
+## Archived: blackscreen 20261018a / seed portal 20261017a / maui 20261016z
+- Lesson: “Could not attach to pid … handshake … 6.0 seconds” 优先当调试器问题，勿先怪 Scene/Badge
 - Lesson: iOS/WK 上 fixed 菜单勿放在 backdrop-filter/transform 祖先内，应 body portal
 - Lesson: Kai 改 inventory 后须回写 micro/maui/parent 表再 build，勿只 cp inventory
 - Lesson: 自定义 select 替身勿放在关联该 select 的 `<label>` 内
