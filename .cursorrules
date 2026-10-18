@@ -130,14 +130,12 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 
 # Scratchpad
 
-## Task: 设置页输入假死 (20261018k)
-- [X] bridge: 勿在 focus/键盘打开时 reset viewport meta
-- [X] seed list close inert + keypad keydown guard；stamp 20261018k
-- [X] sync-web green；报告 settings-input-freeze-20261018k.md
-- [X] Playwright：daily/title focus 在 reset 后仍可输入
-- [X] commit / push / update PR #3
+## Task: 发版准备 + 介绍资料（勿 merge）
+- [X] release-prep-habit-2.md
+- [X] docs/release-materials/*（商店文案 / 亮点 / 上手 / 截图）
+- [ ] Kai 确认：版本号 / ready / 是否 merge
 
-## Archived: subtitle 奖励 20261018j / swipe 奖励 20261018i
+## Archived: 设置假死 20261018k / 奖励 20261018j
 
 
 - Lesson: “Could not attach to pid … handshake … 6.0 seconds” 优先当调试器问题，勿先怪 Scene/Badge
