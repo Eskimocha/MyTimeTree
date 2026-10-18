@@ -131,9 +131,9 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 # Scratchpad
 
 ## Task: 定制文案精简 + 自定义表单瘦身 (20261018g)
-- [ ] 弹窗去副标题；微习惯 placeholder「例如：只漱口」
-- [ ] 自定义表单：每次奖励分钟数；去掉毛伊/微习惯输入
-- [ ] stamp 20261018g；sync；push PR #3
+- [X] 弹窗去副标题；微习惯 placeholder「例如：只漱口」
+- [X] 自定义表单：每次奖励分钟数；去掉毛伊/微习惯输入
+- [X] stamp 20261018g；sync；push PR #3
 
 ## Archived: customize UI 20261018f / swipe half 20261018e
 
