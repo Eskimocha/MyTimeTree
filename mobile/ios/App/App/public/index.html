@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta name="mytimetree-mode" content="local-capacitor" />
-  <meta name="mytimetree-web-build" content="20261018f" />
+  <meta name="mytimetree-web-build" content="20261018g" />
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
   <title>MyTimeTree</title>
@@ -153,9 +153,7 @@
             </div>
             <button type="button" class="btn" id="btn-habit-enable">添加种子习惯</button>
             <label>自定义习惯<input id="habit-custom-title" type="text" lang="zh-CN" inputmode="text" enterkeyhint="done" maxlength="32" placeholder="例如：练字一行" /></label>
-            <label>每次分钟<input id="habit-custom-minutes" type="number" min="1" value="5" /></label>
-            <label>毛伊习惯（可选）<input id="habit-custom-maui" type="text" lang="zh-CN" inputmode="text" enterkeyhint="done" maxlength="120" placeholder="例如：拿出字帖就写" /></label>
-            <label>微习惯（可选）<textarea id="habit-custom-micro" class="habit-custom-micro" lang="zh-CN" inputmode="text" rows="3" maxlength="600" placeholder="可被接受的最小行为；每行一条&#10;例如：只写一个字"></textarea></label>
+            <label>每次奖励分钟数<input id="habit-custom-minutes" type="number" min="1" value="5" /></label>
             <button type="button" class="btn primary" id="btn-habit-custom">添加自定义习惯</button>
           </div>
           <p id="habit-settings-msg" class="msg" hidden></p>
@@ -326,10 +324,9 @@
     <div class="habit-overlay-backdrop" data-customize-dismiss></div>
     <div class="habit-overlay-sheet habit-customize-sheet" role="dialog" aria-modal="true" aria-labelledby="habit-customize-title">
       <p id="habit-customize-title" class="habit-celeb-title">定制习惯</p>
-      <p class="muted habit-micro-lede">可改微习惯、毛伊习惯与家长话术；保存后主屏 tip 立即生效。</p>
-      <label class="habit-customize-label" for="habit-customize-micro">微习惯<small class="muted">每行一条，降低难度用</small></label>
-      <textarea id="habit-customize-micro" class="habit-micro-text" lang="zh-CN" inputmode="text" rows="4" maxlength="600" placeholder="例如：&#10;走到洗手台&#10;先挤一点牙膏"></textarea>
-      <label class="habit-customize-label" for="habit-customize-maui">毛伊习惯<small class="muted">可以先做再正式开始</small></label>
+      <label class="habit-customize-label" for="habit-customize-micro">微习惯</label>
+      <textarea id="habit-customize-micro" class="habit-micro-text" lang="zh-CN" inputmode="text" rows="4" maxlength="600" placeholder="例如：只漱口"></textarea>
+      <label class="habit-customize-label" for="habit-customize-maui">毛伊习惯</label>
       <input id="habit-customize-maui" class="habit-customize-input" type="text" lang="zh-CN" inputmode="text" maxlength="120" placeholder="例如：洗完脸就做下一步" />
       <label class="habit-customize-label" for="habit-customize-script">家长话术</label>
       <textarea id="habit-customize-script" class="habit-micro-text habit-customize-script" lang="zh-CN" inputmode="text" rows="3" maxlength="160" placeholder="例如：这次我们只做最小那一步吧？"></textarea>
@@ -341,14 +338,14 @@
   </div>
 
     <script src="./local/sql-wasm.js"></script>
-  <script src="./local/db.js?v=20261018f"></script>
-  <script src="./local/habit-seed.js?v=20261018f"></script>
-  <script src="./local/store.js?v=20261018f"></script>
-  <script src="./local/habits.js?v=20261018f"></script>
-  <script src="./local/bridge.js?v=20261018f"></script>
-  <script src="./local/lock.js?v=20261018f"></script>
+  <script src="./local/db.js?v=20261018g"></script>
+  <script src="./local/habit-seed.js?v=20261018g"></script>
+  <script src="./local/store.js?v=20261018g"></script>
+  <script src="./local/habits.js?v=20261018g"></script>
+  <script src="./local/bridge.js?v=20261018g"></script>
+  <script src="./local/lock.js?v=20261018g"></script>
   <script src="./local/html2canvas.min.js"></script>
-  <script src="./local/share.js?v=20261018f"></script>
-  <script src="./app.js?v=20261018f"></script>
+  <script src="./local/share.js?v=20261018g"></script>
+  <script src="./app.js?v=20261018g"></script>
 </body>
 </html>

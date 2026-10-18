@@ -130,12 +130,12 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 
 # Scratchpad
 
-## Task: 自定义毛伊/微习惯 + 左滑「定制」(20261018f)
-- [X] db: habits.maui_override / script_override + migrate v13
-- [X] addCustom 存毛伊/微习惯；定制弹窗改微/毛伊/话术
-- [X] stamp 20261018f；sync；push PR #3；写报告
+## Task: 定制文案精简 + 自定义表单瘦身 (20261018g)
+- [ ] 弹窗去副标题；微习惯 placeholder「例如：只漱口」
+- [ ] 自定义表单：每次奖励分钟数；去掉毛伊/微习惯输入
+- [ ] stamp 20261018g；sync；push PR #3
 
-## Archived: swipe half 20261018e / seed category 20261018d
+## Archived: customize UI 20261018f / swipe half 20261018e
 
 - Lesson: “Could not attach to pid … handshake … 6.0 seconds” 优先当调试器问题，勿先怪 Scene/Badge
 - Lesson: iOS/WK 上 fixed 菜单勿放在 backdrop-filter/transform 祖先内，应 body portal

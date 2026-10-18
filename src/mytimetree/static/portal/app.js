@@ -53,7 +53,7 @@
     bird: `/static/portal/ornaments/bird.png?v=${ASSET_V}`,
   };
 
-  const HABIT_MEDIA_V = "20261018f";
+  const HABIT_MEDIA_V = "20261018g";
   // Tip: bright star (icon-tip-seed path overwritten; icon-tip-star alias also shipped)
   const HABIT_TIP_ICON = `/static/portal/habit/icon-tip-star.png?v=${HABIT_MEDIA_V}`;
   const HABIT_TIP_ICON_2X = `/static/portal/habit/icon-tip-star@2x.png?v=${HABIT_MEDIA_V}`;
@@ -2552,16 +2552,12 @@
   $("#btn-habit-custom")?.addEventListener("click", async () => {
     const title = ($("#habit-custom-title")?.value || "").trim();
     const minutes = Number($("#habit-custom-minutes")?.value || 5);
-    const maui_text = ($("#habit-custom-maui")?.value || "").trim();
-    const micro_text = ($("#habit-custom-micro")?.value || "").trim();
     try {
       await api("/api/portal/habits/custom", {
         method: "POST",
-        body: JSON.stringify({ title, minutes, maui_text, micro_text }),
+        body: JSON.stringify({ title, minutes }),
       });
       if ($("#habit-custom-title")) $("#habit-custom-title").value = "";
-      if ($("#habit-custom-maui")) $("#habit-custom-maui").value = "";
-      if ($("#habit-custom-micro")) $("#habit-custom-micro").value = "";
       flash($("#habit-settings-msg"), "已添加自定义习惯");
       await refreshHabitSettings();
       await refreshHabitsStrip();
