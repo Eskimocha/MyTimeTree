@@ -14,7 +14,7 @@ const www = path.join(root, "mobile/www");
 const localSrc = path.join(root, "mobile/www-src/local");
 const sqlJsDist = path.join(root, "mobile/node_modules/sql.js/dist");
 /** Bust WKWebView caches for injected local scripts + app.js (was stuck on p5h1 / local-p2). */
-const LOCAL_ASSET_V = "20261018j";
+const LOCAL_ASSET_V = "20261018k";
 const iosPublic = path.join(root, "mobile/ios/App/App/public");
 
 function rmrf(dir) {
@@ -509,6 +509,16 @@ function assertBuildTree(base, tag) {
     }
     console.log(`[sync-web] ok ${tag} no 改奖励 in index.html`);
   }
+  assertMarker(base, "local/bridge.js", /isEditableFocused/, `${tag} bridge isEditableFocused`);
+  assertMarker(base, "local/bridge.js", /isKeyboardLikelyOpen/, `${tag} bridge isKeyboardLikelyOpen`);
+  assertMarker(base, "local/bridge.js", /假死/, `${tag} bridge 假死 guard comment`);
+  assertMarker(base, "app.js", /Park back under picker/, `${tag} seed list reparent on close`);
+  assertMarker(
+    base,
+    "app.js",
+    /keypadEl\.hidden/,
+    `${tag} keypad keydown requires visible modal`
+  );
   assertMarker(base, "index.html", /每次奖励分钟数/, `${tag} 每次奖励分钟数 label`);
   assertMarker(base, "index.html", /habit-customize-modal/, `${tag} customize modal`);
   assertMarker(base, "index.html", /placeholder="例如：只漱口"/, `${tag} micro placeholder 只漱口`);

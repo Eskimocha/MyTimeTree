@@ -53,7 +53,7 @@
     bird: `./ornaments/bird.png?v=${ASSET_V}`,
   };
 
-  const HABIT_MEDIA_V = "20261018j";
+  const HABIT_MEDIA_V = "20261018k";
   // Tip: bright star (icon-tip-seed path overwritten; icon-tip-star alias also shipped)
   const HABIT_TIP_ICON = `./habit/icon-tip-star.png?v=${HABIT_MEDIA_V}`;
   const HABIT_TIP_ICON_2X = `./habit/icon-tip-star@2x.png?v=${HABIT_MEDIA_V}`;
@@ -1095,7 +1095,15 @@
     const btn = picker.querySelector(".habit-seed-picker-btn");
     if (list) {
       list.hidden = true;
-      list.style.display = "";
+      list.setAttribute("aria-hidden", "true");
+      // Fully inert when closed — iOS can still hit-test some fixed portaled nodes.
+      list.style.display = "none";
+      list.style.pointerEvents = "none";
+      list.style.visibility = "hidden";
+      // Park back under picker so body isn't left with a stray fixed layer.
+      if (list.parentNode !== picker) {
+        picker.appendChild(list);
+      }
     }
     if (btn) btn.setAttribute("aria-expanded", "false");
   }
@@ -1130,6 +1138,10 @@
     list.setAttribute("role", "listbox");
     list.dataset.seedPickerId = pickerId;
     list.hidden = true;
+    list.setAttribute("aria-hidden", "true");
+    list.style.display = "none";
+    list.style.pointerEvents = "none";
+    list.style.visibility = "hidden";
     picker._habitSeedList = list;
 
     const placeList = () => {
@@ -1168,6 +1180,9 @@
     const setOpen = (open) => {
       if (open) {
         list.hidden = false;
+        list.setAttribute("aria-hidden", "false");
+        list.style.pointerEvents = "auto";
+        list.style.visibility = "visible";
         btn.setAttribute("aria-expanded", "true");
         placeList();
         console.info("[seed-picker] open", {
@@ -1201,7 +1216,12 @@
     window.addEventListener(
       "scroll",
       () => {
-        if (!list.hidden) placeList();
+        if (list.hidden) return;
+        // Don't reposition while typing — scroll+layout thrash steals focus on iOS.
+        const ae = document.activeElement;
+        const tag = ae && ae.tagName;
+        if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+        placeList();
       },
       { passive: true, capture: true }
     );
@@ -2120,7 +2140,12 @@
     if (e.target.closest("[data-keypad-dismiss]")) closeKeypad(null);
   });
   window.addEventListener("keydown", (e) => {
-    if (!state.keypad.open) return;
+    const keypadEl = $("#keypad-modal");
+    // Require both flag and visible modal so a stuck flag can't eat settings typing.
+    if (!state.keypad.open || !keypadEl || keypadEl.hidden) return;
+    const ae = document.activeElement;
+    const tag = ae && ae.tagName;
+    if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
     if (e.key === "Escape") {
       e.preventDefault();
       closeKeypad(null);

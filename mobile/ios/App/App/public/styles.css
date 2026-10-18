@@ -754,7 +754,11 @@ html, body {
   gap: 0.5rem;
 }
 
-.keypad-modal[hidden] { display: none !important; }
+.keypad-modal[hidden] {
+  display: none !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+}
 .keypad-modal {
   position: fixed;
   inset: 0;
@@ -1278,7 +1282,11 @@ html.share-capture #tab-home.tab-panel {
   align-items: flex-end;
   justify-content: center;
 }
-.habit-overlay[hidden] { display: none !important; }
+.habit-overlay[hidden] {
+  display: none !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+}
 .habit-overlay-backdrop {
   position: absolute;
   inset: 0;
@@ -1841,6 +1849,8 @@ html.share-capture #tab-home.tab-panel {
 }
 .habit-seed-picker-list[hidden] {
   display: none !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
 }
 .habit-seed-picker-list li {
   list-style: none;

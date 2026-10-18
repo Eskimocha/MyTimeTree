@@ -15,13 +15,38 @@
 
   // iOS WKWebView scrolls the document to keep focused inputs visible; after the
   // keyboard dismisses (or lock reloads), scrollY can stay > 0 and clip the topbar.
+  // IMPORTANT: never rewrite viewport meta / scrollTo while an input is focusing or
+  // the keyboard is open — that steals focus and feels like settings "假死".
   try {
     if (history.scrollRestoration) history.scrollRestoration = "manual";
   } catch {
     /* ignore */
   }
 
+  function isEditableFocused() {
+    const ae = document.activeElement;
+    if (!ae) return false;
+    const tag = ae.tagName;
+    if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return true;
+    if (ae.isContentEditable) return true;
+    return false;
+  }
+
+  function isKeyboardLikelyOpen() {
+    try {
+      const vv = window.visualViewport;
+      if (!vv) return false;
+      // Soft keyboard shrinks / offsets the visual viewport on iOS.
+      if (vv.offsetTop > 0) return true;
+      if (vv.height > 0 && vv.height < window.innerHeight * 0.78) return true;
+    } catch {
+      /* ignore */
+    }
+    return false;
+  }
+
   function resetViewportScroll() {
+    if (isEditableFocused() || isKeyboardLikelyOpen()) return;
     window.scrollTo(0, 0);
     document.documentElement.scrollTop = 0;
     document.documentElement.scrollLeft = 0;
@@ -37,6 +62,7 @@
       el.style.removeProperty("margin");
     }
     // If iOS already auto-zoomed, nudge viewport meta back to scale=1.
+    // Skipping this while focused avoids dismissing the keyboard mid-input.
     const meta = document.querySelector('meta[name="viewport"]');
     if (meta) {
       const base =
@@ -46,17 +72,22 @@
   }
 
   function scheduleViewportReset() {
+    if (isEditableFocused() || isKeyboardLikelyOpen()) return;
     resetViewportScroll();
     requestAnimationFrame(resetViewportScroll);
     setTimeout(resetViewportScroll, 50);
     setTimeout(resetViewportScroll, 300);
   }
 
+  let keyboardClosedTimer = 0;
   function onKeyboardLikelyClosed() {
-    const ae = document.activeElement;
-    const tag = ae && ae.tagName;
-    if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
-    scheduleViewportReset();
+    // iOS fires resize/scroll around focus+keyboard animation *before* activeElement
+    // settles on the input. Debounce + re-check so we don't kill the keyboard.
+    clearTimeout(keyboardClosedTimer);
+    keyboardClosedTimer = setTimeout(() => {
+      if (isEditableFocused() || isKeyboardLikelyOpen()) return;
+      scheduleViewportReset();
+    }, 350);
   }
 
   // If env(safe-area-inset-top) is 0, use a min height — do not add extra gutter
@@ -85,7 +116,7 @@
     onKeyboardLikelyClosed();
   });
   document.addEventListener("focusout", () => {
-    setTimeout(onKeyboardLikelyClosed, 100);
+    onKeyboardLikelyClosed();
   });
   if (window.visualViewport) {
     window.visualViewport.addEventListener("resize", onKeyboardLikelyClosed);

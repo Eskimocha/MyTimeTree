@@ -130,10 +130,15 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 
 # Scratchpad
 
-## Task: 副标题「改奖励」→「奖励」(20261018j)
-- [X] habit-settings-lede 无「改奖励」；stamp 20261018j；sync；push
+## Task: 设置页输入假死 (20261018k)
+- [X] bridge: 勿在 focus/键盘打开时 reset viewport meta
+- [X] seed list close inert + keypad keydown guard；stamp 20261018k
+- [X] sync-web green；报告 settings-input-freeze-20261018k.md
+- [X] Playwright：daily/title focus 在 reset 后仍可输入
+- [ ] commit / push / update PR #3
 
-## Archived: swipe 奖励 20261018i / one-line 20261018h
+## Archived: subtitle 奖励 20261018j / swipe 奖励 20261018i
+
 
 - Lesson: “Could not attach to pid … handshake … 6.0 seconds” 优先当调试器问题，勿先怪 Scene/Badge
 - Lesson: iOS/WK 上 fixed 菜单勿放在 backdrop-filter/transform 祖先内，应 body portal
@@ -148,6 +153,7 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 - Lesson: iOS 图标 badge 勿只 request `.badge`；要 `.alert,.badge,.sound` 才会出系统弹窗
 
 ## Lessons (this task)
+- iOS 设置假死：`bridge` 勿在 editable focus / soft-keyboard open 时 `scrollTo`+重写 viewport meta；resize 早于 activeElement settle，须防抖再查
 - share-capture 勿把所有 `.tab-panel` 刷成 `#f7fcf8`——会盖住森林卡；主屏保持 transparent
 - JS 设 height 时须 `setProperty(..., "important")`，否则打不过 CSS `height:auto !important`
 - Content tables: `docs/v2/content/*.md` → `build-habit-content.mjs` → `habit-seed.js`；`sync-web` 必须先 build
