@@ -53,7 +53,7 @@
     bird: `/static/portal/ornaments/bird.png?v=${ASSET_V}`,
   };
 
-  const HABIT_MEDIA_V = "20261018b";
+  const HABIT_MEDIA_V = "20261018c";
   // Tip: bright star (icon-tip-seed path overwritten; icon-tip-star alias also shipped)
   const HABIT_TIP_ICON = `/static/portal/habit/icon-tip-star.png?v=${HABIT_MEDIA_V}`;
   const HABIT_TIP_ICON_2X = `/static/portal/habit/icon-tip-star@2x.png?v=${HABIT_MEDIA_V}`;
@@ -1264,18 +1264,26 @@
         rewardBtn.addEventListener("click", async (e) => {
           e.stopPropagation();
           closeAllHabitSwipes(list);
-          const raw = window.prompt(
-            `${h.title} 每次兑换奖励几分钟？`,
-            String(h.minutes_per_completion)
-          );
-          if (raw == null) return;
-          const n = Math.floor(Number(raw));
-          if (!Number.isFinite(n) || n <= 0) return;
-          await api("/api/portal/habits/rules", {
-            method: "PATCH",
-            body: JSON.stringify({ rule_id: h.rule_id, minutes_per_completion: n }),
+          // Same calculator keypad as 支出/借用/存入 (not window.prompt).
+          const n = await openKeypad({
+            title: `${h.title} · 每次奖励几分钟？`,
+            hint: `当前 ${h.minutes_per_completion} 分，可直接点「输入」或改数后再输入`,
+            defaultMinutes: h.minutes_per_completion,
           });
-          await refreshHabitSettings();
+          if (n == null) return;
+          try {
+            await api("/api/portal/habits/rules", {
+              method: "PATCH",
+              body: JSON.stringify({
+                rule_id: h.rule_id,
+                minutes_per_completion: n,
+              }),
+            });
+            flash($("#habit-settings-msg"), `已改为每次 ${n} 分`);
+            await refreshHabitSettings();
+          } catch (ex) {
+            flash($("#habit-settings-msg"), ex.message || String(ex));
+          }
         });
 
         const del = document.createElement("button");
