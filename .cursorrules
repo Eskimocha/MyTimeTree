@@ -130,12 +130,11 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 
 # Scratchpad
 
-## Task: 定制文案精简 + 自定义表单瘦身 (20261018g)
-- [X] 弹窗去副标题；微习惯 placeholder「例如：只漱口」
-- [X] 自定义表单：每次奖励分钟数；去掉毛伊/微习惯输入
-- [X] stamp 20261018g；sync；push PR #3
+## Task: 定制弹窗微习惯/话术单行 (20261018h)
+- [ ] 微习惯、家长话术改为单行 input；毛伊已是单行
+- [ ] stamp 20261018h；sync；push PR #3
 
-## Archived: customize UI 20261018f / swipe half 20261018e
+## Archived: copy trim 20261018g / customize UI 20261018f
 
 - Lesson: “Could not attach to pid … handshake … 6.0 seconds” 优先当调试器问题，勿先怪 Scene/Badge
 - Lesson: iOS/WK 上 fixed 菜单勿放在 backdrop-filter/transform 祖先内，应 body portal

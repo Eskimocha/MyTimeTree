@@ -53,7 +53,7 @@
     bird: `./ornaments/bird.png?v=${ASSET_V}`,
   };
 
-  const HABIT_MEDIA_V = "20261018g";
+  const HABIT_MEDIA_V = "20261018h";
   // Tip: bright star (icon-tip-seed path overwritten; icon-tip-star alias also shipped)
   const HABIT_TIP_ICON = `./habit/icon-tip-star.png?v=${HABIT_MEDIA_V}`;
   const HABIT_TIP_ICON_2X = `./habit/icon-tip-star@2x.png?v=${HABIT_MEDIA_V}`;
@@ -1669,9 +1669,11 @@
       );
       customizeEditHabit = { id: h.id, title: h.title };
       if (title) title.textContent = `${h.title} · 定制`;
-      microTa.value = (data.micro_steps || [])
-        .map((s) => s.step_text)
-        .join("\n");
+      // Single-line field: show first micro (or ·-joined if several).
+      const micros = (data.micro_steps || [])
+        .map((s) => String(s.step_text || "").trim())
+        .filter(Boolean);
+      microTa.value = micros.length ? micros.join(" · ") : "";
       mauiIn.value = data.maui_text || "";
       scriptTa.value = data.parent_script || "";
       modal.hidden = false;
@@ -1686,11 +1688,9 @@
     const microTa = $("#habit-customize-micro");
     const mauiIn = $("#habit-customize-maui");
     const scriptTa = $("#habit-customize-script");
-    const micro_steps = String(microTa?.value || "")
-      .split(/\r?\n/)
-      .map((s) => s.trim())
-      .filter(Boolean)
-      .slice(0, 12);
+    // One-line UI: keep as a single micro step (trim only).
+    const microOne = String(microTa?.value || "").trim();
+    const micro_steps = microOne ? [microOne.slice(0, 64)] : [];
     try {
       await api("/api/portal/habits/customize", {
         method: "POST",

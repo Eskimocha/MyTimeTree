@@ -1603,9 +1603,6 @@ html.share-capture #tab-home.tab-panel {
   background: #fff;
   box-sizing: border-box;
 }
-.habit-customize-script {
-  min-height: 4.5rem;
-}
 .habit-micro-text {
   width: 100%;
   min-height: 6.5rem;

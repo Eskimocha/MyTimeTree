@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta name="mytimetree-mode" content="local-capacitor" />
-  <meta name="mytimetree-web-build" content="20261018g" />
+  <meta name="mytimetree-web-build" content="20261018h" />
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
   <title>MyTimeTree</title>
@@ -325,11 +325,11 @@
     <div class="habit-overlay-sheet habit-customize-sheet" role="dialog" aria-modal="true" aria-labelledby="habit-customize-title">
       <p id="habit-customize-title" class="habit-celeb-title">定制习惯</p>
       <label class="habit-customize-label" for="habit-customize-micro">微习惯</label>
-      <textarea id="habit-customize-micro" class="habit-micro-text" lang="zh-CN" inputmode="text" rows="4" maxlength="600" placeholder="例如：只漱口"></textarea>
+      <input id="habit-customize-micro" class="habit-customize-input" type="text" lang="zh-CN" inputmode="text" enterkeyhint="done" maxlength="64" placeholder="例如：只漱口" />
       <label class="habit-customize-label" for="habit-customize-maui">毛伊习惯</label>
-      <input id="habit-customize-maui" class="habit-customize-input" type="text" lang="zh-CN" inputmode="text" maxlength="120" placeholder="例如：洗完脸就做下一步" />
+      <input id="habit-customize-maui" class="habit-customize-input" type="text" lang="zh-CN" inputmode="text" enterkeyhint="done" maxlength="120" placeholder="例如：洗完脸就做下一步" />
       <label class="habit-customize-label" for="habit-customize-script">家长话术</label>
-      <textarea id="habit-customize-script" class="habit-micro-text habit-customize-script" lang="zh-CN" inputmode="text" rows="3" maxlength="160" placeholder="例如：这次我们只做最小那一步吧？"></textarea>
+      <input id="habit-customize-script" class="habit-customize-input" type="text" lang="zh-CN" inputmode="text" enterkeyhint="done" maxlength="160" placeholder="例如：这次我们只做最小那一步吧？" />
       <div class="habit-micro-actions">
         <button type="button" class="btn" data-customize-dismiss>取消</button>
         <button type="button" class="btn primary" id="habit-customize-save">保存</button>
@@ -338,14 +338,14 @@
   </div>
 
     <script src="./local/sql-wasm.js"></script>
-  <script src="./local/db.js?v=20261018g"></script>
-  <script src="./local/habit-seed.js?v=20261018g"></script>
-  <script src="./local/store.js?v=20261018g"></script>
-  <script src="./local/habits.js?v=20261018g"></script>
-  <script src="./local/bridge.js?v=20261018g"></script>
-  <script src="./local/lock.js?v=20261018g"></script>
+  <script src="./local/db.js?v=20261018h"></script>
+  <script src="./local/habit-seed.js?v=20261018h"></script>
+  <script src="./local/store.js?v=20261018h"></script>
+  <script src="./local/habits.js?v=20261018h"></script>
+  <script src="./local/bridge.js?v=20261018h"></script>
+  <script src="./local/lock.js?v=20261018h"></script>
   <script src="./local/html2canvas.min.js"></script>
-  <script src="./local/share.js?v=20261018g"></script>
-  <script src="./app.js?v=20261018g"></script>
+  <script src="./local/share.js?v=20261018h"></script>
+  <script src="./app.js?v=20261018h"></script>
 </body>
 </html>
