@@ -130,10 +130,10 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 
 # Scratchpad
 
-## Task: 左滑「奖励」文案 (20261018i)
-- [X] 改奖励 → 奖励；stamp 20261018i；sync；push PR #3
+## Task: 副标题「改奖励」→「奖励」(20261018j)
+- [X] habit-settings-lede 无「改奖励」；stamp 20261018j；sync；push
 
-## Archived: one-line customize 20261018h / copy trim 20261018g
+## Archived: swipe 奖励 20261018i / one-line 20261018h
 
 - Lesson: “Could not attach to pid … handshake … 6.0 seconds” 优先当调试器问题，勿先怪 Scene/Badge
 - Lesson: iOS/WK 上 fixed 菜单勿放在 backdrop-filter/transform 祖先内，应 body portal

@@ -14,7 +14,7 @@ const www = path.join(root, "mobile/www");
 const localSrc = path.join(root, "mobile/www-src/local");
 const sqlJsDist = path.join(root, "mobile/node_modules/sql.js/dist");
 /** Bust WKWebView caches for injected local scripts + app.js (was stuck on p5h1 / local-p2). */
-const LOCAL_ASSET_V = "20261018i";
+const LOCAL_ASSET_V = "20261018j";
 const iosPublic = path.join(root, "mobile/ios/App/App/public");
 
 function rmrf(dir) {
@@ -501,6 +501,14 @@ function assertBuildTree(base, tag) {
   assertMarker(base, "index.html", /habit-milestones/, `${tag} habit-milestones`);
   assertMarker(base, "index.html", /「奖励」/, `${tag} lede 奖励`);
   assertMarker(base, "index.html", /「定制」/, `${tag} lede 定制`);
+  {
+    const html = fs.readFileSync(path.join(base, "index.html"), "utf8");
+    if (/改奖励/.test(html)) {
+      console.error(`[sync-web] ${tag} index still has 改奖励 in subtitle/copy`);
+      process.exit(1);
+    }
+    console.log(`[sync-web] ok ${tag} no 改奖励 in index.html`);
+  }
   assertMarker(base, "index.html", /每次奖励分钟数/, `${tag} 每次奖励分钟数 label`);
   assertMarker(base, "index.html", /habit-customize-modal/, `${tag} customize modal`);
   assertMarker(base, "index.html", /placeholder="例如：只漱口"/, `${tag} micro placeholder 只漱口`);
