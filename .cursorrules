@@ -131,11 +131,11 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 # Scratchpad
 
 ## Task: 姓名 pill 再加宽 (20261019e)
-- [ ] 禁父级收缩；更宽 select；去 ellipsis；测「方存真」
-- [ ] stamp 20261019e；sync；push PR #3
+- [X] 自定义 account-name-btn + 透明 native select overlay
+- [X] 父级不收缩；测「方存真」；stamp 20261019e；push
 
 ## Lessons
-- iOS select：箭头吃宽；父级 flex-shrink/min-width:0 也会裁 pill
+- iOS/Chromium `<select>` 内部会裁 CJK，加宽外框不够 → 用按钮显示文案
 
 ## Archived: name pill 20261019d / 蓝块 20261019c
 
