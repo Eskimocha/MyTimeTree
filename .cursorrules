@@ -131,8 +131,11 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 # Scratchpad
 
 ## Task: 去掉分享蓝块 + 姓名 pill 三字宽 (20261019c)
-- [ ] share 蓝矩形仅 clone 注入；日常 hero 恢复柔和
-- [ ] account-select 宽够 3 汉字；stamp 20261019c；push
+- [X] live share-capture 不刷蓝；clone 柔和渐变 + tree-scene transparent
+- [X] account-select `--account-name-w: calc(3em + 2.6rem)`；stamp 20261019c；push
+
+## Lessons
+- share 亮色只写 clone/`onclone`；live `share-capture` 勿给 `.tree-scene` 实心色
 
 ## Archived: share 白框 20261019b / tab badge 20261019a
 
