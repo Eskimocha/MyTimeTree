@@ -1,0 +1,25 @@
+{
+  "appId": "com.mytimetree.app",
+  "appName": "MyTimeTree",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "ios": {
+    "contentInset": "never",
+    "scheme": "MyTimeTree"
+  },
+  "server": {
+    "androidScheme": "https"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchAutoHide": true,
+      "launchShowDuration": 300,
+      "backgroundColor": "#eef8f1",
+      "showSpinner": false
+    },
+    "Badge": {
+      "persist": true,
+      "autoClear": false
+    }
+  }
+}

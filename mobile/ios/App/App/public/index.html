@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta name="mytimetree-mode" content="local-capacitor" />
+  <meta name="mytimetree-web-build" content="20261019e" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <title>MyTimeTree</title>
+  <link rel="stylesheet" href="./styles.css?v=20261015c" />
+  <script>document.documentElement.dataset.mode="local";</script>
+  <link rel="stylesheet" href="./local/lock.css?v=p4r12" />
+</head>
+<body>
+  <div id="portal" class="portal">
+    <header class="topbar">
+      <div class="brand-lockup">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <h1 class="brand">MyTimeTree</h1>
+      </div>
+      <div id="account-shell" class="account-shell" hidden>
+        <button type="button" id="share-page-btn" class="account-icon-btn share-page-btn" aria-label="分享当前页" title="分享当前页长图">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg>
+        </button>
+        <div class="account-name-picker" id="account-name-picker">
+          <button type="button" class="account-name-btn" id="account-name-btn" aria-haspopup="listbox" aria-expanded="false">
+            <span class="account-name-text" id="account-name-text"></span>
+            <svg class="account-name-chev" viewBox="0 0 12 8" width="12" height="8" aria-hidden="true" focusable="false"><path d="M1.5 1.75L6 6.25L10.5 1.75" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <label class="sr-only" for="account-select">切换账户</label>
+          <select id="account-select" class="account-select-native" tabindex="-1" aria-hidden="true"></select>
+        </div>
+        <button type="button" id="account-manage-btn" class="account-icon-btn" aria-label="管理孩子账户" title="管理孩子">⋯</button>
+      </div>
+    </header>
+
+    <section id="onboarding" class="panel onboarding" hidden>
+      <p class="lede">为孩子开立第一棵时间树</p>
+      <form id="onboarding-form" class="stack">
+        <label>孩子昵称<input name="name" type="text" lang="zh-CN" inputmode="text" enterkeyhint="done" required maxlength="32" placeholder="例如：小明" autocomplete="nickname" /></label>
+        <label>家长密码<input name="password" type="password" required minlength="4" autocomplete="new-password" /></label>
+        <label>安全问题（忘记密码时用）
+          <select name="recovery_question" required>
+            <option value="你母亲的姓名是？">你母亲的姓名是？</option>
+            <option value="你就读的小学叫什么？">你就读的小学叫什么？</option>
+            <option value="你喜欢的一本书是？">你喜欢的一本书是？</option>
+            <option value="你喜欢的一部电影是？">你喜欢的一部电影是？</option>
+          </select>
+        </label>
+        <label>安全问题答案<input name="recovery_answer" type="text" lang="zh-CN" inputmode="text" enterkeyhint="done" required minlength="2" maxlength="64" placeholder="请牢记答案（建议不用《》书名号）" autocomplete="on" /></label>
+        <label>资产日利率<input name="asset_interest_rate" type="number" step="0.001" min="0" value="0.01" /></label>
+        <button type="submit" class="btn primary">开始种植</button>
+      </form>
+      <p id="onboarding-error" class="error" hidden></p>
+    </section>
+
+    <main id="main" class="main" hidden>
+      <nav class="tabs" role="tablist">
+        <button type="button" class="tab active" data-tab="home" role="tab"><span class="tab-label">主屏</span><span id="habit-home-badge" class="tab-badge" hidden></span></button>
+        <button type="button" class="tab" data-tab="ledger" role="tab"><span class="tab-label">流水</span></button>
+        <button type="button" class="tab" data-tab="settings" role="tab"><span class="tab-label">设置</span></button>
+        <button type="button" class="tab" data-tab="analytics" role="tab"><span class="tab-label">分析</span></button>
+      </nav>
+
+      <section id="tab-home" class="tab-panel active" role="tabpanel">
+        <p class="tagline">每天存一点时间，未来还你一棵大树</p>
+        <div class="hero-tree" id="tree-stage" data-stage="seed">
+          <div class="tree-scene" aria-hidden="true">
+            <img class="tree-art" id="tree-art" src="./tree/seed.png?v=20260811e" alt="" />
+            <div class="tree-ornament-layer" id="tree-ornament-layer"></div>
+          </div>
+          <p class="stage-label" id="stage-label">种子</p>
+          <p class="stage-net" id="stage-net">净资产 0 分 · 本阶段 0–19 分</p>
+          <ul class="ornament-counters" id="ornament-counters" aria-label="挂件计数">
+            <li data-kind="star" title="星">
+              <img src="./ornaments/star.png?v=20260811e" alt="星" />
+              <strong id="orn-star">0</strong>
+            </li>
+            <li data-kind="sun" title="太阳">
+              <img src="./ornaments/sun.png?v=20260811e" alt="太阳" />
+              <strong id="orn-sun">0</strong>
+            </li>
+            <li data-kind="fruit" title="果">
+              <img src="./ornaments/fruit.png?v=20260811e" alt="果" />
+              <strong id="orn-fruit">0</strong>
+            </li>
+            <li data-kind="pest" title="虫">
+              <img src="./ornaments/pest.png?v=20260811e" alt="虫" />
+              <strong id="orn-pest">0</strong>
+            </li>
+            <li data-kind="bird" title="鸟">
+              <img src="./ornaments/bird.png?v=20260811e" alt="鸟" />
+              <strong id="orn-bird">0</strong>
+            </li>
+          </ul>
+        </div>
+        <div class="balances" aria-label="余额与利息">
+          <div class="bal bal-asset">
+            <span class="muted">资产</span>
+            <div class="bal-row"><strong id="asset-min">0</strong><span class="unit">分</span></div>
+          </div>
+          <div class="bal bal-liab">
+            <span class="muted">负债</span>
+            <div class="bal-row"><strong id="liab-min">0</strong><span class="unit">分</span></div>
+          </div>
+          <div class="bal bal-cum">
+            <span class="muted">累积利息</span>
+            <div class="bal-row"><strong id="cum-interest-min">0</strong><span class="unit">分</span></div>
+          </div>
+          <div class="bal bal-today">
+            <span class="muted">当日利息</span>
+            <div class="bal-row"><strong id="today-interest-min">0</strong><span class="unit">分</span></div>
+          </div>
+        </div>
+        <div class="actions">
+          <button type="button" class="btn" id="btn-spend">支出</button>
+          <button type="button" class="btn" id="btn-borrow">借用</button>
+          <button type="button" class="btn" id="btn-deposit">存入</button>
+        </div>
+        <div id="habit-today-strip" class="habit-strip" hidden>
+          <div class="habit-strip-head">
+            <span id="habit-strip-title">今日好习惯</span>
+            <span id="habit-strip-meta" class="habit-strip-meta muted">
+              <span id="habit-strip-remain" class="habit-strip-remain"></span>
+              <span class="habit-strip-meta-sep" aria-hidden="true"> · </span>
+              <span id="habit-strip-total" class="habit-strip-total"></span>
+            </span>
+          </div>
+          <div id="habit-chip-rail" class="habit-chip-rail" role="list"></div>
+        </div>
+        <p id="home-msg" class="msg" hidden></p>
+      </section>
+
+      <section id="tab-ledger" class="tab-panel" role="tabpanel" hidden>
+        <p class="ledger-meta muted" id="ledger-meta" hidden></p>
+        <ul id="ledger-list" class="ledger-list"></ul>
+        <p id="ledger-empty" class="muted" hidden>暂无流水</p>
+        <button type="button" class="btn" id="ledger-more" hidden>加载更早流水</button>
+      </section>
+
+      <section id="tab-settings" class="tab-panel" role="tabpanel" hidden>
+        <form id="settings-form" class="stack">
+          <label>每日派发（分）<input name="daily_grant_minutes" type="number" min="0" /></label>
+          <label>默认支出（分）<input name="default_spend_minutes" type="number" min="1" /></label>
+          <label>默认存入（分）<input name="default_repay_minutes" type="number" min="1" /></label>
+          <button type="submit" class="btn primary">保存设置</button>
+        </form>
+        <p id="settings-msg" class="msg" hidden></p>
+
+        <section id="habit-settings" class="habit-settings" aria-label="好习惯清单">
+          <h2 class="rules-title">好习惯清单</h2>
+          <p class="muted habit-settings-lede">拖 ⋮⋮ 排序；左滑露出「定制」「奖励」「移除」。主屏最多显示排序后的前 9 条。「定制」可改微习惯 / 毛伊习惯 / 家长话术；「奖励」设置每次兑换分钟。</p>
+          <ul id="habit-settings-list" class="habit-settings-list"></ul>
+          <div class="habit-settings-add stack">
+            <!-- Not a <label>: wrapping native select+custom picker made iOS re-click the
+                 hidden select and immediately close the dropdown. -->
+            <div class="habit-seed-field">
+              <span class="habit-field-label" id="habit-seed-field-label">从种子习惯清单中选择</span>
+              <select id="habit-template-select" aria-labelledby="habit-seed-field-label"></select>
+            </div>
+            <button type="button" class="btn" id="btn-habit-enable">添加种子习惯</button>
+            <label>自定义习惯<input id="habit-custom-title" type="text" lang="zh-CN" inputmode="text" enterkeyhint="done" maxlength="32" placeholder="例如：练字一行" /></label>
+            <label>每次奖励分钟数<input id="habit-custom-minutes" type="number" min="1" value="5" /></label>
+            <button type="button" class="btn primary" id="btn-habit-custom">添加自定义习惯</button>
+          </div>
+          <p id="habit-settings-msg" class="msg" hidden></p>
+        </section>
+
+        <aside id="settings-rules" class="rules-card" aria-label="当前规则说明">
+          <h2 class="rules-title">当前规则</h2>
+          <div class="rules-block">
+            <h3>利率（日利率）</h3>
+            <ul class="rules-list">
+              <li>资产利率：<strong id="rule-asset-rate">—</strong></li>
+              <li>负债利率：<strong id="rule-liability-rate">—</strong></li>
+            </ul>
+            <p class="rules-note">每日 0 点按本金分别计息（启动时会补结漏掉的日子）；结息不加星。</p>
+          </div>
+          <div class="rules-block">
+            <h3>挂件积分</h3>
+            <ul class="rules-list">
+              <li><strong>星</strong>：仅手动存入 +1；100 星 → 1 太阳（自动派发不加星）</li>
+              <li><strong>太阳</strong>：由星自动转化</li>
+              <li>
+                <strong>果</strong>（水果挂件）获得规则：
+                <ul class="rules-sublist">
+                  <li>库存：累积净利息（资产结息 − 负债结息）每增加 <strong>100</strong> 分 → +1 果（只增不减）</li>
+                  <li>树上：库存 ≥1 起挂；每再 +10 库存多挂 1 个，最多同时挂 <strong>10</strong> 个</li>
+                  <li>例：净利息 147 → 库存 1 果，树上挂 1 个；满 200 净利息 → 库存 2 果</li>
+                </ul>
+              </li>
+              <li><strong>虫</strong>：每次借用 +1；负债清零时虫数值清零</li>
+              <li><strong>鸟</strong>：存入后负债归零 +1</li>
+            </ul>
+          </div>
+          <div class="rules-block">
+            <h3>借用 / 存入</h3>
+            <ul class="rules-list">
+              <li><strong>借用</strong>：借入即强制消费（记借 + 入账 + 支出三笔，净资产因负债增加而下降）</li>
+              <li><strong>存入</strong>：优先还清负债；还清后多出的时间记入资产，并奖励星</li>
+            </ul>
+          </div>
+        </aside>
+      </section>
+
+      <section id="tab-analytics" class="tab-panel" role="tabpanel" hidden>
+        <div class="analytics-block analytics-assets">
+          <h2>时间资产</h2>
+          <h3 class="habit-review-sub">本周趋势</h3>
+          <div id="chart-week" class="trend-chart" role="img" aria-label="本周资产负债折线与每日利息柱状图"></div>
+          <pre id="analytics-week" class="brief"></pre>
+          <h3 class="habit-review-sub">本月趋势</h3>
+          <div id="chart-month" class="trend-chart" role="img" aria-label="本月资产负债折线与每日利息柱状图"></div>
+          <pre id="analytics-month" class="brief"></pre>
+        </div>
+        <div class="analytics-block analytics-habits">
+          <h2>好习惯</h2>
+          <p id="habit-board-copy" class="muted habit-board-copy" hidden></p>
+          <div id="habit-milestones" class="habit-milestones" hidden aria-label="里程碑达成奖章"></div>
+          <div id="habit-month-heatmap" class="habit-heatmap" aria-label="本月好习惯日历"></div>
+          <ul id="habit-heatmap-legend" class="habit-heatmap-legend"></ul>
+          <p id="habit-board-stats" class="muted"></p>
+          <h3 class="habit-review-sub">最近好习惯记录</h3>
+          <ul id="habit-timeline-list" class="habit-review-list"></ul>
+          <h3 class="habit-review-sub">分类</h3>
+          <ul id="habit-category-list" class="habit-review-list"></ul>
+        </div>
+      </section>
+    </main>
+    <p class="app-version" id="app-version" aria-label="应用版本">v1.0.0</p>
+  </div>
+
+  <div id="keypad-modal" class="keypad-modal" hidden>
+    <div class="keypad-backdrop" data-keypad-dismiss></div>
+    <div class="keypad-sheet" role="dialog" aria-modal="true" aria-labelledby="keypad-title">
+      <header class="keypad-header">
+        <h2 id="keypad-title">输入分钟</h2>
+        <button type="button" class="keypad-close" data-keypad-dismiss aria-label="关闭">×</button>
+      </header>
+      <p class="keypad-hint" id="keypad-hint">默认值来自设置</p>
+      <div class="keypad-display" id="keypad-display" aria-live="polite">20</div>
+      <div class="keypad-grid" id="keypad-grid">
+        <button type="button" data-key="1">1</button>
+        <button type="button" data-key="2">2</button>
+        <button type="button" data-key="3">3</button>
+        <button type="button" data-key="4">4</button>
+        <button type="button" data-key="5">5</button>
+        <button type="button" data-key="6">6</button>
+        <button type="button" data-key="7">7</button>
+        <button type="button" data-key="8">8</button>
+        <button type="button" data-key="9">9</button>
+        <button type="button" data-key="clear" class="key-muted">C</button>
+        <button type="button" data-key="0">0</button>
+        <button type="button" data-key="back" class="key-muted">⌫</button>
+      </div>
+      <button type="button" class="btn primary keypad-submit" id="keypad-submit">输入</button>
+    </div>
+  </div>
+
+  <div id="account-modal" class="account-modal" hidden>
+    <div class="account-modal-backdrop" data-account-dismiss></div>
+    <div class="account-modal-sheet" role="dialog" aria-modal="true" aria-labelledby="account-modal-title">
+      <header class="account-modal-header">
+        <h2 id="account-modal-title">管理孩子账户</h2>
+        <button type="button" class="keypad-close" data-account-dismiss aria-label="关闭">×</button>
+      </header>
+
+      <div id="account-panel-list" class="account-modal-body">
+        <ul id="account-manage-list" class="account-manage-list"></ul>
+        <button type="button" class="btn primary" id="account-show-add">添加孩子</button>
+        <p class="muted account-manage-note">删除会清除该孩子的树、流水与设置，不可恢复。</p>
+      </div>
+
+      <div id="account-panel-add" class="account-modal-body" hidden>
+        <form id="account-add-form" class="stack">
+          <label>孩子昵称<input name="name" type="text" lang="zh-CN" inputmode="text" enterkeyhint="done" required maxlength="32" placeholder="例如：小红" autocomplete="nickname" /></label>
+          <label>资产日利率<input name="asset_interest_rate" type="number" step="0.001" min="0" value="0.01" /></label>
+          <div class="account-delete-actions">
+            <button type="button" class="btn" id="account-add-cancel">返回</button>
+            <button type="submit" class="btn primary">确认添加</button>
+          </div>
+        </form>
+      </div>
+
+      <div id="account-panel-delete" class="account-modal-body" hidden>
+        <form id="account-delete-form" class="stack">
+          <p id="account-delete-target" class="account-delete-target"></p>
+          <label>家长密码<input name="password" type="password" required minlength="4" autocomplete="current-password" /></label>
+          <div class="account-delete-actions">
+            <button type="button" class="btn" id="account-delete-cancel">返回</button>
+            <button type="submit" class="btn danger">确认删除</button>
+          </div>
+        </form>
+      </div>
+
+      <p id="account-manage-error" class="error" hidden></p>
+    </div>
+  </div>
+
+  <div id="habit-celeb-overlay" class="habit-overlay" hidden>
+    <div class="habit-overlay-backdrop" data-habit-dismiss></div>
+    <div class="habit-overlay-sheet" role="dialog" aria-modal="true" aria-labelledby="habit-celeb-title">
+      <div class="habit-celeb-head">
+        <img id="habit-celeb-mark" class="habit-celeb-mark" src="./habit/mark-celeb-small.png" srcset="./habit/mark-celeb-small@2x.png 2x" width="36" height="36" alt="" hidden />
+        <p id="habit-celeb-title" class="habit-celeb-title"></p>
+      </div>
+      <p id="habit-celeb-credit" class="habit-celeb-credit muted"></p>
+      <p id="habit-celeb-incentive" class="habit-celeb-incentive"></p>
+      <div id="habit-celeb-hint" class="habit-celeb-hint" hidden>
+        <img id="habit-hint-art" class="habit-hint-art" alt="" hidden />
+        <div class="habit-hint-copy">
+          <strong id="habit-hint-title"></strong>
+          <p id="habit-hint-body"></p>
+        </div>
+      </div>
+      <button type="button" class="btn primary" data-habit-dismiss>好的</button>
+    </div>
+  </div>
+
+  <div id="habit-board-mask" class="habit-board-mask" hidden>
+    <div class="habit-board-mask-card" role="dialog" aria-modal="true" aria-labelledby="habit-board-mask-title">
+      <img id="habit-board-art" class="habit-board-art" alt="" width="120" height="120" hidden>
+      <p id="habit-board-mask-level" class="habit-board-mask-level muted" hidden></p>
+      <p id="habit-board-mask-title" class="habit-board-mask-title">大庆祝！习惯里程碑</p>
+      <p id="habit-board-mask-body" class="habit-board-mask-body muted"></p>
+      <button type="button" class="btn primary" id="habit-board-mask-ok">太棒了</button>
+    </div>
+  </div>
+
+  <div id="habit-customize-modal" class="habit-overlay" hidden>
+    <div class="habit-overlay-backdrop" data-customize-dismiss></div>
+    <div class="habit-overlay-sheet habit-customize-sheet" role="dialog" aria-modal="true" aria-labelledby="habit-customize-title">
+      <p id="habit-customize-title" class="habit-celeb-title">定制习惯</p>
+      <label class="habit-customize-label" for="habit-customize-micro">微习惯</label>
+      <input id="habit-customize-micro" class="habit-customize-input" type="text" lang="zh-CN" inputmode="text" enterkeyhint="done" maxlength="64" placeholder="例如：只漱口" />
+      <label class="habit-customize-label" for="habit-customize-maui">毛伊习惯</label>
+      <input id="habit-customize-maui" class="habit-customize-input" type="text" lang="zh-CN" inputmode="text" enterkeyhint="done" maxlength="120" placeholder="例如：洗完脸就做下一步" />
+      <label class="habit-customize-label" for="habit-customize-script">家长话术</label>
+      <input id="habit-customize-script" class="habit-customize-input" type="text" lang="zh-CN" inputmode="text" enterkeyhint="done" maxlength="160" placeholder="例如：这次我们只做最小那一步吧？" />
+      <div class="habit-micro-actions">
+        <button type="button" class="btn" data-customize-dismiss>取消</button>
+        <button type="button" class="btn primary" id="habit-customize-save">保存</button>
+      </div>
+    </div>
+  </div>
+
+    <script src="./local/sql-wasm.js"></script>
+  <script src="./local/db.js?v=20261019e"></script>
+  <script src="./local/habit-seed.js?v=20261019e"></script>
+  <script src="./local/store.js?v=20261019e"></script>
+  <script src="./local/habits.js?v=20261019e"></script>
+  <script src="./local/bridge.js?v=20261019e"></script>
+  <script src="./local/lock.js?v=20261019e"></script>
+  <script src="./local/html2canvas.min.js"></script>
+  <script src="./local/share.js?v=20261019e"></script>
+  <script src="./app.js?v=20261019e"></script>
+</body>
+</html>

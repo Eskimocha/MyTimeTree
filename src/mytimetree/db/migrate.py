@@ -121,6 +121,37 @@ MIGRATIONS: list[tuple[int, list[str]]] = [
             """,
         ],
     ),
+    (
+        6,
+        [
+            """
+            CREATE TABLE IF NOT EXISTS ornament_events (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                account_id INTEGER NOT NULL,
+                kind TEXT NOT NULL,
+                delta INTEGER NOT NULL,
+                reason TEXT,
+                correlation_id TEXT,
+                meta_json TEXT NOT NULL DEFAULT '{}',
+                created_at TEXT NOT NULL,
+                FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE
+            )
+            """,
+            """
+            CREATE INDEX IF NOT EXISTS idx_ornament_events_account_created
+            ON ornament_events(account_id, created_at)
+            """,
+        ],
+    ),
+    (
+        7,
+        [
+            """
+            ALTER TABLE tree_ornaments
+            ADD COLUMN interest_fruit_count INTEGER NOT NULL DEFAULT 0
+            """,
+        ],
+    ),
 ]
 
 

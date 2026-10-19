@@ -52,7 +52,7 @@ print(response)
 
 ## LLM
 
-You always have an LLM at your side to help you with the task. For simple tasks, you could invoke the LLM by running the following command:
+You always have an LLM at your side to help you with the task. You could invoke the LLM by running the following command:
 ```
 venv/bin/python3 ./tools/llm_api.py --prompt "What is the capital of France?" --provider "anthropic"
 ```
@@ -109,13 +109,55 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 - Space OpenAI-compatible base URL: `https://space.ai-builders.com/backend/v1` with `AI_BUILDER_TOKEN`
 - Cursor MCP for AI Builder: `.cursor/mcp.json` → `npx -y @aibuilders/mcp-coach-server` with `AI_BUILDER_TOKEN`
 - If MCP shows `spawn npx ENOENT`, system has no Node/npm; install Node to `~/.local/node` and point mcp.json at absolute `mcp-coach-server` or `scripts/run-ai-builder-mcp.sh` (loads `.env`)
+- After macOS arch switch, local venvs may keep x86_64 `pydantic_core` wheels; force-reinstall FastAPI/Pydantic/uvicorn as arm64 before starting uvicorn
+- Capacitor iOS: use SPM (`npm run add:ios` / `scripts/add-ios-spm.mjs`); `npx cap add ios --packagemanager SPM` is broken (CLI lowercases arg → still requires CocoaPods)
+- Mobile Node path: `export PATH="$HOME/.local/node/bin:$PATH"` (system may have no node/npm)
+- Building iOS needs full Xcode.app, not only Command Line Tools
+- Capacitor sync-web must rewrite `/static/portal/` in **app.js** (STAGE_ART/ORN_ICON), not only index.html; otherwise tree/ornament PNGs 404 in the simulator
+- iOS WKWebView + CJK IME: avoid `autocapitalize/autocorrect/autocomplete="off"` on Chinese fields; never `preventDefault` Enter while `e.isComposing` / keyCode 229 (breaks 中文选词). Prefer `input type=text lang=zh-CN inputmode=text`; avoid `backdrop-filter` on focused panels; unlock must NOT `location.reload()` (re-inits sql.js/wasm — feels stuck)
+- iOS WKWebView: keyboard focus scrolls the document; after dismiss/unlock, top of UI can clip — reset scrollY (bridge `resetMyTimeTreeViewport`), `history.scrollRestoration=manual`, and `position:fixed` while `html.is-locked`
+- iOS WKWebView focus zoom: inputs/selects with font-size < 16px auto-zoom on focus and often stay zoomed after unlock — set form controls to `font-size: 16px`; Capacitor viewport uses `maximum-scale=1`; remove temporary `zoom: 0.9` workaround
+- iOS WKWebView “偏右”: avoid horizontal `env(safe-area-inset-left/right)` if it mis-reports; use fixed side gutters; flex children need `min-width:0`
+- Capacitor 7 local plugins: must subclass CAPBridgeViewController as MainViewController, override capacitorDidLoad(), bridge?.registerPluginInstance(...); point Main.storyboard at MainViewController (App module). CAPBridgedPlugin alone is not enough.
+- Newer Xcode (SDK 27 / Xcode 26+): App `IPHONEOS_DEPLOYMENT_TARGET` must be ≥ 15.0 (14.0 rejected). Keep CapApp-SPM `platforms: [.iOS(.v15)]` in sync; `cap sync` may rewrite Package.swift — re-check after sync.
+- Phase 3 iCloud: keep sql.js in-memory; whole-DB file via custom ICloudDb plugin (Application Support + iCloud Documents, newer-wins); JS registerPlugin('ICloudDb'); entitlements CloudDocuments + container iCloud.com.mytimetree.app
+- CapApp-SPM “Missing package product”: usually stale DerivedData / failed GitHub fetch (e.g. ion-ios-filesystem). Fix: quit Xcode → delete `~/Library/Developer/Xcode/DerivedData/App-*` → File → Packages → Reset Package Caches → Resolve Package Versions → Clean Build → Run. Or `xcodebuild -resolvePackageDependencies -project ios/App/App.xcodeproj -scheme App`
+- Share long-screenshot pale/gray: html2canvas poorly composites `backdrop-filter` + `rgba` surfaces; more critically, **cloned nodes restart CSS animations at keyframe 0** (e.g. `.tab-panel { animation: rise }` starts at `opacity:0`) → gray veil. Fix: `html.share-capture` kills animations + backdrop-filter; keep `#tab-home` transparent (do NOT force `#f7fcf8` on home — that whitewashes the forest card); expand nested `#portal`/`.main`/`#tab-home` scrollers for long image. Share button missing in export is intentional.
+- Custom recovery question picker: JS list class must match CSS (was `question-picker-list` vs `.question-picker-menu`) — mismatch falls back to native `<ul>` bullets outside the styled panel.
+
+
+- iOS 27 / Xcode 27 SDK：未接入 UIScene 会在启动时 `EXC_BREAKPOINT`（`UIApplicationEvaluateRuntimeIssueForNoSceneLifecycleAdoption`）。必须加 `UIApplicationSceneManifest` + `SceneDelegate` + AppDelegate `configurationForConnecting`；审核真机 iOS 27 会直接拒（Guideline 2.1 crash on launch）。Capacitor 8.5 才有官方 migrator；Cap 7 可手写 SceneDelegate 并继续用 `ApplicationDelegateProxy`。
 
 # Scratchpad
 
-## Task: Push mytimetree to GitHub Eskimocha/MyTimeTree then prepare Space deploy
-- Repo: git@github.com:Eskimocha/MyTimeTree.git
-- [ ] Ensure .gitignore excludes .env
-- [ ] git init / commit / push
-- [ ] Confirm public + ask service_name / branch for deploy
+## Task: 姓名 pill 再加宽 (20261019e)
+- [X] 自定义 account-name-btn + 透明 native select overlay
+- [X] 父级不收缩；测「方存真」；stamp 20261019e；push
 
-## Previous: Space hosting limit=2, active=0
+## Lessons
+- iOS/Chromium `<select>` 内部会裁 CJK，加宽外框不够 → 用按钮显示文案
+
+## Archived: name pill 20261019d / 蓝块 20261019c
+
+
+- Lesson: “Could not attach to pid … handshake … 6.0 seconds” 优先当调试器问题，勿先怪 Scene/Badge
+- Lesson: iOS/WK 上 fixed 菜单勿放在 backdrop-filter/transform 祖先内，应 body portal
+- Lesson: Kai 改 inventory 后须回写 micro/maui/parent 表再 build，勿只 cp inventory
+- Lesson: 自定义 select 替身勿放在关联该 select 的 `<label>` 内
+
+
+- Lesson: tip 展开勿绑 incentive_text；记后小庆仍用 small_celebration
+- Lesson: micro defaults 须 wholesale replace + rematerialize seed 行，否则旧多步残留
+- Lesson: 大庆/小庆勿互斥单字段；用 celebrations[] 队列
+- Lesson: 自定义 select 替身勿放在关联该 select 的 `<label>` 内
+- Lesson: iOS 图标 badge 勿只 request `.badge`；要 `.alert,.badge,.sound` 才会出系统弹窗
+
+## Lessons (this task)
+- iOS 设置假死：`bridge` 勿在 editable focus / soft-keyboard open 时 `scrollTo`+重写 viewport meta；resize 早于 activeElement settle，须防抖再查
+- share-capture 勿把所有 `.tab-panel` 刷成 `#f7fcf8`——会盖住森林卡；主屏保持 transparent
+- JS 设 height 时须 `setProperty(..., "important")`，否则打不过 CSS `height:auto !important`
+- Content tables: `docs/v2/content/*.md` → `build-habit-content.mjs` → `habit-seed.js`；`sync-web` 必须先 build
+- Kai 错支：须在 `habit-polish-o1-o6` 上 sync（勿停在 habit-ios-replan）
+- tip 展开字段序：微习惯 · 毛伊习惯 · 家长话术（无激励）
+
+## Archived: 日历 20261016l / Kai 5 / whisper / toe

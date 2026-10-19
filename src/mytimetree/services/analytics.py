@@ -5,14 +5,24 @@ from __future__ import annotations
 import calendar
 import json
 import sqlite3
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date, datetime, timedelta
 
 from mytimetree.db.connection import execute
+from mytimetree.domain.interest import daily_interest_minutes
 from mytimetree.domain.ledger import LedgerCategory
 from mytimetree.domain.time import Clock, SystemClock, ensure_app_tz
 from mytimetree.services.accounts import AccountService
 from mytimetree.services.ledger import LedgerService
+
+
+@dataclass(frozen=True, slots=True)
+class DailyPoint:
+    date: str
+    asset: int
+    liability: int
+    net: int
+    interest_net: int  # asset interest − liability interest that day
 
 
 @dataclass(frozen=True, slots=True)
@@ -30,6 +40,7 @@ class TrendReport:
     ending_asset: int
     ending_liability: int
     ending_net: int
+    series: list[DailyPoint] = field(default_factory=list)
 
 
 class AnalyticsService:
@@ -51,7 +62,6 @@ class AnalyticsService:
     ) -> TrendReport:
         now = ensure_app_tz(as_of or self._clock.now())
         day = now.date()
-        # ISO week: Monday = 0
         start = day - timedelta(days=day.weekday())
         end = start + timedelta(days=6)
         return self._aggregate(account_id, start, end, granularity="week")
@@ -86,8 +96,16 @@ class AnalyticsService:
         entry_count = 0
         asset_in = asset_out = interest = 0
         liab_in = liab_out = 0
-        # ending balance = replay all entries up to period_end (inclusive)
         end_asset = end_liab = 0
+
+        # Running balance for daily series; interest accrued per calendar day
+        running_asset = running_liab = 0
+        interest_by_day: dict[str, int] = {}
+        balance_by_day: dict[str, tuple[int, int]] = {}
+        last_date: str | None = None
+
+        def _flush_day(day_s: str) -> None:
+            balance_by_day[day_s] = (running_asset, running_liab)
 
         for r in rows:
             created = str(r["created_at"])[:10]
@@ -96,6 +114,13 @@ class AnalyticsService:
             meta = json.loads(r["meta_json"] or "{}")
             side = meta.get("side") if isinstance(meta, dict) else None
             da, dl = _effects(cat, amount, side)
+
+            if last_date is not None and created != last_date:
+                _flush_day(last_date)
+            last_date = created
+
+            running_asset += da
+            running_liab += dl
 
             if created <= end_s:
                 end_asset += da
@@ -113,6 +138,58 @@ class AnalyticsService:
                     liab_out += -dl
                 if cat == LedgerCategory.AUTO_INTEREST:
                     interest += amount
+                    signed = amount if side != "liability" else -amount
+                    interest_by_day[created] = interest_by_day.get(created, 0) + signed
+
+        if last_date is not None:
+            _flush_day(last_date)
+
+        rates = execute(
+            self._conn,
+            "SELECT asset_interest_rate, liability_interest_rate FROM settings "
+            "WHERE account_id = ?",
+            (account_id,),
+        ).fetchone()
+        asset_rate = float(rates["asset_interest_rate"]) if rates else 0.0
+        liab_rate = float(rates["liability_interest_rate"]) if rates else 0.0
+
+        def projected_interest_net(asset: int, liability: int) -> int:
+            """Same daily preview as ledger: floor(asset×rate) − floor(liab×rate)."""
+            return daily_interest_minutes(asset, asset_rate) - daily_interest_minutes(
+                liability, liab_rate
+            )
+
+        # Carry forward balances for days with no ledger activity
+        series: list[DailyPoint] = []
+        cursor = start
+        # Seed from last known balance before period
+        cur_asset = cur_liab = 0
+        for day_s, (a, l) in sorted(balance_by_day.items()):
+            if day_s < start_s:
+                cur_asset, cur_liab = a, l
+            else:
+                break
+        while cursor <= end:
+            day_s = cursor.isoformat()
+            if day_s in balance_by_day:
+                cur_asset, cur_liab = balance_by_day[day_s]
+            if day_s in interest_by_day:
+                interest_net = interest_by_day[day_s]
+            else:
+                # No posted interest that day: show projected daily accrual from
+                # carried balance (same formula as the nightly job preview).
+                # Otherwise past-only weeks with no job run yet show an empty bar series.
+                interest_net = projected_interest_net(cur_asset, cur_liab)
+            series.append(
+                DailyPoint(
+                    date=day_s,
+                    asset=cur_asset,
+                    liability=cur_liab,
+                    net=cur_asset - cur_liab,
+                    interest_net=interest_net,
+                )
+            )
+            cursor += timedelta(days=1)
 
         return TrendReport(
             account_id=account_id,
@@ -128,6 +205,7 @@ class AnalyticsService:
             ending_asset=end_asset,
             ending_liability=end_liab,
             ending_net=end_asset - end_liab,
+            series=series,
         )
 
 

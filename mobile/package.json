@@ -1,0 +1,40 @@
+{
+  "name": "mytimetree-mobile",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "MyTimeTree iOS Capacitor shell (offline local-first)",
+  "scripts": {
+    "build:habit-content": "node scripts/build-habit-content.mjs",
+    "sync-habit-media": "node scripts/sync-habit-media.mjs",
+    "sync-web": "npm run build:habit-content && npm run sync-habit-media && node scripts/sync-web.mjs",
+    "add:ios": "node scripts/add-ios-spm.mjs",
+    "cap:sync": "npm run sync-web && npx cap sync ios",
+    "open:ios": "open -a Xcode ios/App/App.xcodeproj",
+    "build:ios": "npm run cap:sync",
+    "smoke:phase1": "node scripts/smoke-phase1.mjs",
+    "smoke:phase2": "node scripts/smoke-phase2.mjs",
+    "smoke:phase3": "node scripts/smoke-phase3.mjs",
+    "smoke:phase4": "node scripts/smoke-phase4.mjs",
+    "smoke:habits": "npm run build:habit-content && node scripts/smoke-habits.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@capacitor/app": "^7.1.0",
+    "@capacitor/core": "^7.4.3",
+    "@capacitor/filesystem": "^7.1.8",
+    "@capacitor/ios": "^7.4.3",
+    "@capacitor/share": "^7.0.4",
+    "@capacitor/splash-screen": "^7.0.2",
+    "@capawesome/capacitor-badge": "^7.0.1",
+    "@capgo/capacitor-native-biometric": "^7.6.0",
+    "html2canvas": "^1.4.1",
+    "sql.js": "^1.12.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^7.4.3",
+    "playwright": "^1.49.1"
+  }
+}
