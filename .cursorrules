@@ -131,8 +131,11 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 # Scratchpad
 
 ## Task: 姓名 pill 加宽三字 (20261019d)
-- [ ] appearance:none + CSS chevron；宽够「方存真」
-- [ ] stamp 20261019d；sync；push PR #3
+- [X] appearance:none + CSS chevron；calc(3em + 3.25rem)；「方存真」fits
+- [X] stamp 20261019d；sync；push PR #3
+
+## Lessons
+- iOS native select 箭头吃内容宽；三字 CJK 须 appearance:none 或额外 ~2rem+ 余量
 
 ## Archived: 蓝块/三字 20261019c / share 白框 20261019b
 
