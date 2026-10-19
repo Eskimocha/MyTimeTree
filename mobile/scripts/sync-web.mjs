@@ -14,7 +14,7 @@ const www = path.join(root, "mobile/www");
 const localSrc = path.join(root, "mobile/www-src/local");
 const sqlJsDist = path.join(root, "mobile/node_modules/sql.js/dist");
 /** Bust WKWebView caches for injected local scripts + app.js (was stuck on p5h1 / local-p2). */
-const LOCAL_ASSET_V = "20261019c";
+const LOCAL_ASSET_V = "20261019d";
 const iosPublic = path.join(root, "mobile/ios/App/App/public");
 
 function rmrf(dir) {
@@ -546,8 +546,20 @@ function assertBuildTree(base, tag) {
   assertMarker(
     base,
     "styles.css",
-    /--account-name-w:\s*calc\(3em\s*\+\s*2\.6rem\)/,
+    /--account-name-w:\s*calc\(3em\s*\+\s*3\.25rem\)/,
     `${tag} account select width for 3 CJK`
+  );
+  assertMarker(
+    base,
+    "styles.css",
+    /\.account-shell select\s*\{[\s\S]*?appearance:\s*none/,
+    `${tag} account select appearance none`
+  );
+  assertMarker(
+    base,
+    "styles.css",
+    /\.account-shell select\s*\{[\s\S]*?padding:\s*0\.35rem 1\.85rem 0\.35rem 0\.7rem/,
+    `${tag} account select chevron padding`
   );
   assertMarker(base, "app.js", /Park back under picker/, `${tag} seed list reparent on close`);
   assertMarker(

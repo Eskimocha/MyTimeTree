@@ -82,7 +82,8 @@ html, body {
   gap: 0.4rem;
   min-width: 0;
   flex: 1 1 0;
-  max-width: 52%;
+  /* Leave room for 3-CJK name pill + two icon buttons */
+  max-width: 46%;
 }
 .brand-mark {
   width: 1.25rem;
@@ -114,26 +115,35 @@ html, body {
   justify-content: flex-end;
   gap: 0.55rem;
   flex: 0 1 auto;
-  max-width: 46%;
+  max-width: 54%;
   min-width: 0;
   margin-left: auto;
   box-sizing: border-box;
 }
 .account-shell select {
-  /* Exactly wide enough for 3 CJK glyphs + padding + iOS disclosure chevron.
-     Do not use width:0/min-width:0 — that clipped the 3rd character (e.g. 小红X). */
-  --account-name-w: calc(3em + 2.6rem);
+  /* 3 CJK (1em each at 16px) + L pad + R pad/chevron gutter.
+     Native iOS <select> disclosure ate ~28px inside the old box and clipped 方存真.
+     appearance:none + CSS chevron makes the text budget predictable. */
+  --account-name-w: calc(3em + 3.25rem);
   width: var(--account-name-w);
   min-width: var(--account-name-w);
   max-width: var(--account-name-w);
   flex: 0 0 auto;
   border: 0;
-  background: var(--surface);
+  -webkit-appearance: none;
+  appearance: none;
+  background-color: var(--surface);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1.5 1.75L6 6.25L10.5 1.75' stroke='%231a6b48' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.65rem center;
+  background-size: 0.72rem 0.48rem;
   backdrop-filter: blur(8px);
   border-radius: 999px;
-  padding: 0.35rem 0.55rem;
+  /* Extra end padding so glyphs never sit under the chevron */
+  padding: 0.35rem 1.85rem 0.35rem 0.7rem;
   font: inherit;
   font-size: 16px;
+  line-height: 1.2;
   color: var(--ink);
   box-shadow: 0 1px 0 #fff8 inset, 0 6px 18px #1a3d3212;
   box-sizing: border-box;
