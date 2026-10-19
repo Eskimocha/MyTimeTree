@@ -486,6 +486,7 @@ html, body {
   gap: 0.35rem;
   margin-bottom: 0.55rem;
   flex: 0 0 auto;
+  overflow: visible;
 }
 .tab {
   border: 0;
@@ -500,6 +501,8 @@ html, body {
   justify-content: center;
   gap: 0.22rem;
   line-height: 1;
+  /* Badge must not be clipped by the tab hit-box */
+  overflow: visible;
 }
 .tab-label {
   display: block;
@@ -1131,7 +1134,7 @@ html.share-capture #tab-home.tab-panel {
 }
 
 /* —— 好习惯：主屏 strip + overlay + 设置/分析 —— */
-/* Badge sized in em so its box mid-line matches .tab-label (same flex row). */
+/* Tab count badge: true circle (1 digit) / capsule (2+); digit centered, not clipped. */
 .tab-badge {
   display: inline-flex;
   align-items: center;
@@ -1139,19 +1142,25 @@ html.share-capture #tab-home.tab-panel {
   align-self: center;
   box-sizing: border-box;
   flex: 0 0 auto;
-  min-width: 1.15em;
-  height: 1.15em;
+  /* Size relative to badge font-size; min-width === height → circle for 1 digit */
+  font-size: 0.68em;
+  min-width: 1.55em;
+  width: auto;
+  height: 1.55em;
+  min-height: 1.55em;
   margin: 0;
-  padding: 0 0.32em;
+  /* Horizontal only — vertical padding would squash the circle under border-box */
+  padding: 0 0.4em;
   border-radius: 999px;
   background: var(--danger);
   color: #fff;
-  font-size: 0.72em;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   line-height: 1;
   letter-spacing: 0;
   text-align: center;
+  overflow: visible;
+  -webkit-font-smoothing: antialiased;
 }
 .tab-badge[hidden] { display: none !important; }
 

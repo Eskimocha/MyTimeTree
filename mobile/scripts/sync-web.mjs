@@ -14,7 +14,7 @@ const www = path.join(root, "mobile/www");
 const localSrc = path.join(root, "mobile/www-src/local");
 const sqlJsDist = path.join(root, "mobile/node_modules/sql.js/dist");
 /** Bust WKWebView caches for injected local scripts + app.js (was stuck on p5h1 / local-p2). */
-const LOCAL_ASSET_V = "20261018k";
+const LOCAL_ASSET_V = "20261019a";
 const iosPublic = path.join(root, "mobile/ios/App/App/public");
 
 function rmrf(dir) {
@@ -354,7 +354,15 @@ function assertBuildTree(base, tag) {
   assertMarker(base, "styles.css", /\.tab-badge\s*\{[\s\S]*?line-height:\s*1/, `${tag} CSS tab-badge line-height`);
   assertMarker(base, "styles.css", /\.tab-label/, `${tag} CSS tab-label`);
   assertMarker(base, "index.html", /class="tab-label"/, `${tag} tab-label span`);
-  assertMarker(base, "styles.css", /\.tab-badge\s*\{[\s\S]*?1\.15em/, `${tag} CSS tab-badge em size`);
+  assertMarker(base, "styles.css", /\.tab-badge\s*\{[\s\S]*?1\.55em/, `${tag} CSS tab-badge em size 1.55`);
+  assertMarker(base, "styles.css", /\.tab-badge\s*\{[\s\S]*?overflow:\s*visible/, `${tag} CSS tab-badge overflow visible`);
+  assertMarker(base, "styles.css", /\.tab\s*\{[\s\S]*?overflow:\s*visible/, `${tag} CSS tab overflow visible`);
+  assertMarker(
+    base,
+    "styles.css",
+    /\.tab-badge\s*\{[\s\S]*?min-width:\s*1\.55em[\s\S]*?height:\s*1\.55em/,
+    `${tag} CSS tab-badge equal min-width/height circle`
+  );
   {
     const appJs = fs.readFileSync(path.join(base, "app.js"), "utf8");
     if (/\$\{show\.length\}\/\$\{limit\}/.test(appJs) || /还剩 \$\{pending\} ·/.test(appJs)) {
