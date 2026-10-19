@@ -14,7 +14,7 @@ const www = path.join(root, "mobile/www");
 const localSrc = path.join(root, "mobile/www-src/local");
 const sqlJsDist = path.join(root, "mobile/node_modules/sql.js/dist");
 /** Bust WKWebView caches for injected local scripts + app.js (was stuck on p5h1 / local-p2). */
-const LOCAL_ASSET_V = "20261019a";
+const LOCAL_ASSET_V = "20261019b";
 const iosPublic = path.join(root, "mobile/ios/App/App/public");
 
 function rmrf(dir) {
@@ -520,6 +520,20 @@ function assertBuildTree(base, tag) {
   assertMarker(base, "local/bridge.js", /isEditableFocused/, `${tag} bridge isEditableFocused`);
   assertMarker(base, "local/bridge.js", /isKeyboardLikelyOpen/, `${tag} bridge isKeyboardLikelyOpen`);
   assertMarker(base, "local/bridge.js", /假死/, `${tag} bridge 假死 guard comment`);
+  assertMarker(
+    base,
+    "styles.css",
+    /html\.share-capture #tab-home\.tab-panel\s*\{[\s\S]*?background:\s*#ffffff/,
+    `${tag} share-capture home white card`
+  );
+  assertMarker(
+    base,
+    "styles.css",
+    /html\.share-capture \.hero-tree\s*\{[\s\S]*?background-color:\s*#b3e5fc/,
+    `${tag} share-capture hero-tree sky base`
+  );
+  assertMarker(base, "local/share.js", /backgroundColor:\s*["']#eef8f1["']/, `${tag} share html2canvas opaque sky`);
+  assertMarker(base, "local/share.js", /HERO_TREE_SHARE_BG/, `${tag} share HERO_TREE_SHARE_BG`);
   assertMarker(base, "app.js", /Park back under picker/, `${tag} seed list reparent on close`);
   assertMarker(
     base,

@@ -3,8 +3,8 @@
  * Uses native SaveToPhotos.shareImage (no JS Filesystem / Share plugins required).
  *
  * Long-capture expands nested scrollers (#tab-home inside .main/.portal) so「今日好习惯」
- * below the fold is included. share-capture CSS kills backdrop-filter without whitewashing
- * the forest card / tree art.
+ * below the fold is included. share-capture CSS kills backdrop-filter, paints an opaque
+ * white home card + html2canvas-safe hero-tree gradients (no gray holes).
  */
 (function () {
   "use strict";
@@ -67,6 +67,13 @@
     });
   }
 
+  /** Bright forest-card paint — rgba stops (html2canvas fails on #rrggbbaa / transparent). */
+  const HERO_TREE_SHARE_BG =
+    "radial-gradient(ellipse 90% 50% at 50% 100%, rgba(165, 214, 167, 0.53) 0%, rgba(165, 214, 167, 0) 55%)," +
+    "radial-gradient(circle at 18% 18%, rgba(255, 248, 225, 0.8) 0%, rgba(255, 248, 225, 0) 28%)," +
+    "radial-gradient(circle at 82% 22%, rgba(255, 255, 255, 0.67) 0%, rgba(255, 255, 255, 0) 22%)," +
+    "linear-gradient(180deg, #b3e5fc 0%, #e3f2fd 38%, #e8f5e9 72%, #c8e6c9 100%)";
+
   /** Styles forced into the html2canvas clone (animations reset to opacity:0 otherwise). */
   const SHARE_CLONE_CSS = `
     *, *::before, *::after {
@@ -76,8 +83,9 @@
       -webkit-backdrop-filter: none !important;
     }
     html, body {
-      background:
-        radial-gradient(120% 80% at 10% -10%, #fff6d6 0%, transparent 45%),
+      background-color: #eef8f1 !important;
+      background-image:
+        radial-gradient(120% 80% at 10% -10%, rgba(255, 246, 214, 0.95) 0%, rgba(255, 246, 214, 0) 45%),
         linear-gradient(165deg, #d8eefc, #eef8f1 55%, #f4faf6) !important;
       opacity: 1 !important;
     }
@@ -90,13 +98,18 @@
       opacity: 1 !important;
     }
     .portal {
-      background:
-        radial-gradient(120% 80% at 10% -10%, #fff6d6 0%, transparent 45%),
+      background-color: #eef8f1 !important;
+      background-image:
+        radial-gradient(120% 80% at 10% -10%, rgba(255, 246, 214, 0.95) 0%, rgba(255, 246, 214, 0) 45%),
         linear-gradient(165deg, #d8eefc, #eef8f1 55%, #f4faf6) !important;
     }
-    #tab-home.tab-panel {
+    .main {
       background: transparent !important;
-      box-shadow: none !important;
+    }
+    /* Outer white card — must be opaque or PNG holes go gray */
+    #tab-home.tab-panel {
+      background: #ffffff !important;
+      box-shadow: 0 10px 30px rgba(26, 61, 50, 0.06) !important;
     }
     .tab-panel:not(#tab-home), .panel:not(.hero-tree) {
       background: #f7fcf8 !important;
@@ -113,11 +126,18 @@
     }
     .hero-tree {
       filter: none !important;
+      background-color: #b3e5fc !important;
+      background-image: ${HERO_TREE_SHARE_BG} !important;
+      background-repeat: no-repeat !important;
+    }
+    .tree-scene {
+      background-color: #c8eaf8 !important;
     }
     .hero-tree::before,
     .hero-tree::after {
       filter: none !important;
       opacity: 0.45 !important;
+      background: #ffffff !important;
     }
     .habit-strip {
       background: #f3faf6 !important;
@@ -237,6 +257,25 @@
       el.style.setProperty("filter", "none", "important");
     });
 
+    // Paint white home card + bright tree stage inline (clone stylesheet race-safe).
+    const home = doc.getElementById("tab-home");
+    if (home) {
+      home.style.setProperty("background", "#ffffff", "important");
+      home.style.setProperty(
+        "box-shadow",
+        "0 10px 30px rgba(26, 61, 50, 0.06)",
+        "important"
+      );
+    }
+    doc.querySelectorAll(".hero-tree").forEach((el) => {
+      el.style.setProperty("background-color", "#b3e5fc", "important");
+      el.style.setProperty("background-image", HERO_TREE_SHARE_BG, "important");
+      el.style.setProperty("filter", "none", "important");
+    });
+    doc.querySelectorAll(".tree-scene").forEach((el) => {
+      el.style.setProperty("background-color", "#c8eaf8", "important");
+    });
+
     const hideIds = [
       "share-page-btn",
       "app-lock",
@@ -282,7 +321,8 @@
       );
       console.info("[share] capture size", { fullW, fullH, tabH: tab && tab.scrollHeight });
       const canvas = await html2canvas(portal, {
-        backgroundColor: null,
+        // Opaque page sky — null punches gray/black holes where layers are transparent.
+        backgroundColor: "#eef8f1",
         scale: Math.min(2, window.devicePixelRatio || 2),
         useCORS: true,
         allowTaint: true,

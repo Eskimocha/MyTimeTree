@@ -130,11 +130,11 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 
 # Scratchpad
 
-## Task: 主屏 Tab 小红点更圆 (20261019a)
-- [X] CSS：min-width=height=1.55em；overflow visible；数字居中
-- [X] stamp 20261019a；sync-web；Playwright ratio=1；push PR #3
+## Task: 分享截图白框/树区灰暗 (20261019b)
+- [ ] #tab-home 白卡 + hero-tree 可烘焙渐变；html2canvas 底色非 null
+- [ ] stamp 20261019b；sync；push PR #3；报告
 
-## Archived: 发版资料准备 / 设置假死 20261018k
+## Archived: tab badge 20261019a / 发版资料 / 假死 20261018k
 
 
 - Lesson: “Could not attach to pid … handshake … 6.0 seconds” 优先当调试器问题，勿先怪 Scene/Badge
