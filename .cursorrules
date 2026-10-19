@@ -130,14 +130,14 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 
 # Scratchpad
 
-## Task: 姓名 pill 加宽三字 (20261019d)
-- [X] appearance:none + CSS chevron；calc(3em + 3.25rem)；「方存真」fits
-- [X] stamp 20261019d；sync；push PR #3
+## Task: 姓名 pill 再加宽 (20261019e)
+- [ ] 禁父级收缩；更宽 select；去 ellipsis；测「方存真」
+- [ ] stamp 20261019e；sync；push PR #3
 
 ## Lessons
-- iOS native select 箭头吃内容宽；三字 CJK 须 appearance:none 或额外 ~2rem+ 余量
+- iOS select：箭头吃宽；父级 flex-shrink/min-width:0 也会裁 pill
 
-## Archived: 蓝块/三字 20261019c / share 白框 20261019b
+## Archived: name pill 20261019d / 蓝块 20261019c
 
 
 - Lesson: “Could not attach to pid … handshake … 6.0 seconds” 优先当调试器问题，勿先怪 Scene/Badge

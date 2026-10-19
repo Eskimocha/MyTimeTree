@@ -74,6 +74,8 @@ html, body {
   max-width: 100%;
   min-width: 0;
   box-sizing: border-box;
+  /* Name pill must not be clipped by the topbar */
+  overflow: visible;
 }
 
 .brand-lockup {
@@ -82,8 +84,8 @@ html, body {
   gap: 0.4rem;
   min-width: 0;
   flex: 1 1 0;
-  /* Leave room for 3-CJK name pill + two icon buttons */
-  max-width: 46%;
+  /* Yield width to name pill + share/manage icons */
+  max-width: 40%;
 }
 .brand-mark {
   width: 1.25rem;
@@ -108,46 +110,87 @@ html, body {
   text-overflow: ellipsis;
 }
 
-/* Keep select + ⋯ entirely inside the topbar (⋯ must not clip past the right edge). */
+/* Keep name pill + icons inside the topbar. Never flex-shrink the shell. */
 .account-shell {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 0.55rem;
-  flex: 0 1 auto;
-  max-width: 54%;
-  min-width: 0;
+  gap: 0.45rem;
+  flex: 0 0 auto;
+  max-width: none;
+  min-width: max-content;
   margin-left: auto;
   box-sizing: border-box;
+  overflow: visible;
 }
-.account-shell select {
-  /* 3 CJK (1em each at 16px) + L pad + R pad/chevron gutter.
-     Native iOS <select> disclosure ate ~28px inside the old box and clipped 方存真.
-     appearance:none + CSS chevron makes the text budget predictable. */
-  --account-name-w: calc(3em + 3.25rem);
-  width: var(--account-name-w);
-  min-width: var(--account-name-w);
-  max-width: var(--account-name-w);
+/* Custom name pill: native <select> clips CJK inside its anonymous text box even when wide.
+   Button sizes to content (3+ chars fully visible); transparent select overlays for iOS picker. */
+.account-name-picker {
+  position: relative;
   flex: 0 0 auto;
+  display: inline-flex;
+  max-width: none;
+  min-width: 0;
+  overflow: visible;
+}
+.account-name-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.45rem;
+  flex: 0 0 auto;
+  min-width: calc(3em + 2.85rem); /* ≥3 CJK + chevron + comfortable pads */
+  width: auto;
+  max-width: none;
+  margin: 0;
   border: 0;
-  -webkit-appearance: none;
-  appearance: none;
-  background-color: var(--surface);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1.5 1.75L6 6.25L10.5 1.75' stroke='%231a6b48' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 0.65rem center;
-  background-size: 0.72rem 0.48rem;
-  backdrop-filter: blur(8px);
   border-radius: 999px;
-  /* Extra end padding so glyphs never sit under the chevron */
-  padding: 0.35rem 1.85rem 0.35rem 0.7rem;
+  padding: 0.38rem 1rem 0.38rem 0.85rem;
+  background: var(--surface);
+  backdrop-filter: blur(8px);
+  color: var(--ink);
   font: inherit;
   font-size: 16px;
-  line-height: 1.2;
-  color: var(--ink);
+  line-height: 1.25;
+  letter-spacing: 0;
   box-shadow: 0 1px 0 #fff8 inset, 0 6px 18px #1a3d3212;
   box-sizing: border-box;
-  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: visible;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.account-name-text {
+  display: inline-block;
+  flex: 0 0 auto;
+  white-space: nowrap;
+  overflow: visible;
+  text-overflow: clip;
+  max-width: none;
+}
+.account-name-chev {
+  flex: 0 0 auto;
+  width: 0.72rem;
+  height: 0.48rem;
+  color: var(--leaf-deep);
+  opacity: 0.9;
+  pointer-events: none;
+}
+.account-select-native,
+.account-shell select.account-select-native {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  opacity: 0;
+  cursor: pointer;
+  font-size: 16px; /* iOS focus zoom guard */
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
 }
 .account-icon-btn {
   flex: 0 0 2rem;
@@ -1023,6 +1066,7 @@ html.share-capture .hero-tree::after {
   filter: none !important;
 }
 html.share-capture .account-shell select,
+html.share-capture .account-name-btn,
 html.share-capture .account-icon-btn,
 html.share-capture .balances .bal,
 html.share-capture .ornament-counters li,

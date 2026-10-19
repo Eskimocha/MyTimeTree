@@ -53,7 +53,7 @@
     bird: `/static/portal/ornaments/bird.png?v=${ASSET_V}`,
   };
 
-  const HABIT_MEDIA_V = "20261019d";
+  const HABIT_MEDIA_V = "20261019e";
   // Tip: bright star (icon-tip-seed path overwritten; icon-tip-star alias also shipped)
   const HABIT_TIP_ICON = `/static/portal/habit/icon-tip-star.png?v=${HABIT_MEDIA_V}`;
   const HABIT_TIP_ICON_2X = `/static/portal/habit/icon-tip-star@2x.png?v=${HABIT_MEDIA_V}`;
@@ -376,6 +376,17 @@
   // Soft re-entry after unlock (avoid location.reload → re-download wasm / re-open DB).
   window.__mytimetreeBootstrap = bootstrap;
 
+  function syncAccountNameBtn() {
+    const sel = $("#account-select");
+    const label = $("#account-name-text");
+    const btn = $("#account-name-btn");
+    if (!sel || !label) return;
+    const opt = sel.selectedOptions && sel.selectedOptions[0];
+    const name = (opt && opt.textContent) || "";
+    label.textContent = name;
+    if (btn) btn.setAttribute("aria-label", name ? `当前孩子 ${name}` : "切换孩子账户");
+  }
+
   function fillAccountSelect() {
     const sel = $("#account-select");
     sel.innerHTML = "";
@@ -386,6 +397,7 @@
       if (a.id === state.currentAccountId) opt.selected = true;
       sel.appendChild(opt);
     }
+    syncAccountNameBtn();
   }
 
   async function openAccount(payload) {
@@ -2210,6 +2222,7 @@
   });
 
   $("#account-select").addEventListener("change", async (e) => {
+    syncAccountNameBtn();
     const id = Number(e.target.value);
     await api("/api/accounts/switch", {
       method: "POST",
@@ -2219,6 +2232,23 @@
     const active = document.querySelector(".tab.active")?.dataset.tab || "home";
     showTab(active);
   });
+
+  // Custom name pill: open native select picker (overlay sits on the button).
+  {
+    const nameBtn = $("#account-name-btn");
+    const sel = $("#account-select");
+    if (nameBtn && sel) {
+      nameBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        try {
+          if (typeof sel.showPicker === "function") sel.showPicker();
+          else sel.focus();
+        } catch {
+          sel.focus();
+        }
+      });
+    }
+  }
 
   let pendingDeleteId = null;
 

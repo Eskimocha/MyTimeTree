@@ -20,8 +20,14 @@
         <button type="button" id="share-page-btn" class="account-icon-btn share-page-btn" aria-label="分享当前页" title="分享当前页长图">
           <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg>
         </button>
-        <label class="sr-only" for="account-select">切换账户</label>
-        <select id="account-select"></select>
+        <div class="account-name-picker" id="account-name-picker">
+          <button type="button" class="account-name-btn" id="account-name-btn" aria-haspopup="listbox" aria-expanded="false">
+            <span class="account-name-text" id="account-name-text"></span>
+            <svg class="account-name-chev" viewBox="0 0 12 8" width="12" height="8" aria-hidden="true" focusable="false"><path d="M1.5 1.75L6 6.25L10.5 1.75" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <label class="sr-only" for="account-select">切换账户</label>
+          <select id="account-select" class="account-select-native" tabindex="-1" aria-hidden="true"></select>
+        </div>
         <button type="button" id="account-manage-btn" class="account-icon-btn" aria-label="管理孩子账户" title="管理孩子">⋯</button>
       </div>
     </header>

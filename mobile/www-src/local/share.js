@@ -147,6 +147,7 @@
       background: #f3faf6 !important;
     }
     .account-shell select,
+    .account-name-btn,
     .account-icon-btn,
     .balances .bal,
     .ornament-counters li,
