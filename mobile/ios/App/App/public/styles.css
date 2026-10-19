@@ -120,21 +120,24 @@ html, body {
   box-sizing: border-box;
 }
 .account-shell select {
-  /* width:0 + flex:1 lets native <select> shrink instead of expanding the page */
-  width: 0;
-  flex: 1 1 auto;
-  min-width: 0;
-  max-width: 7rem;
+  /* Exactly wide enough for 3 CJK glyphs + padding + iOS disclosure chevron.
+     Do not use width:0/min-width:0 — that clipped the 3rd character (e.g. 小红X). */
+  --account-name-w: calc(3em + 2.6rem);
+  width: var(--account-name-w);
+  min-width: var(--account-name-w);
+  max-width: var(--account-name-w);
+  flex: 0 0 auto;
   border: 0;
   background: var(--surface);
   backdrop-filter: blur(8px);
   border-radius: 999px;
-  padding: 0.35rem 0.5rem;
+  padding: 0.35rem 0.55rem;
   font: inherit;
   font-size: 16px;
   color: var(--ink);
   box-shadow: 0 1px 0 #fff8 inset, 0 6px 18px #1a3d3212;
   box-sizing: border-box;
+  text-overflow: ellipsis;
 }
 .account-icon-btn {
   flex: 0 0 2rem;
@@ -989,8 +992,9 @@ html.share-capture .tree-art,
 html.share-capture .float-orn {
   filter: none !important;
 }
-/* Home tab: opaque white card (matches on-screen 白框). Do NOT leave transparent —
-   html2canvas(backgroundColor:null) turns holes gray/black in the saved PNG. */
+/* Live flash during capture: freeze + white home card only.
+   Do NOT paint a solid blue .tree-scene / flat hero base here — that made a ugly
+   blue rectangle on-screen. Soft bright forest paint is clone-only (share.js). */
 html.share-capture #tab-home.tab-panel {
   background: #ffffff !important;
   box-shadow: 0 10px 30px rgba(26, 61, 50, 0.06) !important;
@@ -1001,26 +1005,12 @@ html.share-capture .tab-panel:not(#tab-home) {
   background: #f7fcf8 !important;
 }
 html.share-capture .hero-tree {
-  /* html2canvas mishandles 8-digit hex + `transparent` stops → gray tree stage.
-     Force rgba stops + solid sky base so the forest card stays bright. */
+  /* Keep everyday soft gradient on the live DOM; only drop blur filters. */
   filter: none !important;
-  background-color: #b3e5fc !important;
-  background-image:
-    radial-gradient(ellipse 90% 50% at 50% 100%, rgba(165, 214, 167, 0.53) 0%, rgba(165, 214, 167, 0) 55%),
-    radial-gradient(circle at 18% 18%, rgba(255, 248, 225, 0.8) 0%, rgba(255, 248, 225, 0) 28%),
-    radial-gradient(circle at 82% 22%, rgba(255, 255, 255, 0.67) 0%, rgba(255, 255, 255, 0) 22%),
-    linear-gradient(180deg, #b3e5fc 0%, #e3f2fd 38%, #e8f5e9 72%, #c8e6c9 100%) !important;
-  background-repeat: no-repeat !important;
-}
-html.share-capture .tree-scene {
-  /* Tree PNG may be partly transparent; keep sky under the art */
-  background-color: #c8eaf8 !important;
 }
 html.share-capture .hero-tree::before,
 html.share-capture .hero-tree::after {
   filter: none !important;
-  opacity: 0.45 !important;
-  background: #ffffff !important;
 }
 html.share-capture .account-shell select,
 html.share-capture .account-icon-btn,

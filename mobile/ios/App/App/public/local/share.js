@@ -3,8 +3,8 @@
  * Uses native SaveToPhotos.shareImage (no JS Filesystem / Share plugins required).
  *
  * Long-capture expands nested scrollers (#tab-home inside .main/.portal) so「今日好习惯」
- * below the fold is included. share-capture CSS kills backdrop-filter, paints an opaque
- * white home card + html2canvas-safe hero-tree gradients (no gray holes).
+ * below the fold is included. Live share-capture only freezes UI + white home card;
+ * soft bright forest gradients are injected on the html2canvas clone only (no live blue slab).
  */
 (function () {
   "use strict";
@@ -67,7 +67,8 @@
     });
   }
 
-  /** Bright forest-card paint — rgba stops (html2canvas fails on #rrggbbaa / transparent). */
+  /** Soft forest-card paint for clone only — rgba stops (html2canvas fails on #rrggbbaa / transparent).
+   *  Matches everyday .hero-tree; no flat #c8eaf8 tree-scene slab. */
   const HERO_TREE_SHARE_BG =
     "radial-gradient(ellipse 90% 50% at 50% 100%, rgba(165, 214, 167, 0.53) 0%, rgba(165, 214, 167, 0) 55%)," +
     "radial-gradient(circle at 18% 18%, rgba(255, 248, 225, 0.8) 0%, rgba(255, 248, 225, 0) 28%)," +
@@ -126,12 +127,15 @@
     }
     .hero-tree {
       filter: none !important;
-      background-color: #b3e5fc !important;
+      /* Soft base (mid sky) — avoid loud solid blue rectangle under the seed art */
+      background-color: #e3f2fd !important;
       background-image: ${HERO_TREE_SHARE_BG} !important;
       background-repeat: no-repeat !important;
     }
     .tree-scene {
-      background-color: #c8eaf8 !important;
+      /* Transparent: let soft hero-tree gradient show (no blue slab) */
+      background-color: transparent !important;
+      background-image: none !important;
     }
     .hero-tree::before,
     .hero-tree::after {
@@ -268,12 +272,13 @@
       );
     }
     doc.querySelectorAll(".hero-tree").forEach((el) => {
-      el.style.setProperty("background-color", "#b3e5fc", "important");
+      el.style.setProperty("background-color", "#e3f2fd", "important");
       el.style.setProperty("background-image", HERO_TREE_SHARE_BG, "important");
       el.style.setProperty("filter", "none", "important");
     });
     doc.querySelectorAll(".tree-scene").forEach((el) => {
-      el.style.setProperty("background-color", "#c8eaf8", "important");
+      el.style.setProperty("background-color", "transparent", "important");
+      el.style.setProperty("background-image", "none", "important");
     });
 
     const hideIds = [

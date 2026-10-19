@@ -14,7 +14,7 @@ const www = path.join(root, "mobile/www");
 const localSrc = path.join(root, "mobile/www-src/local");
 const sqlJsDist = path.join(root, "mobile/node_modules/sql.js/dist");
 /** Bust WKWebView caches for injected local scripts + app.js (was stuck on p5h1 / local-p2). */
-const LOCAL_ASSET_V = "20261019b";
+const LOCAL_ASSET_V = "20261019c";
 const iosPublic = path.join(root, "mobile/ios/App/App/public");
 
 function rmrf(dir) {
@@ -526,14 +526,29 @@ function assertBuildTree(base, tag) {
     /html\.share-capture #tab-home\.tab-panel\s*\{[\s\S]*?background:\s*#ffffff/,
     `${tag} share-capture home white card`
   );
+  // Live share-capture must NOT paint a solid blue tree-scene slab (20261019c).
+  {
+    const css = fs.readFileSync(path.join(base, "styles.css"), "utf8");
+    if (/html\.share-capture\s+\.tree-scene\s*\{[\s\S]*?background-color:\s*#c8eaf8/.test(css)) {
+      console.error(`[sync-web] ${tag} live share-capture still paints #c8eaf8 tree-scene slab`);
+      process.exit(1);
+    }
+    console.log(`[sync-web] ok ${tag} no live share-capture tree-scene blue slab`);
+  }
+  assertMarker(base, "local/share.js", /backgroundColor:\s*["']#eef8f1["']/, `${tag} share html2canvas opaque sky`);
+  assertMarker(base, "local/share.js", /HERO_TREE_SHARE_BG/, `${tag} share HERO_TREE_SHARE_BG`);
+  assertMarker(
+    base,
+    "local/share.js",
+    /background-color:\s*transparent\s*!important/,
+    `${tag} share clone tree-scene transparent`
+  );
   assertMarker(
     base,
     "styles.css",
-    /html\.share-capture \.hero-tree\s*\{[\s\S]*?background-color:\s*#b3e5fc/,
-    `${tag} share-capture hero-tree sky base`
+    /--account-name-w:\s*calc\(3em\s*\+\s*2\.6rem\)/,
+    `${tag} account select width for 3 CJK`
   );
-  assertMarker(base, "local/share.js", /backgroundColor:\s*["']#eef8f1["']/, `${tag} share html2canvas opaque sky`);
-  assertMarker(base, "local/share.js", /HERO_TREE_SHARE_BG/, `${tag} share HERO_TREE_SHARE_BG`);
   assertMarker(base, "app.js", /Park back under picker/, `${tag} seed list reparent on close`);
   assertMarker(
     base,

@@ -130,14 +130,11 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 
 # Scratchpad
 
-## Task: 分享截图白框/树区灰暗 (20261019b)
-- [X] #tab-home 白卡 + hero-tree rgba 渐变；html2canvas #eef8f1
-- [X] stamp 20261019b；sync；push PR #3；报告
+## Task: 去掉分享蓝块 + 姓名 pill 三字宽 (20261019c)
+- [ ] share 蓝矩形仅 clone 注入；日常 hero 恢复柔和
+- [ ] account-select 宽够 3 汉字；stamp 20261019c；push
 
-## Lessons
-- share：勿 `backgroundColor:null` + home transparent；8 位 hex/transparent 渐变改 rgba + solid base
-
-## Archived: tab badge 20261019a / 发版资料 / 假死 20261018k
+## Archived: share 白框 20261019b / tab badge 20261019a
 
 
 - Lesson: “Could not attach to pid … handshake … 6.0 seconds” 优先当调试器问题，勿先怪 Scene/Badge
