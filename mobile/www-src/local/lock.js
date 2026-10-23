@@ -1,5 +1,5 @@
 /**
- * Phase 2 lock screen: Face ID + parent password + recovery reset.
+ * Phase 2 lock screen: biometric (Face ID / 指纹识别) + parent password + recovery reset.
  */
 (function () {
   "use strict";
@@ -33,6 +33,25 @@
     } catch {
       return false;
     }
+  }
+
+  /** User-facing biometric noun: Android = 指纹识别; iOS = Face ID. */
+  function bioNoun() {
+    return isAndroidPlatform() ? "指纹识别" : "Face ID";
+  }
+
+  function bioUnlockLabel() {
+    return "使用 " + bioNoun() + " 解锁";
+  }
+
+  function bioOptinLede() {
+    return isAndroidPlatform()
+      ? "下次可用指纹快速解锁。也可稍后在「设置」中开关。"
+      : "下次可用面容快速解锁。也可稍后在「设置」中开关。";
+  }
+
+  function bioVerifySubtitle() {
+    return isAndroidPlatform() ? "验证指纹以开启快捷解锁" : "验证面容以开启快捷解锁";
   }
 
   function $(sel, root) {
@@ -72,7 +91,7 @@
       <div class="app-lock-card" id="app-lock-main">
         <p class="app-lock-brand">MyTimeTree</p>
         <p class="app-lock-lede">家长解锁后继续</p>
-        <button type="button" class="btn primary" id="app-lock-face">使用 Face ID 解锁</button>
+        <button type="button" class="btn primary" id="app-lock-face"></button>
         <p class="app-lock-hint muted" id="app-lock-face-hint" hidden></p>
         <form id="app-lock-form" class="stack app-lock-form">
           <label>家长密码
@@ -107,9 +126,9 @@
         </div>
       </div>
       <div class="app-lock-card" id="app-lock-faceid-optin" hidden>
-        <p class="app-lock-brand">启用 Face ID？</p>
-        <p class="app-lock-lede">下次可用面容快速解锁。也可稍后在「设置」中开关。</p>
-        <button type="button" class="btn primary" id="faceid-optin-yes">启用 Face ID</button>
+        <p class="app-lock-brand" id="faceid-optin-title"></p>
+        <p class="app-lock-lede" id="faceid-optin-lede"></p>
+        <button type="button" class="btn primary" id="faceid-optin-yes"></button>
         <button type="button" class="btn" id="faceid-optin-no">暂不启用</button>
         <p id="faceid-optin-error" class="error" hidden></p>
       </div>
@@ -117,6 +136,13 @@
     document.body.appendChild(el);
 
     faceBtn = $("#app-lock-face", el);
+    if (faceBtn) faceBtn.textContent = bioUnlockLabel();
+    const optTitle = $("#faceid-optin-title", el);
+    const optLede = $("#faceid-optin-lede", el);
+    const optYes = $("#faceid-optin-yes", el);
+    if (optTitle) optTitle.textContent = "启用 " + bioNoun() + "？";
+    if (optLede) optLede.textContent = bioOptinLede();
+    if (optYes) optYes.textContent = "启用 " + bioNoun();
 
     $("#app-lock-form", el).addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -193,9 +219,9 @@
         const bio = plugin("NativeBiometric");
         if (bio) {
           await bio.verifyIdentity({
-            reason: "确认启用 Face ID 解锁",
-            title: "启用 Face ID",
-            subtitle: "验证面容以开启快捷解锁",
+            reason: "确认启用 " + bioNoun() + " 解锁",
+            title: "启用 " + bioNoun(),
+            subtitle: bioVerifySubtitle(),
             negativeButtonText: "取消",
             useFallback: false,
           });
@@ -206,7 +232,7 @@
         });
         await finishUnlockReload();
       } catch (ex) {
-        setErr(errEl, ex.message || "未能启用 Face ID，可稍后再试");
+        setErr(errEl, ex.message || "未能启用 " + bioNoun() + "，可稍后再试");
       }
     });
 
@@ -317,9 +343,9 @@
     box.innerHTML = `
       <h3 class="security-title">安全</h3>
       <label class="faceid-toggle-row">
-        <span class="faceid-toggle-label">Face ID 解锁</span>
+        <span class="faceid-toggle-label">${bioNoun()} 解锁</span>
         <span class="faceid-switch">
-          <input type="checkbox" id="faceid-enabled" role="switch" aria-label="Face ID 解锁" />
+          <input type="checkbox" id="faceid-enabled" role="switch" aria-label="${bioNoun()} 解锁" />
           <span class="faceid-switch-track" aria-hidden="true">
             <span class="faceid-switch-thumb"></span>
           </span>
@@ -355,14 +381,17 @@
             toggle.checked = false;
             flashMsg(
               $("#faceid-settings-hint"),
-              "设备未录入 Face ID。模拟器请用 Features → Face ID → Enrolled"
+              isAndroidPlatform()
+                ? "设备未录入指纹。请先在系统设置中添加指纹后再开启。"
+                : "设备未录入 Face ID。模拟器请用 Features → Face ID → Enrolled"
             );
             return;
           }
           if (bio) {
             await bio.verifyIdentity({
-              reason: "确认启用 Face ID",
-              title: "启用 Face ID",
+              reason: "确认启用 " + bioNoun(),
+              title: "启用 " + bioNoun(),
+              subtitle: bioVerifySubtitle(),
               useFallback: false,
             });
           }
@@ -376,7 +405,9 @@
         });
         flashMsg(
           $("#faceid-settings-hint"),
-          toggle.checked ? "已启用 Face ID 解锁" : "已关闭 Face ID 解锁"
+          toggle.checked
+            ? "已启用 " + bioNoun() + " 解锁"
+            : "已关闭 " + bioNoun() + " 解锁"
         );
       } catch (ex) {
         toggle.checked = !toggle.checked;
@@ -416,9 +447,9 @@
     if (row.querySelector(".faceid-switch")) return;
     const checked = input.checked;
     row.innerHTML = `
-      <span class="faceid-toggle-label">Face ID 解锁</span>
+      <span class="faceid-toggle-label">${bioNoun()} 解锁</span>
       <span class="faceid-switch">
-        <input type="checkbox" id="faceid-enabled" role="switch" aria-label="Face ID 解锁" />
+        <input type="checkbox" id="faceid-enabled" role="switch" aria-label="${bioNoun()} 解锁" />
         <span class="faceid-switch-track" aria-hidden="true">
           <span class="faceid-switch-thumb"></span>
         </span>
@@ -426,6 +457,8 @@
     `;
     const next = $("#faceid-enabled");
     if (next) next.checked = checked;
+    const label = row.querySelector(".faceid-toggle-label");
+    if (label) label.textContent = bioNoun() + " 解锁";
   }
 
   function flashMsg(el, text) {
@@ -1023,8 +1056,9 @@
       const avail = await biometryAvailable();
       if (hint && !avail) {
         hint.hidden = false;
-        hint.textContent =
-          "当前检测不到 Face ID。模拟器：Features → Face ID → Enrolled，然后再开此开关。";
+        hint.textContent = isAndroidPlatform()
+          ? "当前检测不到指纹。请先在系统设置中添加指纹，然后再开此开关。"
+          : "当前检测不到 Face ID。模拟器：Features → Face ID → Enrolled，然后再开此开关。";
       }
     } catch {
       /* locked */
@@ -1050,7 +1084,9 @@
     if (!bio) {
       setErr(
         errEl,
-        "未找到 Face ID 插件。请重新 Run 一次工程；模拟器还需 Features → Face ID → Enrolled"
+        isAndroidPlatform()
+          ? "未找到指纹识别插件。请重新安装 Android 包后再试。"
+          : "未找到 Face ID 插件。请重新 Run 一次工程；模拟器还需 Features → Face ID → Enrolled"
       );
       return false;
     }
@@ -1059,7 +1095,7 @@
       if (!pref.enabled) {
         setErr(
           errEl,
-          "尚未启用 Face ID。请先用密码解锁，按提示开启；或在设置中打开。"
+          "尚未启用 " + bioNoun() + "。请先用密码解锁，按提示开启；或在设置中打开。"
         );
         return false;
       }
@@ -1067,19 +1103,22 @@
       if (!avail) {
         setErr(
           errEl,
-          "Face ID 不可用。模拟器：Features → Face ID → Enrolled，然后再点按钮；出现系统弹窗后选 Matching Face"
+          isAndroidPlatform()
+            ? "指纹识别不可用。请先在系统设置中添加指纹，然后再点按钮。"
+            : "Face ID 不可用。模拟器：Features → Face ID → Enrolled，然后再点按钮；出现系统弹窗后选 Matching Face"
         );
         if (hint) {
           hint.hidden = false;
-          hint.textContent =
-            "提示：要先点「使用 Face ID 解锁」弹出系统框，再选 Matching Face";
+          hint.textContent = isAndroidPlatform()
+            ? "提示：请先在系统设置录入指纹，再点「" + bioUnlockLabel() + "」"
+            : "提示：要先点「使用 Face ID 解锁」弹出系统框，再选 Matching Face";
         }
         return false;
       }
       await bio.verifyIdentity({
         reason: "解锁 MyTimeTree",
         title: "家长验证",
-        subtitle: "使用 Face ID 解锁",
+        subtitle: bioUnlockLabel(),
         description: "验证通过后可管理时间树",
         negativeButtonText: "使用密码",
         useFallback: false,
@@ -1091,14 +1130,19 @@
       });
       return true;
     } catch (ex) {
-      console.warn("[lock] Face ID failed", ex);
+      console.warn("[lock] biometric failed", ex);
       if (fromButton) {
         const code = ex && (ex.code || ex.errorCode);
         const msg = String((ex && ex.message) || "");
         if (/cancel|Cancel|16|11|15/i.test(msg + code)) {
           setErr(errEl, "");
         } else {
-          setErr(errEl, "Face ID 未通过，请输入家长密码，或再试 Matching Face");
+          setErr(
+            errEl,
+            isAndroidPlatform()
+              ? bioNoun() + " 未通过，请输入家长密码后重试"
+              : "Face ID 未通过，请输入家长密码，或再试 Matching Face"
+          );
         }
       }
       return false;
@@ -1118,26 +1162,29 @@
     faceBtn.hidden = false;
     faceBtn.disabled = false;
     if (!plugin("NativeBiometric")) {
-      faceBtn.textContent = "Face ID（插件未就绪）";
+      faceBtn.textContent = bioNoun() + "（插件未就绪）";
       if (hint) {
         hint.hidden = false;
-        hint.textContent = "请重新编译运行 App 后再试";
+        hint.textContent = isAndroidPlatform()
+          ? "请重新安装 Android 包后再试"
+          : "请重新编译运行 App 后再试";
       }
     } else if (!avail) {
-      faceBtn.textContent = "使用 Face ID 解锁";
+      faceBtn.textContent = bioUnlockLabel();
       if (hint) {
         hint.hidden = false;
-        hint.textContent =
-          "模拟器请先 Features → Face ID → Enrolled，再点此按钮；弹出后再 Matching Face";
+        hint.textContent = isAndroidPlatform()
+          ? "请先在系统设置中添加指纹，再点此按钮"
+          : "模拟器请先 Features → Face ID → Enrolled，再点此按钮；弹出后再 Matching Face";
       }
     } else if (!faceOn) {
-      faceBtn.textContent = "使用 Face ID 解锁";
+      faceBtn.textContent = bioUnlockLabel();
       if (hint) {
         hint.hidden = false;
         hint.textContent = "尚未启用：先密码解锁并选择启用，或在设置中打开";
       }
     } else {
-      faceBtn.textContent = "使用 Face ID 解锁";
+      faceBtn.textContent = bioUnlockLabel();
       if (hint) hint.hidden = true;
       setTimeout(() => tryFaceId(false), 400);
     }

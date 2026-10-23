@@ -9,6 +9,8 @@ public class MainActivity extends BridgeActivity {
     public void onCreate(Bundle savedInstanceState) {
         // Local plugins must register before BridgeActivity initializes the bridge.
         registerPlugin(ICloudDbPlugin.class);
+        registerPlugin(SaveToPhotosPlugin.class);
+        registerPlugin(AppIconBadgePlugin.class);
         super.onCreate(savedInstanceState);
     }
 }

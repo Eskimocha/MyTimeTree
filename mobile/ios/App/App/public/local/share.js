@@ -357,7 +357,13 @@
   async function shareNative(dataUrl) {
     const SaveToPhotos = plugin("SaveToPhotos");
     if (!SaveToPhotos || typeof SaveToPhotos.shareImage !== "function") {
-      throw new Error("分享插件未就绪：请在 Xcode 重新 Product → Clean Build Folder 后再 Run");
+      throw new Error(
+        (typeof window.Capacitor !== "undefined" &&
+          window.Capacitor.getPlatform &&
+          window.Capacitor.getPlatform() === "android")
+          ? "分享插件未就绪：请重新安装带 SaveToPhotos 的 Android 包"
+          : "分享插件未就绪：请在 Xcode 重新 Product → Clean Build Folder 后再 Run"
+      );
     }
     toast("正在打开分享…");
     const result = await SaveToPhotos.shareImage({ dataUrl });
