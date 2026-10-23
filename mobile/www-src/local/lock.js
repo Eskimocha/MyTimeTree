@@ -25,6 +25,16 @@
     }
   }
 
+  function isAndroidPlatform() {
+    try {
+      const cap = window.Capacitor;
+      if (!cap || typeof cap.getPlatform !== "function") return false;
+      return cap.getPlatform() === "android";
+    } catch {
+      return false;
+    }
+  }
+
   function $(sel, root) {
     return (root || document).querySelector(sel);
   }
@@ -426,11 +436,35 @@
 
   function ensureSyncSettings(afterEl) {
     let box = $("#sync-settings");
+    const android = isAndroidPlatform();
     if (!box) {
       box = document.createElement("div");
       box.id = "sync-settings";
       box.className = "sync-settings";
-      box.innerHTML = `
+      box.innerHTML = android
+        ? `
+        <h3 class="security-title">本地备份</h3>
+        <p class="sync-status-line" id="sync-status-text">
+          <span class="sync-status-dot" id="sync-status-dot" aria-hidden="true"></span>
+          <span id="sync-status-label">正在检查…</span>
+        </p>
+        <ul class="sync-time-list" id="sync-time-list" aria-label="备份状态">
+          <li>检查时间：<strong id="sync-checked-at">—</strong></li>
+          <li>上次写入：<strong id="sync-last-write">—</strong></li>
+          <li>本机文件：<strong id="sync-local-at">—</strong></li>
+          <li>云同步：<strong id="sync-icloud-at">Android 不做云同步</strong></li>
+        </ul>
+        <p class="security-note" id="sync-status-detail" hidden></p>
+        <div class="sync-actions">
+          <button type="button" class="btn primary sync-flush-btn" id="sync-flush-btn">导出备份</button>
+          <div class="sync-actions-row">
+            <button type="button" class="btn sync-refresh-btn" id="sync-refresh-btn">刷新状态</button>
+            <button type="button" class="btn sync-restore-main" id="sync-restore-btn">导入备份</button>
+          </div>
+        </div>
+        <p id="sync-settings-msg" class="msg" hidden></p>
+      `
+        : `
         <h3 class="security-title">iCloud 同步</h3>
         <p class="sync-status-line" id="sync-status-text">
           <span class="sync-status-dot" id="sync-status-dot" aria-hidden="true"></span>
@@ -527,10 +561,18 @@
     }
     if (restore) {
       restore.classList.add("sync-restore-main");
-      restore.textContent = "从 iCloud 恢复";
+      restore.textContent = isAndroidPlatform() ? "导入备份" : "从 iCloud 恢复";
       if (row && restore.parentNode !== row) {
         row.appendChild(restore);
       }
+    }
+    const flushBtn = $("#sync-flush-btn");
+    if (flushBtn && isAndroidPlatform()) {
+      flushBtn.textContent = "导出备份";
+    }
+    const title = box && box.querySelector(".security-title");
+    if (title && isAndroidPlatform()) {
+      title.textContent = "本地备份";
     }
     if (refresh && row && refresh.parentNode !== row) {
       row.insertBefore(refresh, row.firstChild);
@@ -631,11 +673,22 @@
       flush.addEventListener("click", async () => {
         const msg = $("#sync-settings-msg");
         try {
+          if (isAndroidPlatform()) {
+            const ICloudDb = plugin("ICloudDb");
+            if (!ICloudDb || typeof ICloudDb.exportBackup !== "function") {
+              throw new Error("导出备份未就绪");
+            }
+            flashMsg(msg, "正在打开系统分享…");
+            await ICloudDb.exportBackup();
+            flashMsg(msg, "已打开导出面板；请选「存储到文件」或发送到其他 App");
+            await refreshSyncStatus(true);
+            return;
+          }
           await api("/api/sync/flush", { method: "POST", body: "{}" });
           flashMsg(msg, "已请求写入；正在读取时间戳…");
           await refreshSyncStatus(true);
         } catch (ex) {
-          flashMsg(msg, ex.message || "同步失败");
+          flashMsg(msg, ex.message || (isAndroidPlatform() ? "导出失败" : "同步失败"));
         }
       });
     }
@@ -644,25 +697,48 @@
       restore.dataset.wired = "1";
       restore.addEventListener("click", async () => {
         const msg = $("#sync-settings-msg");
+        const android = isAndroidPlatform();
         const ok = window.confirm(
-          "将用 iCloud 上的整库覆盖本机全部数据。若 iCloud 较旧，本机较新的改动会丢失。确定继续？"
+          android
+            ? "将用所选备份文件覆盖本机全部数据。本机较新的改动会丢失。确定继续？"
+            : "将用 iCloud 上的整库覆盖本机全部数据。若 iCloud 较旧，本机较新的改动会丢失。确定继续？"
         );
         if (!ok) return;
         const password = await promptRestorePassword();
         if (password == null) return;
         try {
-          flashMsg(msg, "正在从 iCloud 拉取…");
-          if (!window.MyTimeTreeLocal || typeof window.MyTimeTreeLocal.restoreFromICloud !== "function") {
-            throw new Error("当前 App 版本过旧，请 Clean Build 后重新 Run");
+          flashMsg(msg, android ? "请选择备份文件…" : "正在从 iCloud 拉取…");
+          if (android) {
+            if (
+              !window.MyTimeTreeLocal ||
+              typeof window.MyTimeTreeLocal.restoreFromLocalBackup !== "function"
+            ) {
+              throw new Error("当前 App 版本过旧，请重新安装 Android 包");
+            }
+            const result = await window.MyTimeTreeLocal.restoreFromLocalBackup({
+              confirm: true,
+              password: password || undefined,
+            });
+            flashMsg(
+              msg,
+              `已恢复 ${result.account_count} 个账户。即将锁屏，请用备份库密码解锁…`
+            );
+          } else {
+            if (
+              !window.MyTimeTreeLocal ||
+              typeof window.MyTimeTreeLocal.restoreFromICloud !== "function"
+            ) {
+              throw new Error("当前 App 版本过旧，请 Clean Build 后重新 Run");
+            }
+            const result = await window.MyTimeTreeLocal.restoreFromICloud({
+              confirm: true,
+              password: password || undefined,
+            });
+            flashMsg(
+              msg,
+              `已恢复 ${result.account_count} 个账户。即将锁屏，请用恢复库密码解锁…`
+            );
           }
-          const result = await window.MyTimeTreeLocal.restoreFromICloud({
-            confirm: true,
-            password: password || undefined,
-          });
-          flashMsg(
-            msg,
-            `已恢复 ${result.account_count} 个账户。即将锁屏，请用恢复库密码解锁…`
-          );
           setTimeout(() => location.reload(), 700);
         } catch (ex) {
           flashMsg(msg, ex.message || "恢复失败");
@@ -716,7 +792,11 @@
     setText("sync-checked-at", checked);
     setText(
       "sync-last-write",
-      lastWrite ? lastWrite : "尚无记录（请先点「立即同步」）"
+      lastWrite
+        ? lastWrite
+        : isAndroidPlatform()
+          ? "尚无记录（开户或记账后会写入本机）"
+          : "尚无记录（请先点「立即同步」）"
     );
     setText(
       "sync-local-at",
@@ -730,15 +810,17 @@
     );
     setText(
       "sync-icloud-at",
-      sync.iCloudAvailable === false
-        ? "容器不可用"
-        : cloudAt
-          ? cloudAt
-          : sync.iCloudExists === false
-            ? "尚无文件"
-            : sync.iCloudExists === true
-              ? "有文件（无时间）"
-              : "未知"
+      isAndroidPlatform() || sync.platform === "android"
+        ? "不做云同步（请用导出/导入）"
+        : sync.iCloudAvailable === false
+          ? "容器不可用"
+          : cloudAt
+            ? cloudAt
+            : sync.iCloudExists === false
+              ? "尚无文件"
+              : sync.iCloudExists === true
+                ? "有文件（无时间）"
+                : "未知"
     );
 
     const label = $("#sync-status-label") || $("#sync-status-text");
@@ -773,14 +855,21 @@
       setStatus("ICloudDb 插件未就绪", "bad");
       setDetail(
         sync.lastError ||
-          "请 Product → Clean Build Folder 后重新 Run。"
+          (isAndroidPlatform()
+            ? "请重新安装带 ICloudDb 的 Android 包。"
+            : "请 Product → Clean Build Folder 后重新 Run。")
       );
       return { summary: "插件未就绪" };
     }
 
     let summary;
     let tone = "bad";
-    if (sync.iCloudAvailable) {
+    if (isAndroidPlatform() || sync.platform === "android") {
+      summary = sync.localExists
+        ? "本机存储可用（可导出备份）"
+        : "本机尚无库文件（开户后写入）";
+      tone = sync.localExists ? "ok" : "warn";
+    } else if (sync.iCloudAvailable) {
       summary = sync.lastWriteICloud || cloudAt ? "iCloud 可用" : "iCloud 可用（待写入云端文件）";
       tone = "ok";
     } else if (sync.isSimulator) {
@@ -792,8 +881,11 @@
     }
     setStatus(summary, tone);
     const bits = [];
-    if (sync.iCloudReason) bits.push(String(sync.iCloudReason));
-    else if (sync.hasIdentityToken === false && !sync.isSimulator) {
+    if (isAndroidPlatform() || sync.platform === "android") {
+      bits.push("Android：无云同步；换机请导出/导入备份");
+    } else if (sync.iCloudReason) {
+      bits.push(String(sync.iCloudReason));
+    } else if (sync.hasIdentityToken === false && !sync.isSimulator) {
       bits.push("未检测到 iCloud 登录令牌");
     }
     if (sync.lastError) bits.push(`错误：${sync.lastError}`);
