@@ -685,10 +685,33 @@
     return { ...out, source: "icloud-restore" };
   }
 
+  /** Android local backup: document picker → overwrite local file → reload sql.js. */
+  async function restoreFromLocalBackup() {
+    const ICloudDb = plugin("ICloudDb");
+    if (!ICloudDb || typeof ICloudDb.importBackup !== "function") {
+      throw new Error("本地备份导入未就绪（请重新安装 Android 包）");
+    }
+    const res = await ICloudDb.importBackup();
+    if (!res || typeof res.data !== "string" || !res.data.length) {
+      throw new Error("备份中没有可恢复的数据库");
+    }
+    const out = await replaceFromBytes(bytesFromB64(res.data));
+    lastSyncMeta.lastLoadSource = "local-backup-import";
+    lastSyncMeta.iCloudAvailable = false;
+    lastSyncMeta.lastSave = {
+      at: res.lastWriteAt || new Date().toISOString(),
+      iCloud: false,
+      bytes: res.bytes,
+    };
+    lastSyncMeta.lastError = null;
+    return { ...out, source: "local-backup-import" };
+  }
+
   global.MyTimeTreeDb = {
     open: openLocalDb,
     replaceFromBytes,
     restoreFromICloud,
+    restoreFromLocalBackup,
     STORAGE_KEY,
     status: nativeStatus,
     getSyncMeta: () => ({ ...lastSyncMeta }),
