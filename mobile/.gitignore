@@ -13,6 +13,9 @@ android/app/build/
 android/build/
 android/capacitor-cordova-android-plugins/build/
 android/local.properties
+android/keystore.properties
+*.jks
+*.keystore
 *.apk
 *.aab
 *.ap_

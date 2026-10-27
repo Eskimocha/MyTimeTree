@@ -16,6 +16,7 @@
     "open:android": "npx cap open android",
     "build:ios": "npm run cap:sync",
     "build:android:debug": "npm run cap:sync:android && cd android && ./gradlew :app:assembleDebug",
+    "build:android:release": "npm run cap:sync:android && cd android && ./gradlew :app:assembleRelease",
     "smoke:phase1": "node scripts/smoke-phase1.mjs",
     "smoke:phase2": "node scripts/smoke-phase2.mjs",
     "smoke:phase3": "node scripts/smoke-phase3.mjs",

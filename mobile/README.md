@@ -19,10 +19,14 @@ npm run open:ios
 # Android
 npm run cap:sync:android
 npm run open:android
-# 或命令行 Debug APK：
+# Debug APK：
 npm run build:android:debug
-# APK: android/app/build/outputs/apk/debug/app-debug.apk
+# Release 签名 APK（需 android/keystore.properties，见 keystore.properties.example）：
+npm run build:android:release
+# APK: android/app/build/outputs/apk/release/app-release.apk
 ```
+
+大陆自分发：用 Release 签名包；**勿**把 `.jks` / 密码提交进 git。
 
 改过 iOS 原生插件 / entitlements 后：Xcode **Product → Clean Build Folder**，再 Run。
 
