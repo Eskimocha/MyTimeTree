@@ -84,7 +84,7 @@ class LedgerService:
                     liability += e.amount_minutes
                 else:
                     asset += e.amount_minutes
-        # borrow: BORROW(+liability) + DEPOSIT(+asset) + SPEND(−asset); net asset unchanged
+        # borrow: BORROW(+liability) + DEPOSIT(+asset); net unchanged (no forced spend)
         return Balance(asset=Minutes(asset), liability=Minutes(liability))
 
     def get_ornaments(self, account_id: int) -> Ornaments:
@@ -185,7 +185,7 @@ class LedgerService:
         )
 
     def borrow(self, account_id: int, minutes: int, summary: str | None = None) -> list[LedgerEntry]:
-        """Borrow: liability+N, asset+N, then spend N (3 rows, same correlation_id)."""
+        """借入：负债+N、资产+N（2 笔同 correlation_id）；净资产不变。不加星。"""
         ensure(minutes > 0, ErrorCode.VALIDATION, "借用分钟必须为正")
         cid = str(uuid.uuid4())
         borrow_row = self._append(
@@ -205,14 +205,6 @@ class LedgerService:
             correlation_id=cid,
             commit=False,
         )
-        spend_row = self._append(
-            account_id,
-            LedgerCategory.SPEND,
-            minutes,
-            summary=summary,
-            correlation_id=cid,
-            commit=False,
-        )
         orn = add_pest(self.get_ornaments(account_id))
         self._apply_ornament_change(
             account_id,
@@ -222,7 +214,7 @@ class LedgerService:
             awards={"pest": 1},
         )
         self._conn.commit()
-        return [borrow_row, deposit_row, spend_row]
+        return [borrow_row, deposit_row]
 
     def repay(
         self,

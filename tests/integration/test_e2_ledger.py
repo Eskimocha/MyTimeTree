@@ -63,11 +63,11 @@ def test_balance_recomputed_from_ledger(kid):
     ledger.deposit(acc.id, minutes=100, summary="in")
     ledger.spend(acc.id, minutes=30, summary="out")
     ledger.borrow(acc.id, minutes=20, summary="loan")
-    # borrow: +20 liability, +20 asset, then spend 20 → asset unchanged by borrow
+    # borrow: +20 liability +20 asset → net unchanged by borrow
     bal = ledger.get_balance(acc.id)
-    assert bal.asset.value == 70  # 100 - 30
+    assert bal.asset.value == 90  # 100 - 30 + 20
     assert bal.liability.value == 20
-    assert bal.net.value == 50
+    assert bal.net.value == 70
 
 
 @pytest.mark.integration
@@ -101,22 +101,23 @@ def test_spend_insufficient_asset(kid):
 
 
 @pytest.mark.integration
-def test_borrow_writes_three_rows_same_correlation_and_one_pest(kid):
+def test_borrow_writes_two_rows_same_correlation_and_one_pest(kid):
     _, ledger, acc = kid
     ledger.deposit(acc.id, minutes=100)
     entries = ledger.borrow(acc.id, minutes=25, summary="上网")
-    assert len(entries) == 3
+    assert len(entries) == 2
     assert [e.category for e in entries] == [
         LedgerCategory.BORROW,
         LedgerCategory.DEPOSIT,
-        LedgerCategory.SPEND,
     ]
-    assert entries[0].correlation_id == entries[1].correlation_id == entries[2].correlation_id
+    assert entries[0].correlation_id == entries[1].correlation_id
     assert entries[0].correlation_id
+    assert not any(e.category == LedgerCategory.SPEND for e in entries)
 
     bal = ledger.get_balance(acc.id)
-    assert bal.asset.value == 100  # borrow credits then spends; net asset unchanged
+    assert bal.asset.value == 125  # +25 from borrow deposit leg
     assert bal.liability.value == 25
+    assert bal.net.value == 100  # 净资产不变
 
     orn = ledger.get_ornaments(acc.id)
     assert orn.pest_count == 1
@@ -127,10 +128,11 @@ def test_borrow_writes_three_rows_same_correlation_and_one_pest(kid):
 def test_borrow_without_prior_asset(kid):
     _, ledger, acc = kid
     entries = ledger.borrow(acc.id, minutes=15, summary="先借")
-    assert len(entries) == 3
+    assert len(entries) == 2
     bal = ledger.get_balance(acc.id)
-    assert bal.asset.value == 0
+    assert bal.asset.value == 15
     assert bal.liability.value == 15
+    assert bal.net.value == 0
 
 
 @pytest.mark.integration
@@ -153,7 +155,7 @@ def test_repay_and_woodpecker_when_cleared(kid):
 @pytest.mark.integration
 def test_repay_excess_becomes_asset(kid):
     _, ledger, acc = kid
-    ledger.borrow(acc.id, minutes=10)
+    ledger.borrow(acc.id, minutes=10)  # asset 10, liability 10
     rows = ledger.repay(acc.id, minutes=30, summary="存入超额")
     assert [e.category for e in rows] == [
         LedgerCategory.REPAY,
@@ -164,7 +166,7 @@ def test_repay_excess_becomes_asset(kid):
     assert rows[0].correlation_id == rows[1].correlation_id
     bal = ledger.get_balance(acc.id)
     assert bal.liability.value == 0
-    assert bal.asset.value == 20
+    assert bal.asset.value == 30  # 借入入账 10 + 超额存入 20
     assert ledger.get_ornaments(acc.id).woodpecker_count == 1
     assert ledger.get_ornaments(acc.id).fruit_count == 1  # 存入奖励 1 星
 

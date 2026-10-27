@@ -656,13 +656,13 @@
   }
 
   function borrow(accountId, minutes, summary) {
+    // 借入：负债+N + 资产+N（净资产不变）。勿再写 spend；旧「随借随用」三笔会冲掉资产入账。
     const amount = Number(minutes);
     ensure(amount > 0, "validation", "借用分钟必须为正");
     const cid = uuid();
     const rows = [
       appendEntry(accountId, "borrow", amount, { summary, correlation_id: cid }),
       appendEntry(accountId, "deposit", amount, { summary, correlation_id: cid }),
-      appendEntry(accountId, "spend", amount, { summary, correlation_id: cid }),
     ];
     const orn = getOrnaments(accountId);
     orn.pest_count += 1;
