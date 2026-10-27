@@ -1,6 +1,9 @@
-# MyTimeTree — iOS 单机壳
+# MyTimeTree — Capacitor 单机壳（iOS + Android）
 
-完全离线；本机 SQLite（sql.js）；家长密码 + Face ID；安全问题可重置密码；**整库文件**经原生插件写入本机 + iCloud Documents。
+完全离线；本机 SQLite（sql.js）；家长密码 + 生物识别；安全问题可重置密码。
+
+- **iOS**：整库经 `ICloudDb` 写入本机 + iCloud Documents。
+- **Android**：同名 `ICloudDb` 仅本机 `filesDir`；**无云同步**；设置里「本地备份」导出/导入整库。
 
 ## 命令
 
@@ -8,11 +11,24 @@
 export PATH="$HOME/.local/node/bin:$PATH"
 cd mobile
 npm install
+
+# iOS（发版路径不变）
 npm run cap:sync
 npm run open:ios
+
+# Android
+npm run cap:sync:android
+npm run open:android
+# Debug APK：
+npm run build:android:debug
+# Release 签名 APK（需 android/keystore.properties，见 keystore.properties.example）：
+npm run build:android:release
+# APK: android/app/build/outputs/apk/release/app-release.apk
 ```
 
-改过原生插件 / entitlements 后：Xcode **Product → Clean Build Folder**，再 Run。
+大陆自分发：用 Release 签名包；**勿**把 `.jks` / 密码提交进 git。
+
+改过 iOS 原生插件 / entitlements 后：Xcode **Product → Clean Build Folder**，再 Run。
 
 ## Phase 2 验收（锁屏）
 

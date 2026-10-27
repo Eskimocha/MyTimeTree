@@ -1325,6 +1325,51 @@
     };
   }
 
+  /**
+   * Android: import a local backup file (overwrites local). Same password gate as iCloud restore.
+   */
+  async function restoreFromLocalBackup(opts) {
+    opts = opts || {};
+    ensure(opts.confirm === true, "validation", "请确认用备份文件覆盖本机数据");
+    await ensureDb();
+    if (listAccounts().length > 0) {
+      ensure(Boolean(opts.password), "validation", "请输入家长密码以确认覆盖");
+      const okId = await verifyParentPassword(String(opts.password));
+      ensure(okId, "forbidden", "家长密码不正确");
+    }
+    const Db = global.MyTimeTreeDb;
+    ensure(
+      Db && typeof Db.restoreFromLocalBackup === "function",
+      "internal",
+      "本地备份导入未就绪"
+    );
+
+    try {
+      if (dbApi && dbApi.db && typeof dbApi.db.close === "function") {
+        dbApi.db.close();
+      }
+    } catch (err) {
+      console.warn("[restore-local] close old db", err);
+    }
+
+    const result = await Db.restoreFromLocalBackup();
+    dbApi = result.api;
+    initPromise = Promise.resolve(dbApi);
+    setSessionUnlocked(false);
+    writeUnlockFlag(false);
+
+    const accounts = listAccounts();
+    return {
+      ok: true,
+      account_count: result.accountCount,
+      accounts: accounts.map((a) => ({ id: a.id, name: a.name })),
+      schema_version: result.schemaVersion,
+      bytes: result.bytes,
+      source: "local-backup-import",
+      message: "已从本地备份恢复。请用备份库中的家长密码重新解锁。",
+    };
+  }
+
   async function handle(url, init) {
     await ensureDb();
     const u = new URL(url, "https://mytimetree.local");
@@ -1692,6 +1737,7 @@
     handle,
     importSqliteBytes,
     restoreFromICloud,
+    restoreFromLocalBackup,
     async init() {
       await ensureDb();
       sessionUnlocked = readUnlockFlag();
