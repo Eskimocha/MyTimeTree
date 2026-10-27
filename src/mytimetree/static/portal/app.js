@@ -2506,7 +2506,7 @@
         method: "POST",
         body: JSON.stringify({ minutes, summary: "借用" }),
       });
-      flash($("#home-msg"), "已借用（记借+入+支）");
+      flash($("#home-msg"), "已借入（负债↑ 资产↑，净资产不变）");
       await refreshHome();
     } catch (ex) {
       flash($("#home-msg"), ex.message);

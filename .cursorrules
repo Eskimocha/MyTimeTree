@@ -130,34 +130,19 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 
 # Scratchpad
 
-## Task: 姓名 pill 再加宽 (20261019e)
-- [X] 自定义 account-name-btn + 透明 native select overlay
-- [X] 父级不收缩；测「方存真」；stamp 20261019e；push
+## Task: 借入流水去掉绿色 −N（20261027）
+Kai：借入应负债↑+资产↑、净资产不变；现状多一笔 spend（绿 −N）导致资产不变、净资产错。
+修：`borrow` 只写 `borrow`+`deposit` 两笔（同 correlation_id），删 spend。
+产品主路径：`mobile/www-src/local/store.js`（Cap 共用 portal）；Python ledger 同步以免沙盒/测试漂移。
+PR #4 Android 仍开但属移植，本修从 main 新开分支。
+
+- [X] 定位 store.js / ledger.py / UI 文案 / 测试
+- [X] 改 borrow 为 2 笔；更新规则文案与 flash
+- [X] 更新相关断言 + smoke；跑测试
+- [ ] sync-web stamp；commit/push/PR；internal 说明
 
 ## Lessons
-- iOS/Chromium `<select>` 内部会裁 CJK，加宽外框不够 → 用按钮显示文案
+- 借入 ≠ 随借随用：Kai 要「借入入账」两笔，勿再强制 spend
+- e8 测试勿写死本机 `/Users/...` 路径；用 `Path(__file__).parents[2]`
 
-## Archived: name pill 20261019d / 蓝块 20261019c
-
-
-- Lesson: “Could not attach to pid … handshake … 6.0 seconds” 优先当调试器问题，勿先怪 Scene/Badge
-- Lesson: iOS/WK 上 fixed 菜单勿放在 backdrop-filter/transform 祖先内，应 body portal
-- Lesson: Kai 改 inventory 后须回写 micro/maui/parent 表再 build，勿只 cp inventory
-- Lesson: 自定义 select 替身勿放在关联该 select 的 `<label>` 内
-
-
-- Lesson: tip 展开勿绑 incentive_text；记后小庆仍用 small_celebration
-- Lesson: micro defaults 须 wholesale replace + rematerialize seed 行，否则旧多步残留
-- Lesson: 大庆/小庆勿互斥单字段；用 celebrations[] 队列
-- Lesson: 自定义 select 替身勿放在关联该 select 的 `<label>` 内
-- Lesson: iOS 图标 badge 勿只 request `.badge`；要 `.alert,.badge,.sound` 才会出系统弹窗
-
-## Lessons (this task)
-- iOS 设置假死：`bridge` 勿在 editable focus / soft-keyboard open 时 `scrollTo`+重写 viewport meta；resize 早于 activeElement settle，须防抖再查
-- share-capture 勿把所有 `.tab-panel` 刷成 `#f7fcf8`——会盖住森林卡；主屏保持 transparent
-- JS 设 height 时须 `setProperty(..., "important")`，否则打不过 CSS `height:auto !important`
-- Content tables: `docs/v2/content/*.md` → `build-habit-content.mjs` → `habit-seed.js`；`sync-web` 必须先 build
-- Kai 错支：须在 `habit-polish-o1-o6` 上 sync（勿停在 habit-ios-replan）
-- tip 展开字段序：微习惯 · 毛伊习惯 · 家长话术（无激励）
-
-## Archived: 日历 20261016l / Kai 5 / whisper / toe
+## Archived: 姓名 pill 20261019e / 蓝块 20261019c / 日历 20261016l

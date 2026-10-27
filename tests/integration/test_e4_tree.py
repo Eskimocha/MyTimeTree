@@ -106,8 +106,8 @@ def test_tree_service_stage_from_net_balance(env):
     accounts, ledger, tree = env["accounts"], env["ledger"], env["tree"]
     acc = accounts.open_account(name="小明", password="p", asset_interest_rate=0.0)
     ledger.deposit(acc.id, minutes=100)
-    ledger.borrow(acc.id, minutes=30)  # asset 100, liability 30, net 70
-    ledger.spend(acc.id, minutes=40)  # asset 60, liability 30, net 30 → sprout
+    ledger.borrow(acc.id, minutes=30)  # asset 130, liability 30, net 100
+    ledger.spend(acc.id, minutes=70)  # asset 60, liability 30, net 30 → sprout
     state = tree.get_state(acc.id)
     assert state.stage == TreeStage.SPROUT
     assert state.ornaments.pest_count == 1
@@ -177,10 +177,10 @@ def test_today_interest_preview(env):
     # liability rate = asset/2 = 0.005
     ledger.deposit(acc.id, minutes=200)
     ledger.borrow(acc.id, minutes=100)
-    # asset 200 → floor(2); liability 100 → floor(0.5)=0
+    # asset 300 → floor(3); liability 100 → floor(0.5)=0
     prev = ledger.preview_today_interest(acc.id)
-    assert prev["asset"] == 2
+    assert prev["asset"] == 3
     assert prev["liability"] == 0
-    assert prev["net"] == 2
+    assert prev["net"] == 3
     state = tree.get_state(acc.id)
-    assert state.today_interest == 2
+    assert state.today_interest == 3

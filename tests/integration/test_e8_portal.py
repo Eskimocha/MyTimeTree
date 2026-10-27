@@ -21,8 +21,9 @@ from mytimetree.services.security import ConfirmTokenService
 from mytimetree.services.settings import SettingsService
 from mytimetree.services.tree import TreeService
 
-CHECKLIST = Path("/Users/fangkai/编程/mytimetree-tdd/docs/portal-design-checklist.md")
-STATIC = Path("/Users/fangkai/编程/mytimetree-tdd/src/mytimetree/static/portal")
+_REPO = Path(__file__).resolve().parents[2]
+CHECKLIST = _REPO / "docs" / "portal-design-checklist.md"
+STATIC = _REPO / "src" / "mytimetree" / "static" / "portal"
 
 
 @pytest.fixture
@@ -173,16 +174,20 @@ def test_home_shows_balance_tree_and_actions(env):
 
     borrow = client.post("/api/portal/borrow", json={"minutes": 10, "summary": "借玩"})
     assert borrow.status_code == 200
+    assert borrow.json()["count"] == 2
+    assert borrow.json()["categories"] == ["borrow", "deposit"]
     home2 = client.get("/api/portal/home").json()
     assert home2["balance"]["liability"] == 10
+    assert home2["balance"]["asset"] == 110  # 借入入账 +10；净资产仍 100
+    assert home2["balance"]["net"] == 100
     assert home2["tree"]["ornaments"]["pest_count"] >= 1
 
     deposit = client.post("/api/portal/deposit", json={"minutes": 10, "summary": "存入"})
     assert deposit.status_code == 200
     home3 = client.get("/api/portal/home").json()
-    # 存入优先还债：负债 10 全部还清，无超额进资产；资产仍为 100
+    # 存入优先还债：负债 10 全部还清，无超额进资产；资产仍为借入后的 110
     assert home3["balance"]["liability"] == 0
-    assert home3["balance"]["asset"] == 100
+    assert home3["balance"]["asset"] == 110
     assert home3["tree"]["ornaments"]["woodpecker_count"] >= 1
     assert home3["tree"]["ornaments"]["pest_count"] == 0  # 还清负债消灭虫
     assert home3["tree"]["ornaments"]["fruit_count"] >= 2  # 奖励存入 + 本次存入各 1 星
@@ -192,7 +197,7 @@ def test_home_shows_balance_tree_and_actions(env):
     assert excess.status_code == 200
     assert excess.json()["categories"] == ["deposit"]
     home4 = client.get("/api/portal/home").json()
-    assert home4["balance"]["asset"] == 115
+    assert home4["balance"]["asset"] == 125
     assert home4["balance"]["liability"] == 0
 
 
@@ -262,7 +267,8 @@ def test_portal_markup_has_shell_tabs_and_onboarding():
     assert "存入" in html
     assert "还入" not in html
     assert "挂件积分" in html
-    assert "借用" in html and "强制消费" in html
+    assert "借用" in html and "净资产不变" in html
+    assert "强制消费" not in html
     assert "优先还清负债" in html
     assert html.count('data-kind="') >= 5
     assert "orn-star" in html and "orn-bird" in html

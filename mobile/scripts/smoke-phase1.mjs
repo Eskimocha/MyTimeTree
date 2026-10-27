@@ -87,16 +87,38 @@ const home2 = await api("/api/portal/home");
 if (home2.balance.asset !== 80) throw new Error(`asset want 80 got ${home2.balance.asset}`);
 if (home2.tree.ornaments.fruit_count < 1) throw new Error("expected star after deposit");
 
+const beforeBorrow = home2.balance;
 await api("/api/portal/borrow", {
   method: "POST",
   body: JSON.stringify({ minutes: 30 }),
 });
 const home3 = await api("/api/portal/home");
 if (home3.balance.liability !== 30) throw new Error(`liab want 30 got ${home3.balance.liability}`);
+if (home3.balance.asset !== beforeBorrow.asset + 30) {
+  throw new Error(
+    `asset want ${beforeBorrow.asset + 30} got ${home3.balance.asset} (borrow must credit asset)`
+  );
+}
+if (home3.balance.net !== beforeBorrow.net) {
+  throw new Error(
+    `net want ${beforeBorrow.net} got ${home3.balance.net} (borrow must keep net unchanged)`
+  );
+}
 if (home3.tree.ornaments.pest_count < 1) throw new Error("expected pest");
 
 const ledger = await api("/api/ledger?account_id=1&limit=50");
-console.log("[smoke] ledger total", ledger.total);
+const borrowRow = (ledger.items || []).find((e) => e.category === "borrow");
+if (!borrowRow) throw new Error("expected borrow ledger row");
+const sameCid = (ledger.items || []).filter(
+  (e) => e.correlation_id === borrowRow.correlation_id
+);
+if (sameCid.length !== 2) {
+  throw new Error(`borrow legs want 2 got ${sameCid.length}: ${sameCid.map((e) => e.category)}`);
+}
+if (sameCid.some((e) => e.category === "spend")) {
+  throw new Error("borrow must not write spend leg");
+}
+console.log("[smoke] ledger total", ledger.total, "borrow legs", sameCid.map((e) => e.category));
 
 const week = await api("/api/analytics/weekly?account_id=1");
 console.log("[smoke] weekly series days", week.series.length);
