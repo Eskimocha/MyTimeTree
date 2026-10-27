@@ -139,7 +139,7 @@ PR #4 Android 仍开但属移植，本修从 main 新开分支。
 - [X] 定位 store.js / ledger.py / UI 文案 / 测试
 - [X] 改 borrow 为 2 笔；更新规则文案与 flash
 - [X] 更新相关断言 + smoke；跑测试
-- [ ] sync-web stamp；commit/push/PR；internal 说明
+- [X] sync-web stamp；commit/push/PR #5；internal 说明
 
 ## Lessons
 - 借入 ≠ 随借随用：Kai 要「借入入账」两笔，勿再强制 spend
