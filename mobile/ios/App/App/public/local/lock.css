@@ -107,7 +107,8 @@ body {
 
 html.is-locked #portal,
 html.is-locked .keypad-modal,
-html.is-locked .account-modal {
+html.is-locked .account-modal,
+html.is-locked .update-soft-prompt {
   visibility: hidden;
   pointer-events: none;
 }
@@ -685,4 +686,57 @@ html.is-locked .account-modal {
 .question-picker-list button:active,
 .question-picker-menu button:active {
   background: #dff3e8;
+}
+
+/* Soft update prompt — below lock (1000) / seed picker (400); above account (50) */
+.update-soft-prompt[hidden] {
+  display: none !important;
+}
+.update-soft-prompt {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: grid;
+  align-items: end;
+  justify-items: center;
+  padding: 0 12px;
+  box-sizing: border-box;
+  pointer-events: auto;
+}
+.update-soft-prompt-backdrop {
+  position: fixed;
+  inset: 0;
+  background: #1a3d3244;
+}
+.update-soft-prompt-sheet {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: min(calc(430px - 2.8rem), 100%);
+  box-sizing: border-box;
+  padding: 1.05rem 1.1rem calc(1.25rem + env(safe-area-inset-bottom, 0px));
+  border-radius: 22px 22px 0 0;
+  background: #f7fcf8;
+  box-shadow: 0 -12px 40px #1a3d3228;
+}
+.update-soft-prompt-sheet h2 {
+  margin: 0 0 0.45rem;
+  font-family: var(--font-display, "Fredoka", "Noto Sans SC", sans-serif);
+  font-size: 1.15rem;
+  color: #1a3d32;
+}
+.update-soft-prompt-body {
+  margin: 0 0 1rem;
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: #3d5c52;
+}
+.update-soft-prompt-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+.update-soft-prompt-actions .btn {
+  font-size: 16px;
+  min-height: 2.75rem;
 }

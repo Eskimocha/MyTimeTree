@@ -1,0 +1,9 @@
+{
+  "androidVersionCode": 5,
+  "androidVersionName": "1.1.1",
+  "androidDownloadUrl": "https://example.com/mytimetree/MyTimeTree-1.1.1.apk",
+  "notes": "稳定性与体验改进",
+  "ios": {
+    "note": "iOS uses App Store lookup; this block is optional documentation only"
+  }
+}

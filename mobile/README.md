@@ -14,6 +14,10 @@ npm run open:ios
 
 改过原生插件 / entitlements 后：Xcode **Product → Clean Build Folder**，再 Run。
 
+## 软更新提示
+
+原生壳启动后会做**软提示**（可关「稍后」；不强制、无 OTA）：iOS 用 App Store lookup（`country=cn`）；Android 读远程 `version.json`（**versionCode**）。Android URL 在 `www-src/local/update-check.js` 的 `ANDROID_VERSION_JSON_URL`；样例见 `version.json.example`。说明与 Kai 托管步骤见 Project store `docs/update-check-soft-prompt.md`。
+
 ## Phase 2 验收（锁屏）
 
 ### 若提示「密码不正确」（旧数据）

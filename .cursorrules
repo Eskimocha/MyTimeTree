@@ -130,19 +130,17 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 
 # Scratchpad
 
-## Task: sync-web HABIT_MEDIA_V stamp 对齐（20261028）
-Kai iOS 黑屏：`npm run sync-web` 失败 — www HABIT_MEDIA_V 20261027a not found in mobile/www/app.js。
-根因：PR #5 把 WEB_BUILD/stamp 改成 20261027a，漏改 HABIT_MEDIA_V（#4 Android 分支曾对齐，main 可能仍缺）。
-只修 stamp/assert 对齐，不改业务逻辑。从 main 开分支 → 对齐 → sync-web 通过 → PR → 尽量 merge。
+## Task: 软更新提示 iOS A / Android B（20261028）
+Kai 拍板：iOS App Store lookup（country=cn）；Android 远程 version.json 用 versionCode；软弹窗；无强制/无 Capgo；失败静默；同日不重复。
 
-- [X] 定位：LOCAL_ASSET_V=20261027a，HABIT_MEDIA_V 仍 20261019e
-- [X] 对齐 HABIT_MEDIA_V→20261027a；`npm run sync-web` 通过
-- [ ] commit/push/PR（[Cursor]）；尝试 merge
-- [ ] internal 说明 + Kai 本机命令
+- [X] 读 preferences + 定位 Capacitor/local 注入与 stamp
+- [ ] 实现 update-check.js + CSS + sync-web 注入；stamp→20261028a
+- [ ] docs/update-check-soft-prompt.md（JSON 样例 + Kai 托管）
+- [ ] sync-web 通过 → commit/push/PR `[Cursor]`
 
 ## Lessons
 - 借入 ≠ 随借随用：Kai 要「借入入账」两笔，勿再强制 spend
 - e8 测试勿写死本机 `/Users/...` 路径；用 `Path(__file__).parents[2]`
 - 改 WEB_BUILD/stamp 时必须同步 HABIT_MEDIA_V / LOCAL_ASSET_V / sync-web assert（PR #5 漏改致 sync-web 挂）
 
-## Archived: 借入 20261027 / 姓名 pill 20261019e / 蓝块 20261019c / 日历 20261016l
+## Archived: stamp 对齐 20261027a / 借入 20261027 / 姓名 pill 20261019e / 蓝块 20261019c / 日历 20261016l

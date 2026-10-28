@@ -3,7 +3,7 @@
   "use strict";
   global.MyTimeTreeHabitSeed = {
   "version": 5,
-  "generated_at": "2026-10-28T03:20:38.789Z",
+  "generated_at": "2026-10-28T10:36:29.628Z",
   "templates": [
     {
       "slug": "brush_teeth",
