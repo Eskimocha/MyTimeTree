@@ -134,9 +134,9 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 Kai 拍板：iOS App Store lookup（country=cn）；Android 远程 version.json 用 versionCode；软弹窗；无强制/无 Capgo；失败静默；同日不重复。
 
 - [X] 读 preferences + 定位 Capacitor/local 注入与 stamp
-- [ ] 实现 update-check.js + CSS + sync-web 注入；stamp→20261028a
-- [ ] docs/update-check-soft-prompt.md（JSON 样例 + Kai 托管）
-- [ ] sync-web 通过 → commit/push/PR `[Cursor]`
+- [X] 实现 update-check.js + CSS + sync-web 注入；stamp→20261028a
+- [X] docs/update-check-soft-prompt.md（JSON 样例 + Kai 托管）
+- [X] sync-web 通过 → commit/push/PR `[Cursor]` → [#7](https://github.com/Eskimocha/MyTimeTree/pull/7)
 
 ## Lessons
 - 借入 ≠ 随借随用：Kai 要「借入入账」两笔，勿再强制 spend
