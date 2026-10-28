@@ -53,7 +53,7 @@
     bird: `./ornaments/bird.png?v=${ASSET_V}`,
   };
 
-  const HABIT_MEDIA_V = "20261019e";
+  const HABIT_MEDIA_V = "20261027a";
   // Tip: bright star (icon-tip-seed path overwritten; icon-tip-star alias also shipped)
   const HABIT_TIP_ICON = `./habit/icon-tip-star.png?v=${HABIT_MEDIA_V}`;
   const HABIT_TIP_ICON_2X = `./habit/icon-tip-star@2x.png?v=${HABIT_MEDIA_V}`;
@@ -2506,7 +2506,7 @@
         method: "POST",
         body: JSON.stringify({ minutes, summary: "借用" }),
       });
-      flash($("#home-msg"), "已借用（记借+入+支）");
+      flash($("#home-msg"), "已借入（负债↑ 资产↑，净资产不变）");
       await refreshHome();
     } catch (ex) {
       flash($("#home-msg"), ex.message);
