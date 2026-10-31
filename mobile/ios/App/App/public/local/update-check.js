@@ -86,15 +86,30 @@
     }
   }
 
+  /**
+   * Parse marketing version into numeric parts.
+   * Do NOT use filter(Boolean) — it drops "0" and turns "1.0.0" into [1].
+   * @returns {number[]|null}
+   */
+  function parseSemverParts(v) {
+    const s = String(v == null ? "" : v)
+      .trim()
+      .replace(/^[vV]/, "");
+    if (!s) return null;
+    const raw = s.split(/[^\d]+/).filter((p) => p !== "");
+    if (!raw.length) return null;
+    const parts = raw.map((n) => parseInt(n, 10));
+    if (parts.some((n) => !Number.isFinite(n))) return null;
+    return parts;
+  }
+
+  /**
+   * @returns {number|null} 1 if a>b, -1 if a<b, 0 if equal, null if either invalid
+   */
   function cmpSemver(a, b) {
-    const pa = String(a || "0")
-      .split(/[^\d]+/)
-      .filter(Boolean)
-      .map((n) => parseInt(n, 10) || 0);
-    const pb = String(b || "0")
-      .split(/[^\d]+/)
-      .filter(Boolean)
-      .map((n) => parseInt(n, 10) || 0);
+    const pa = parseSemverParts(a);
+    const pb = parseSemverParts(b);
+    if (!pa || !pb) return null;
     const len = Math.max(pa.length, pb.length);
     for (let i = 0; i < len; i++) {
       const d = (pa[i] || 0) - (pb[i] || 0);
@@ -128,14 +143,35 @@
     }
   }
 
+  /** Build an itms-apps:// deep link that iOS hands to the App Store app (not Safari). */
+  function appStoreDeepLink(trackId, trackViewUrl) {
+    const fromId = String(trackId == null ? "" : trackId).replace(/\D/g, "");
+    if (fromId) {
+      return `itms-apps://apps.apple.com/cn/app/id${fromId}`;
+    }
+    const m = String(trackViewUrl || "").match(/\/id(\d+)/);
+    if (m && m[1]) {
+      return `itms-apps://apps.apple.com/cn/app/id${m[1]}`;
+    }
+    return "";
+  }
+
   function openExternal(url) {
     if (!url) return;
     try {
+      // Custom schemes: navigate so WKWebView delegates to UIApplication.open
+      // (target=_blank https → Safari; itms-apps must not go through Browser/Safari).
+      if (/^(itms-apps|itms|market):/i.test(url)) {
+        window.location.href = url;
+        return;
+      }
+    } catch (err) {
+      console.warn("[update-check] scheme open failed", err);
+    }
+    try {
       const Cap = window.Capacitor;
       const Browser =
-        Cap && Cap.Plugins && Cap.Plugins.Browser
-          ? Cap.Plugins.Browser
-          : null;
+        Cap && Cap.Plugins && Cap.Plugins.Browser ? Cap.Plugins.Browser : null;
       if (Browser && typeof Browser.open === "function") {
         Browser.open({ url }).catch(() => {
           windowOpen(url);
@@ -261,35 +297,69 @@
 
   async function checkIos() {
     const info = await getLocalInfo();
-    const localVer = info && info.version;
+    // Marketing version only (CFBundleShortVersionString) — never compare to build.
+    const localVer = info && info.version != null ? String(info.version).trim() : "";
+    const localBuild = info && info.build != null ? String(info.build).trim() : "";
+    const localId = info && info.id != null ? String(info.id).trim() : "";
     if (!localVer) {
-      console.info("[update-check] iOS: no local version");
+      console.info("[update-check] iOS: no local marketing version; skip");
       return;
     }
+    if (localId && localId !== IOS_BUNDLE_ID) {
+      console.info("[update-check] iOS: bundle id mismatch; skip", {
+        localId,
+        expected: IOS_BUNDLE_ID,
+      });
+      return;
+    }
+
     const data = await fetchJson(IOS_LOOKUP_URL);
+    const resultCount = data && typeof data.resultCount === "number" ? data.resultCount : 0;
     const result =
       data && Array.isArray(data.results) && data.results.length
         ? data.results[0]
         : null;
-    if (!result) {
-      console.info("[update-check] iOS: lookup empty (app may be unlisted)");
+    if (!resultCount || !result) {
+      console.info("[update-check] iOS: lookup empty (not on App Store / unlisted); skip");
       return;
     }
-    const remoteVer = result.version;
-    const url =
-      result.trackViewUrl ||
-      (result.trackId
-        ? `https://apps.apple.com/cn/app/id${result.trackId}`
-        : "");
+    if (result.bundleId && result.bundleId !== IOS_BUNDLE_ID) {
+      console.info("[update-check] iOS: lookup bundleId mismatch; skip", result.bundleId);
+      return;
+    }
+
+    const remoteVer = result.version != null ? String(result.version).trim() : "";
+    const deepLink = appStoreDeepLink(result.trackId, result.trackViewUrl);
+    if (!remoteVer || !deepLink) {
+      console.info("[update-check] iOS: missing store version or trackId; skip", {
+        remoteVer,
+        trackId: result.trackId,
+      });
+      return;
+    }
+
+    const cmp = cmpSemver(remoteVer, localVer);
     console.info("[update-check] iOS compare", {
-      local: localVer,
-      remote: remoteVer,
+      localVersion: localVer,
+      localBuild,
+      remoteVersion: remoteVer,
+      cmp,
+      localParts: parseSemverParts(localVer),
+      remoteParts: parseSemverParts(remoteVer),
+      deepLink,
     });
-    if (cmpSemver(remoteVer, localVer) > 0) {
+    // Invalid parse → silent skip (do not prompt).
+    if (cmp == null) {
+      console.info("[update-check] iOS: unparsable version; skip");
+      return;
+    }
+    // Only prompt when store marketing version is strictly newer.
+    // Same version or local newer (TestFlight / ahead of store) → no prompt.
+    if (cmp > 0) {
       showSoftPrompt({
         storeVersion: remoteVer,
         notes: "",
-        url,
+        url: deepLink,
       });
     }
   }
@@ -381,7 +451,6 @@
     };
     setTimeout(kick, START_DELAY_MS);
 
-    // After unlock / when lock class clears, try again if check not settled.
     try {
       const obs = new MutationObserver(() => {
         if (settled || alreadyPromptedToday()) {
@@ -421,6 +490,9 @@
   window.__mytimetreeUpdateCheck = {
     runCheck,
     showSoftPrompt,
+    cmpSemver,
+    parseSemverParts,
+    appStoreDeepLink,
     ANDROID_VERSION_JSON_URL,
     IOS_LOOKUP_URL,
   };
