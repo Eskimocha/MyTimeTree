@@ -744,14 +744,11 @@ html.is-locked .update-soft-prompt {
 .update-check-settings {
   margin-top: 1rem;
 }
-.update-check-settings .update-check-lede {
-  margin: 0 0 0.75rem;
-  font-size: 0.85rem;
-}
 .update-check-settings #btn-check-update {
   width: 100%;
   font-size: 16px;
   min-height: 2.75rem;
+  margin-top: 0.35rem;
 }
 .update-check-toast {
   z-index: 90;

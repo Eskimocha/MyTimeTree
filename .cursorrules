@@ -130,11 +130,14 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 
 # Scratchpad
 
-## Task: PR #7 设置「检查更新」手动入口（20261031）
-Kai：设置加检查更新；忽略同日限制；有新版软弹窗；最新 Toast；失败可见提示。
+## Task: 设置页隐藏开发/模拟器文案（续 PR #7）
+Kai：蓝框内开发说明勿展示；保留 Face ID 开关、iCloud 同步、检查更新按钮。
 
-- [X] update-check：checkNowManual + 设置入口；stamp→20261031b
-- [X] 更新 docs；sync-web；push #7
+- [X] Face ID：不展示「当前检测不到…模拟器 Features…」
+- [X] iCloud：模拟器长错误/说明不展示；真机简洁状态可留
+- [X] 版本更新：删「检查 App Store…不强制更新」句，留按钮
+- [X] stamp 齐改（20261031c）+ sync-web + push #7
+- [X] 更新 docs/update-check + Kai 验证说明
 
 ## Lessons
 - 借入 ≠ 随借随用：Kai 要「借入入账」两笔，勿再强制 spend
@@ -142,5 +145,6 @@ Kai：设置加检查更新；忽略同日限制；有新版软弹窗；最新 T
 - 改 WEB_BUILD/stamp 时必须同步 HABIT_MEDIA_V / LOCAL_ASSET_V / sync-web assert（PR #5 漏改致 sync-web 挂）
 - semver split 后禁止 `filter(Boolean)`（会丢掉 `"0"` → `1.0.0` 变成 `[1]`）
 - iOS「去更新」必须 `itms-apps://apps.apple.com/.../id{trackId}`，勿用 https + target=_blank（会进 Safari）
+- 设置页不向用户展示开发/模拟器说明（Face ID Enrolled、iCloud 模拟器限制长文、检查更新 lede）
 
-## Archived: 软更新误弹/Safari 20261031a / 软更新初版 20261028a / stamp 对齐 20261027a
+## Archived: 检查更新手动入口 20261031b / 软更新误弹/Safari 20261031a / 软更新初版 20261028a / stamp 对齐 20261027a

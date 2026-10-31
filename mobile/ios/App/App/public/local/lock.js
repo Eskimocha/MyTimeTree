@@ -343,10 +343,8 @@
           const avail = await biometryAvailable();
           if (!avail) {
             toggle.checked = false;
-            flashMsg(
-              $("#faceid-settings-hint"),
-              "设备未录入 Face ID。模拟器请用 Features → Face ID → Enrolled"
-            );
+            // Do not surface simulator / developer enrollment hints in Settings.
+            flashMsg($("#faceid-settings-hint"), "");
             return;
           }
           if (bio) {
@@ -770,12 +768,9 @@
       return { summary: "网页模式" };
     }
     if (sync.plugin === false) {
-      setStatus("ICloudDb 插件未就绪", "bad");
-      setDetail(
-        sync.lastError ||
-          "请 Product → Clean Build Folder 后重新 Run。"
-      );
-      return { summary: "插件未就绪" };
+      setStatus("同步插件未就绪", "bad");
+      setDetail("");
+      return { summary: "插件未就绪", reason: null };
     }
 
     let summary;
@@ -784,19 +779,43 @@
       summary = sync.lastWriteICloud || cloudAt ? "iCloud 可用" : "iCloud 可用（待写入云端文件）";
       tone = "ok";
     } else if (sync.isSimulator) {
-      summary = "模拟器：iCloud Documents 通常不可用";
+      // Concise only — never show simulator limitation essays in Settings.
+      summary = "不可用";
       tone = "warn";
+      setStatus(summary, tone);
+      setDetail("");
+      return {
+        summary,
+        checked,
+        lastWrite,
+        localAt,
+        cloudAt,
+        reason: null,
+      };
     } else {
       summary = "iCloud 容器不可用（本机仍应能保存）";
       tone = "bad";
     }
     setStatus(summary, tone);
     const bits = [];
-    if (sync.iCloudReason) bits.push(String(sync.iCloudReason));
-    else if (sync.hasIdentityToken === false && !sync.isSimulator) {
+    // Skip long native iCloudReason on simulator (handled above); keep short device hints.
+    if (sync.iCloudReason && !sync.isSimulator) {
+      const reason = String(sync.iCloudReason);
+      // Hide Xcode / Clean Build style developer diagnostics from end users.
+      const isDevDiag =
+        /Xcode|Clean Build|Personal Team|Signing|Features →|模拟器限制/.test(
+          reason
+        );
+      if (!isDevDiag) bits.push(reason);
+    } else if (sync.hasIdentityToken === false && !sync.isSimulator) {
       bits.push("未检测到 iCloud 登录令牌");
     }
-    if (sync.lastError) bits.push(`错误：${sync.lastError}`);
+    if (sync.lastError && !sync.isSimulator) {
+      const err = String(sync.lastError);
+      if (!/模拟器限制|Xcode|Clean Build/.test(err)) {
+        bits.push(`错误：${err}`);
+      }
+    }
     setDetail(bits.join(" · "));
     return {
       summary,
@@ -804,7 +823,7 @@
       lastWrite,
       localAt,
       cloudAt,
-      reason: sync.iCloudReason || null,
+      reason: bits.length ? bits.join(" · ") : null,
     };
   }
 
@@ -928,11 +947,10 @@
       const st = await api("/api/auth/faceid");
       box.checked = Boolean(st.enabled);
       const hint = $("#faceid-settings-hint");
-      const avail = await biometryAvailable();
-      if (hint && !avail) {
-        hint.hidden = false;
-        hint.textContent =
-          "当前检测不到 Face ID。模拟器：Features → Face ID → Enrolled，然后再开此开关。";
+      // Never show Face ID / simulator enrollment guidance in Settings.
+      if (hint) {
+        hint.hidden = true;
+        hint.textContent = "";
       }
     } catch {
       /* locked */

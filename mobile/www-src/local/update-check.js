@@ -523,7 +523,6 @@
       box.className = "update-check-settings sync-settings";
       box.innerHTML = `
         <h3 class="security-title">版本更新</h3>
-        <p class="muted update-check-lede">检查 App Store / 下载页是否有新版本（不强制更新）。</p>
         <button type="button" class="btn primary" id="btn-check-update">检查更新</button>
         <p id="update-check-settings-msg" class="msg" hidden></p>
       `;
@@ -536,6 +535,9 @@
       } else {
         after.parentNode.appendChild(box);
       }
+    } else {
+      // Drop legacy developer lede if an older inject left it in place.
+      box.querySelectorAll(".update-check-lede").forEach((el) => el.remove());
     }
     const btn = document.getElementById("btn-check-update");
     if (btn && btn.dataset.wired !== "1") {
