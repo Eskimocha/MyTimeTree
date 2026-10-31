@@ -135,7 +135,7 @@ Kai：Connect 拒绝再传 1.1.0。在 PR #7 分支改 MARKETING_VERSION→1.1.1
 
 - [X] project.pbxproj Debug/Release：MARKETING_VERSION=1.1.1、CURRENT_PROJECT_VERSION=9
 - [X] 对齐 APP_VERSION + mobile/README；Info.plist 已用 $(MARKETING_VERSION) 无需硬改
-- [ ] commit/push PR #7；回复 Kai fetch+sync+Archive
+- [X] commit/push PR #7（37381b2）；回复 Kai fetch+sync+Archive
 
 ## Lessons
 - 借入 ≠ 随借随用：Kai 要「借入入账」两笔，勿再强制 spend
