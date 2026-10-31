@@ -134,9 +134,9 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 Kai 测 #7：已最新仍弹；去更新开 Safari 空页。
 根因假设：① cmpSemver `filter(Boolean)` 吃掉 `"0"`；工程 MARKETING 仍 1.0.0 而商店 1.1.0 也会真阳性；② 用 https trackViewUrl + `<a target=_blank>` → Safari，应 itms-apps deep link；无 trackId/未上架不弹。
 
-- [ ] 修 cmpSemver + itms-apps 打开；校验 bundleId/trackId
-- [ ] 对齐 pbx MARKETING 1.1.0（与商店）；stamp 三件套 bump
-- [ ] 更新 docs；sync-web；push #7
+- [X] 修 cmpSemver + itms-apps 打开；校验 bundleId/trackId
+- [X] 对齐 pbx MARKETING 1.1.0（与商店）；stamp 三件套 bump → 20261031a
+- [X] 更新 docs；sync-web；push #7 @dfdcb38
 
 ## Lessons
 - 借入 ≠ 随借随用：Kai 要「借入入账」两笔，勿再强制 spend
