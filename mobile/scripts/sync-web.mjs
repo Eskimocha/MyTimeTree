@@ -14,7 +14,7 @@ const www = path.join(root, "mobile/www");
 const localSrc = path.join(root, "mobile/www-src/local");
 const sqlJsDist = path.join(root, "mobile/node_modules/sql.js/dist");
 /** Bust WKWebView caches for injected local scripts + app.js (was stuck on p5h1 / local-p2). */
-const LOCAL_ASSET_V = "20261031a";
+const LOCAL_ASSET_V = "20261031b";
 const iosPublic = path.join(root, "mobile/ios/App/App/public");
 
 function rmrf(dir) {
@@ -648,7 +648,12 @@ function assertBuildTree(base, tag) {
     /filter\(\(p\) => p !== ""\)/,
     `${tag} semver keep zero parts`
   );
+  assertMarker(base, "local/update-check.js", /checkNowManual/, `${tag} checkNowManual`);
+  assertMarker(base, "local/update-check.js", /btn-check-update/, `${tag} settings 检查更新`);
+  assertMarker(base, "local/update-check.js", /已是最新版本/, `${tag} latest toast copy`);
+  assertMarker(base, "local/update-check.js", /暂时无法检查/, `${tag} fail toast copy`);
   assertMarker(base, "local/lock.css", /\.update-soft-prompt/, `${tag} update-soft-prompt CSS`);
+  assertMarker(base, "local/lock.css", /\.update-check-settings/, `${tag} update-check-settings CSS`);
 }
 
 assertBuildTree(www, "www");

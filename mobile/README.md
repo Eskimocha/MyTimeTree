@@ -16,7 +16,7 @@ npm run open:ios
 
 ## 软更新提示
 
-原生壳启动后会做**软提示**（可关「稍后」；不强制、无 OTA）：iOS 用 App Store lookup（`country=cn`）；Android 读远程 `version.json`（**versionCode**）。Android URL 在 `www-src/local/update-check.js` 的 `ANDROID_VERSION_JSON_URL`；样例见 `version.json.example`。说明与 Kai 托管步骤见 Project store `docs/update-check-soft-prompt.md`。
+原生壳启动后会做**软提示**（可关「稍后」；不强制、无 OTA）：iOS 用 App Store lookup（`country=cn`）；Android 读远程 `version.json`（**versionCode**）。设置页有手动 **检查更新**（忽略同日限制；最新/失败用 Toast）。Android URL 在 `www-src/local/update-check.js` 的 `ANDROID_VERSION_JSON_URL`；样例见 `version.json.example`。说明见 Project store `docs/update-check-soft-prompt.md`。
 
 ## Phase 2 验收（锁屏）
 

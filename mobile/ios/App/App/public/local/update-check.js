@@ -2,8 +2,9 @@
  * Soft in-app update prompt (native only).
  * - iOS: App Store lookup (country=cn) vs local marketing version
  * - Android: remote version.json vs local versionCode (App.getInfo().build)
- * Soft modal only — never force-upgrade; offline/errors stay silent.
- * Same calendar day: at most one prompt (localStorage).
+ * Soft modal only — never force-upgrade.
+ * Auto: offline/errors stay silent; same calendar day at most one prompt.
+ * Manual (设置 → 检查更新): always re-check; toast for latest / failure.
  */
 (function () {
   "use strict";
@@ -21,12 +22,14 @@
   const FETCH_MS = 8000;
   const START_DELAY_MS = 2200;
   const RETRY_WHEN_BUSY_MS = 4000;
+  const TOAST_MS = 2800;
 
   let scheduled = false;
   let inFlight = false;
-  /** True after a successful platform check (update or not); network failures stay false for a later resume retry. */
+  /** True after a successful auto check (update or not); network failures stay false for a later resume retry. */
   let settled = false;
   let modalEl = null;
+  let toastTimer = null;
 
   function platform() {
     try {
@@ -159,8 +162,6 @@
   function openExternal(url) {
     if (!url) return;
     try {
-      // Custom schemes: navigate so WKWebView delegates to UIApplication.open
-      // (target=_blank https → Safari; itms-apps must not go through Browser/Safari).
       if (/^(itms-apps|itms|market):/i.test(url)) {
         window.location.href = url;
         return;
@@ -196,6 +197,22 @@
     } catch (err) {
       console.warn("[update-check] openExternal failed", err);
     }
+  }
+
+  function showToast(msg) {
+    let el = document.getElementById("update-check-toast");
+    if (!el) {
+      el = document.createElement("div");
+      el.id = "update-check-toast";
+      el.className = "share-toast update-check-toast";
+      document.body.appendChild(el);
+    }
+    el.textContent = msg;
+    el.hidden = false;
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+      el.hidden = true;
+    }, TOAST_MS);
   }
 
   function canShowPrompt() {
@@ -262,18 +279,20 @@
     modalEl.dataset.updateUrl = "";
   }
 
-  function showSoftPrompt({ storeVersion, notes, url }) {
+  function showSoftPrompt({ storeVersion, notes, url }, opts) {
+    const force = !!(opts && opts.force);
     if (!url) {
       console.info("[update-check] update available but no URL; skip prompt");
-      return;
+      return false;
     }
-    if (!canShowPrompt()) {
+    if (!force && !canShowPrompt()) {
       console.info("[update-check] UI busy; retry prompt later");
       setTimeout(() => {
         if (!alreadyPromptedToday()) showSoftPrompt({ storeVersion, notes, url });
       }, RETRY_WHEN_BUSY_MS);
-      return;
+      return false;
     }
+    if (document.documentElement.classList.contains("is-locked")) return false;
     const el = ensureModal();
     const body = el.querySelector("#update-soft-body");
     const bits = [];
@@ -285,6 +304,7 @@
     markPromptedToday();
     el.hidden = false;
     console.info("[update-check] soft prompt shown", { storeVersion, url });
+    return true;
   }
 
   async function getLocalInfo() {
@@ -295,22 +315,20 @@
     return App.getInfo();
   }
 
+  /**
+   * @returns {Promise<{kind:string, storeVersion?:string, localVersion?:string, url?:string, notes?:string, message?:string}>}
+   */
   async function checkIos() {
     const info = await getLocalInfo();
-    // Marketing version only (CFBundleShortVersionString) — never compare to build.
     const localVer = info && info.version != null ? String(info.version).trim() : "";
     const localBuild = info && info.build != null ? String(info.build).trim() : "";
     const localId = info && info.id != null ? String(info.id).trim() : "";
     if (!localVer) {
-      console.info("[update-check] iOS: no local marketing version; skip");
-      return;
+      return { kind: "error", message: "暂时无法检查" };
     }
     if (localId && localId !== IOS_BUNDLE_ID) {
-      console.info("[update-check] iOS: bundle id mismatch; skip", {
-        localId,
-        expected: IOS_BUNDLE_ID,
-      });
-      return;
+      console.info("[update-check] iOS: bundle id mismatch", { localId });
+      return { kind: "error", message: "暂时无法检查" };
     }
 
     const data = await fetchJson(IOS_LOOKUP_URL);
@@ -320,22 +338,17 @@
         ? data.results[0]
         : null;
     if (!resultCount || !result) {
-      console.info("[update-check] iOS: lookup empty (not on App Store / unlisted); skip");
-      return;
+      console.info("[update-check] iOS: lookup empty");
+      return { kind: "error", message: "暂时无法检查" };
     }
     if (result.bundleId && result.bundleId !== IOS_BUNDLE_ID) {
-      console.info("[update-check] iOS: lookup bundleId mismatch; skip", result.bundleId);
-      return;
+      return { kind: "error", message: "暂时无法检查" };
     }
 
     const remoteVer = result.version != null ? String(result.version).trim() : "";
     const deepLink = appStoreDeepLink(result.trackId, result.trackViewUrl);
     if (!remoteVer || !deepLink) {
-      console.info("[update-check] iOS: missing store version or trackId; skip", {
-        remoteVer,
-        trackId: result.trackId,
-      });
-      return;
+      return { kind: "error", message: "暂时无法检查" };
     }
 
     const cmp = cmpSemver(remoteVer, localVer);
@@ -344,39 +357,40 @@
       localBuild,
       remoteVersion: remoteVer,
       cmp,
-      localParts: parseSemverParts(localVer),
-      remoteParts: parseSemverParts(remoteVer),
       deepLink,
     });
-    // Invalid parse → silent skip (do not prompt).
     if (cmp == null) {
-      console.info("[update-check] iOS: unparsable version; skip");
-      return;
+      return { kind: "error", message: "暂时无法检查" };
     }
-    // Only prompt when store marketing version is strictly newer.
-    // Same version or local newer (TestFlight / ahead of store) → no prompt.
     if (cmp > 0) {
-      showSoftPrompt({
+      return {
+        kind: "update",
         storeVersion: remoteVer,
-        notes: "",
+        localVersion: localVer,
         url: deepLink,
-      });
+        notes: "",
+      };
     }
+    return {
+      kind: "latest",
+      storeVersion: remoteVer,
+      localVersion: localVer,
+    };
   }
 
+  /**
+   * @returns {Promise<{kind:string, storeVersion?:string, url?:string, notes?:string, message?:string}>}
+   */
   async function checkAndroid() {
     const url = String(ANDROID_VERSION_JSON_URL || "").trim();
     if (!url) {
-      console.info(
-        "[update-check] Android: ANDROID_VERSION_JSON_URL empty — skip (set constant + host version.json)"
-      );
-      return;
+      console.info("[update-check] Android: ANDROID_VERSION_JSON_URL empty");
+      return { kind: "error", message: "暂时无法检查" };
     }
     const info = await getLocalInfo();
     const localCode = parseInt(String(info && info.build), 10);
     if (!Number.isFinite(localCode)) {
-      console.info("[update-check] Android: invalid local build", info);
-      return;
+      return { kind: "error", message: "暂时无法检查" };
     }
     const remote = await fetchJson(url);
     const remoteCode = parseInt(String(remote && remote.androidVersionCode), 10);
@@ -397,16 +411,27 @@
       downloadUrl: downloadUrl ? "(set)" : "(missing)",
     });
     if (!Number.isFinite(remoteCode)) {
-      console.info("[update-check] Android: bad androidVersionCode");
-      return;
+      return { kind: "error", message: "暂时无法检查" };
     }
     if (remoteCode > localCode) {
-      showSoftPrompt({
+      if (!downloadUrl) {
+        return { kind: "error", message: "暂时无法检查" };
+      }
+      return {
+        kind: "update",
         storeVersion,
-        notes,
         url: downloadUrl,
-      });
+        notes,
+      };
     }
+    return { kind: "latest", storeVersion, localVersion: String(localCode) };
+  }
+
+  async function probePlatform() {
+    const p = platform();
+    if (p === "ios") return checkIos();
+    if (p === "android") return checkAndroid();
+    return { kind: "error", message: "暂时无法检查" };
   }
 
   async function runCheck() {
@@ -417,18 +442,16 @@
       console.info("[update-check] already prompted today; skip");
       return;
     }
-    const p = platform();
     inFlight = true;
     try {
-      if (p === "ios") {
-        await checkIos();
-        settled = true;
-      } else if (p === "android") {
-        await checkAndroid();
-        settled = true;
-      } else {
-        console.info("[update-check] skip platform", p);
-        settled = true;
+      const result = await probePlatform();
+      settled = true;
+      if (result.kind === "update") {
+        showSoftPrompt({
+          storeVersion: result.storeVersion,
+          notes: result.notes || "",
+          url: result.url,
+        });
       }
     } catch (err) {
       console.info("[update-check] silent skip", err && err.message ? err.message : err);
@@ -437,7 +460,105 @@
     }
   }
 
+  /**
+   * Manual check from 设置 — ignores same-day prompt gate; always reports to user.
+   * @returns {Promise<{kind:string}>}
+   */
+  async function checkNowManual() {
+    if (!isNative()) {
+      showToast("暂时无法检查");
+      return { kind: "error", message: "暂时无法检查" };
+    }
+    if (inFlight) {
+      showToast("正在检查…");
+      return { kind: "busy" };
+    }
+    inFlight = true;
+    setManualButtonBusy(true);
+    try {
+      const result = await probePlatform();
+      if (result.kind === "update") {
+        const shown = showSoftPrompt(
+          {
+            storeVersion: result.storeVersion,
+            notes: result.notes || "",
+            url: result.url,
+          },
+          { force: true }
+        );
+        if (!shown) {
+          showToast(result.storeVersion ? `发现新版本 ${result.storeVersion}` : "发现新版本");
+        }
+      } else if (result.kind === "latest") {
+        showToast("已是最新版本");
+      } else {
+        showToast((result && result.message) || "暂时无法检查");
+      }
+      return result;
+    } catch (err) {
+      console.info("[update-check] manual check failed", err && err.message ? err.message : err);
+      showToast("暂时无法检查");
+      return { kind: "error", message: "暂时无法检查" };
+    } finally {
+      inFlight = false;
+      setManualButtonBusy(false);
+    }
+  }
+
+  function setManualButtonBusy(busy) {
+    const btn = document.getElementById("btn-check-update");
+    if (!btn) return;
+    btn.disabled = !!busy;
+    btn.textContent = busy ? "检查中…" : "检查更新";
+  }
+
+  function ensureSettingsEntry() {
+    if (!isNative()) return;
+    const form = document.getElementById("settings-form");
+    if (!form || !form.parentNode) return;
+    let box = document.getElementById("update-check-settings");
+    if (!box) {
+      box = document.createElement("div");
+      box.id = "update-check-settings";
+      box.className = "update-check-settings sync-settings";
+      box.innerHTML = `
+        <h3 class="security-title">版本更新</h3>
+        <p class="muted update-check-lede">检查 App Store / 下载页是否有新版本（不强制更新）。</p>
+        <button type="button" class="btn primary" id="btn-check-update">检查更新</button>
+        <p id="update-check-settings-msg" class="msg" hidden></p>
+      `;
+      const after =
+        document.getElementById("sync-settings") ||
+        document.getElementById("security-settings") ||
+        form;
+      if (after.nextSibling) {
+        after.parentNode.insertBefore(box, after.nextSibling);
+      } else {
+        after.parentNode.appendChild(box);
+      }
+    }
+    const btn = document.getElementById("btn-check-update");
+    if (btn && btn.dataset.wired !== "1") {
+      btn.dataset.wired = "1";
+      btn.addEventListener("click", () => {
+        checkNowManual().catch(() => {});
+      });
+    }
+  }
+
+  function wireSettingsTab() {
+    document.querySelectorAll('.tab[data-tab="settings"]').forEach((tabBtn) => {
+      if (tabBtn.dataset.updateCheckWired === "1") return;
+      tabBtn.dataset.updateCheckWired = "1";
+      tabBtn.addEventListener("click", () => {
+        ensureSettingsEntry();
+      });
+    });
+  }
+
   function schedule() {
+    ensureSettingsEntry();
+    wireSettingsTab();
     if (!isNative()) return;
     if (scheduled) return;
     scheduled = true;
@@ -489,10 +610,13 @@
 
   window.__mytimetreeUpdateCheck = {
     runCheck,
+    checkNowManual,
     showSoftPrompt,
+    showToast,
     cmpSemver,
     parseSemverParts,
     appStoreDeepLink,
+    ensureSettingsEntry,
     ANDROID_VERSION_JSON_URL,
     IOS_LOOKUP_URL,
   };
