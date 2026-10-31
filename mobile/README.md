@@ -62,16 +62,16 @@ location.reload();
 
 ## Phase 5：TestFlight → App Store
 
-对外版本：**`1.1.0`**（Build **`8`**；之后每次上传 +1）。  
+对外版本：**`1.1.1`**（Build **`9`**；之后每次上传 +1）。  
 Bundle ID：`com.mytimetree.app` · iCloud：`iCloud.com.mytimetree.app`
 
 ### 5.1 仓库内已对齐
 
 | 项 | 值 |
 |----|-----|
-| 主屏 `APP_VERSION` | `1.1.0` |
-| Xcode `MARKETING_VERSION` | `1.1.0` |
-| Xcode `CURRENT_PROJECT_VERSION`（Build） | `8` |
+| 主屏 `APP_VERSION` | `1.1.1` |
+| Xcode `MARKETING_VERSION` | `1.1.1` |
+| Xcode `CURRENT_PROJECT_VERSION`（Build） | `9` |
 | `mobile/package.json` | `1.0.0`（npm 包名版本，与营销版独立） |
 | 出口合规 | `ITSAppUsesNonExemptEncryption = false`（仅用系统标准加密） |
 

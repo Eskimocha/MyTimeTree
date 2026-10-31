@@ -1,7 +1,7 @@
 /* MyTimeTree portal SPA — parent mobile shell */
 (() => {
   /** User-facing marketing version (align with iOS MARKETING_VERSION). */
-  const APP_VERSION = "1.1.0";
+  const APP_VERSION = "1.1.1";
 
   const STAGE_ZH = {
     seed: "种子",

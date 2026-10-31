@@ -130,14 +130,12 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 
 # Scratchpad
 
-## Task: 设置页隐藏开发/模拟器文案（续 PR #7）
-Kai：蓝框内开发说明勿展示；保留 Face ID 开关、iCloud 同步、检查更新按钮。
+## Task: iOS 版本 bump 1.1.1（Connect train closed）（20261031）
+Kai：Connect 拒绝再传 1.1.0。在 PR #7 分支改 MARKETING_VERSION→1.1.1；Build 8→9。勿改业务逻辑。
 
-- [X] Face ID：不展示「当前检测不到…模拟器 Features…」
-- [X] iCloud：模拟器长错误/说明不展示；真机简洁状态可留
-- [X] 版本更新：删「检查 App Store…不强制更新」句，留按钮
-- [X] stamp 齐改（20261031c）+ sync-web + push #7
-- [X] 更新 docs/update-check + Kai 验证说明
+- [X] project.pbxproj Debug/Release：MARKETING_VERSION=1.1.1、CURRENT_PROJECT_VERSION=9
+- [X] 对齐 APP_VERSION + mobile/README；Info.plist 已用 $(MARKETING_VERSION) 无需硬改
+- [ ] commit/push PR #7；回复 Kai fetch+sync+Archive
 
 ## Lessons
 - 借入 ≠ 随借随用：Kai 要「借入入账」两笔，勿再强制 spend
@@ -146,5 +144,6 @@ Kai：蓝框内开发说明勿展示；保留 Face ID 开关、iCloud 同步、�
 - semver split 后禁止 `filter(Boolean)`（会丢掉 `"0"` → `1.0.0` 变成 `[1]`）
 - iOS「去更新」必须 `itms-apps://apps.apple.com/.../id{trackId}`，勿用 https + target=_blank（会进 Safari）
 - 设置页不向用户展示开发/模拟器说明（Face ID Enrolled、iCloud 模拟器限制长文、检查更新 lede）
+- Connect 营销版列车关闭后须升 CFBundleShortVersionString（仅加 Build 不够）；1.1.0 → 1.1.1
 
-## Archived: 检查更新手动入口 20261031b / 软更新误弹/Safari 20261031a / 软更新初版 20261028a / stamp 对齐 20261027a
+## Archived: 设置页隐藏开发文案 20261031c / 检查更新手动入口 20261031b / 软更新误弹/Safari 20261031a / 软更新初版 20261028a / stamp 对齐 20261027a
