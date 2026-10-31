@@ -14,6 +14,10 @@ npm run open:ios
 
 改过原生插件 / entitlements 后：Xcode **Product → Clean Build Folder**，再 Run。
 
+## 软更新提示
+
+原生壳启动后会做**软提示**（可关「稍后」；不强制、无 OTA）：iOS 用 App Store lookup（`country=cn`）；Android 读远程 `version.json`（**versionCode**）。设置页有手动 **检查更新**（忽略同日限制；最新/失败用 Toast）。Android URL 在 `www-src/local/update-check.js` 的 `ANDROID_VERSION_JSON_URL`；样例见 `version.json.example`。说明见 Project store `docs/update-check-soft-prompt.md`。
+
 ## Phase 2 验收（锁屏）
 
 ### 若提示「密码不正确」（旧数据）
@@ -58,17 +62,17 @@ location.reload();
 
 ## Phase 5：TestFlight → App Store
 
-对外版本：**`1.0.0`**（Build 从 **`1`** 起，每次上传 +1）。  
+对外版本：**`1.1.1`**（Build **`9`**；之后每次上传 +1）。  
 Bundle ID：`com.mytimetree.app` · iCloud：`iCloud.com.mytimetree.app`
 
 ### 5.1 仓库内已对齐
 
 | 项 | 值 |
 |----|-----|
-| 主屏 `APP_VERSION` | `1.0.0` |
-| Xcode `MARKETING_VERSION` | `1.0.0` |
-| Xcode `CURRENT_PROJECT_VERSION`（Build） | `1`（下次上传改为 2…） |
-| `mobile/package.json` | `1.0.0` |
+| 主屏 `APP_VERSION` | `1.1.1` |
+| Xcode `MARKETING_VERSION` | `1.1.1` |
+| Xcode `CURRENT_PROJECT_VERSION`（Build） | `9` |
+| `mobile/package.json` | `1.0.0`（npm 包名版本，与营销版独立） |
 | 出口合规 | `ITSAppUsesNonExemptEncryption = false`（仅用系统标准加密） |
 
 ### 5.2 App Store Connect（需你在网页完成）

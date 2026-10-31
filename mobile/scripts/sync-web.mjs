@@ -14,7 +14,7 @@ const www = path.join(root, "mobile/www");
 const localSrc = path.join(root, "mobile/www-src/local");
 const sqlJsDist = path.join(root, "mobile/node_modules/sql.js/dist");
 /** Bust WKWebView caches for injected local scripts + app.js (was stuck on p5h1 / local-p2). */
-const LOCAL_ASSET_V = "20261027a";
+const LOCAL_ASSET_V = "20261031c";
 const iosPublic = path.join(root, "mobile/ios/App/App/public");
 
 function rmrf(dir) {
@@ -74,6 +74,7 @@ function rewritePortalHtml(html) {
     `  <script src="./local/lock.js?v=${v}"></script>`,
     '  <script src="./local/html2canvas.min.js"></script>',
     `  <script src="./local/share.js?v=${v}"></script>`,
+    `  <script src="./local/update-check.js?v=${v}"></script>`,
   ].join("\n");
 
   // Strip any prior local inject then re-add
@@ -629,6 +630,30 @@ function assertBuildTree(base, tag) {
     new RegExp(`mytimetree-web-build" content="${esc}"`),
     `${tag} meta web-build`
   );
+  assertMarker(
+    base,
+    "index.html",
+    new RegExp(`update-check\\.js\\?v=${esc}`),
+    `${tag} update-check.js inject`
+  );
+  assertMarker(base, "local/update-check.js", /ANDROID_VERSION_JSON_URL/, `${tag} ANDROID_VERSION_JSON_URL`);
+  assertMarker(base, "local/update-check.js", /itunes\.apple\.com\/lookup/, `${tag} iOS App Store lookup`);
+  assertMarker(base, "local/update-check.js", /androidVersionCode/, `${tag} androidVersionCode`);
+  assertMarker(base, "local/update-check.js", /发现新版本/, `${tag} soft prompt copy`);
+  assertMarker(base, "local/update-check.js", /mtt\.updatePrompt\.ymd/, `${tag} same-day prompt key`);
+  assertMarker(base, "local/update-check.js", /itms-apps:\/\/apps\.apple\.com/, `${tag} itms-apps deep link`);
+  assertMarker(
+    base,
+    "local/update-check.js",
+    /filter\(\(p\) => p !== ""\)/,
+    `${tag} semver keep zero parts`
+  );
+  assertMarker(base, "local/update-check.js", /checkNowManual/, `${tag} checkNowManual`);
+  assertMarker(base, "local/update-check.js", /btn-check-update/, `${tag} settings 检查更新`);
+  assertMarker(base, "local/update-check.js", /已是最新版本/, `${tag} latest toast copy`);
+  assertMarker(base, "local/update-check.js", /暂时无法检查/, `${tag} fail toast copy`);
+  assertMarker(base, "local/lock.css", /\.update-soft-prompt/, `${tag} update-soft-prompt CSS`);
+  assertMarker(base, "local/lock.css", /\.update-check-settings/, `${tag} update-check-settings CSS`);
 }
 
 assertBuildTree(www, "www");

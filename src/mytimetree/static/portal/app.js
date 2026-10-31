@@ -1,7 +1,7 @@
 /* MyTimeTree portal SPA — parent mobile shell */
 (() => {
   /** User-facing marketing version (align with iOS MARKETING_VERSION). */
-  const APP_VERSION = "1.0.0";
+  const APP_VERSION = "1.1.1";
 
   const STAGE_ZH = {
     seed: "种子",
@@ -53,7 +53,7 @@
     bird: `/static/portal/ornaments/bird.png?v=${ASSET_V}`,
   };
 
-  const HABIT_MEDIA_V = "20261027a";
+  const HABIT_MEDIA_V = "20261031c";
   // Tip: bright star (icon-tip-seed path overwritten; icon-tip-star alias also shipped)
   const HABIT_TIP_ICON = `/static/portal/habit/icon-tip-star.png?v=${HABIT_MEDIA_V}`;
   const HABIT_TIP_ICON_2X = `/static/portal/habit/icon-tip-star@2x.png?v=${HABIT_MEDIA_V}`;
